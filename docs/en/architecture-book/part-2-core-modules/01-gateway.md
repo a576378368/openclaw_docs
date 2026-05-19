@@ -362,4 +362,4 @@ The same handshake and token auth apply over the tunnel.
 - [Protocol Overview](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - Protocol details
 - [WebSocket Transport](/architecture-book/part-4-gateway-protocol/02-ws-transport) - Transport layer
 - [Events and RPC](/architecture-book/part-4-gateway-protocol/04-events-and-rpc) - Communication patterns
-- [Session Management](/architecture-book/part-8-session-memory/01-session-management) - Session architecture
+- [Session Management](/architecture-book/part-8-session-memory/00-session-memory-overview) - Session architecture

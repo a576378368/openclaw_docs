@@ -362,4 +362,4 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 - [协议概述](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - 协议详情
 - [WebSocket 传输](/architecture-book/part-4-gateway-protocol/02-ws-transport) - 传输层
 - [事件和 RPC](/architecture-book/part-4-gateway-protocol/04-events-and-rpc) - 通信模式
-- [Session 管理](/architecture-book/part-8-session-memory/01-session-management) - Session 架构
+- [Session 管理](/architecture-book/part-8-session-memory/00-session-memory-overview) - Session 架构

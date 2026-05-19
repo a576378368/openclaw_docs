@@ -325,4 +325,4 @@ interface MemoryPolicy {
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - Context assembly
 - [Compaction](/architecture-book/part-8-session-memory/04-compaction) - Memory compaction
 - [Multi-Agent](/architecture-book/part-8-session-memory/05-multi-agent) - Multi-agent memory
-- [Session Management](/architecture-book/part-8-session-memory/01-session-management) - Session architecture
+- [Session Management](/architecture-book/part-8-session-memory/00-session-memory-overview) - Session architecture

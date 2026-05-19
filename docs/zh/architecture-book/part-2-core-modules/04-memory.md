@@ -325,4 +325,4 @@ interface MemoryPolicy {
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - 上下文组装
 - [压缩](/architecture-book/part-8-session-memory/04-compaction) - Memory 压缩
 - [Multi-Agent](/architecture-book/part-8-session-memory/05-multi-agent) - 多 Agent Memory
-- [Session 管理](/architecture-book/part-8-session-memory/01-session-management) - Session 架构
+- [Session 管理](/architecture-book/part-8-session-memory/00-session-memory-overview) - Session 架构

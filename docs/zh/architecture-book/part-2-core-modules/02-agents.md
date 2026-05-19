@@ -378,7 +378,7 @@ interface RunMetrics {
 
 ## 相关
 
-- [Session 管理](/architecture-book/part-8-session-memory/01-session-management) - Session 架构
+- [Session 管理](/architecture-book/part-8-session-memory/00-session-memory-overview) - Session 架构
 - [Memory 系统](/architecture-book/part-8-session-memory/00-session-memory-overview) - Memory 架构
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - 上下文组装
 - [MCP 支持](/architecture-book/part-2-core-modules/06-mcp) - MCP 集成
