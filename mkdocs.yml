@@ -52,10 +52,6 @@ plugins:
       lang:
         - en
         - zh
-      prebuild_index: true
-  - exclude:
-      glob:
-        - "*/_category_.json"
 
 nav:
   - home:
@@ -175,8 +171,6 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
       line_anchors: local
-  - pymdownx.snippets:
-      auto_section: true
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.superfences:
@@ -197,7 +191,6 @@ markdown_extensions:
   - def_list
   - footnotes
   - meta
-  - wikilinks
 
 extra_css:
   - stylesheets/extra.css
