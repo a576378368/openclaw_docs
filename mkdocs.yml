@@ -11,20 +11,20 @@ site_dir: site
 
 theme:
   name: material
-  language: en
+  language: zh
   palette:
     - scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: 切换深色模式
     - scheme: slate
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: 切换浅色模式
   font:
     text: Inter
     code: JetBrains Mono
@@ -54,72 +54,13 @@ plugins:
         - zh
 
 nav:
-  - 🌐 Languages:
-    - English: en/architecture-book/index.md
-    - 中文: zh/architecture-book/index.md
-  - 📖 English:
-    - Foundations:
-      - Introduction: en/architecture-book/part-1-foundations/01-introduction.md
-      - System Overview: en/architecture-book/part-1-foundations/02-system-overview.md
-      - Core Concepts: en/architecture-book/part-1-foundations/03-core-concepts.md
-      - Directory Structure: en/architecture-book/part-1-foundations/04-directory-structure.md
-    - Core Modules:
-      - Gateway: en/architecture-book/part-2-core-modules/01-gateway.md
-      - Agent: en/architecture-book/part-2-core-modules/02-agents.md
-      - Sessions: en/architecture-book/part-2-core-modules/03-sessions.md
-      - Memory: en/architecture-book/part-2-core-modules/04-memory.md
-      - Tools: en/architecture-book/part-2-core-modules/05-tools.md
-      - MCP: en/architecture-book/part-2-core-modules/06-mcp.md
-      - Flow: en/architecture-book/part-2-core-modules/07-flows.md
-      - Tasks: en/architecture-book/part-2-core-modules/08-tasks.md
-    - Plugin System:
-      - Plugin Architecture: en/architecture-book/part-3-plugin-system/01-plugin-architecture.md
-      - Plugin SDK: en/architecture-book/part-3-plugin-system/02-plugin-sdk.md
-      - Plugin Contracts: en/architecture-book/part-3-plugin-system/03-plugin-contracts.md
-      - Plugin Runtime: en/architecture-book/part-3-plugin-system/04-plugin-runtime.md
-      - Writing Plugins: en/architecture-book/part-3-plugin-system/05-writing-plugins.md
-      - Channel Plugins: en/architecture-book/part-3-plugin-system/06-channel-plugins.md
-    - Gateway Protocol:
-      - Protocol Overview: en/architecture-book/part-4-gateway-protocol/01-protocol-overview.md
-      - WebSocket Transport: en/architecture-book/part-4-gateway-protocol/02-ws-transport.md
-      - Message Flow: en/architecture-book/part-4-gateway-protocol/03-message-flow.md
-      - Events and RPC: en/architecture-book/part-4-gateway-protocol/04-events-and-rpc.md
-      - Auth and Security: en/architecture-book/part-4-gateway-protocol/05-auth-security.md
-    - Channels:
-      - Channel Architecture: en/architecture-book/part-5-channels/01-channel-architecture.md
-      - Channel Abstract: en/architecture-book/part-5-channels/02-channel-abstract.md
-      - Inbound Events: en/architecture-book/part-5-channels/03-inbound-events.md
-      - Message Processing: en/architecture-book/part-5-channels/04-message-processing.md
-      - Transport Layer: en/architecture-book/part-5-channels/05-transport-layer.md
-    - SDK and API:
-      - App SDK: en/architecture-book/part-6-sdks-apis/01-app-sdk.md
-      - Plugin SDK: en/architecture-book/part-6-sdks-apis/02-plugin-sdk.md
-      - Memory Host SDK: en/architecture-book/part-6-sdks-apis/03-memory-host-sdk.md
-      - API Reference: en/architecture-book/part-6-sdks-apis/04-api-reference.md
-    - Config System:
-      - Config Schema: en/architecture-book/part-7-config-system/01-config-schema.md
-      - Provider Config: en/architecture-book/part-7-config-system/03-provider-config.md
-      - Channel Config: en/architecture-book/part-7-config-system/04-channel-config.md
-      - Agent Config: en/architecture-book/part-7-config-system/05-agent-config.md
-      - Plugin Config: en/architecture-book/part-7-config-system/06-plugin-config.md
-    - Session Memory:
-      - Overview: en/architecture-book/part-8-session-memory/00-session-memory-overview.md
-      - Context Engine: en/architecture-book/part-8-session-memory/03-context-engine.md
-      - Compaction: en/architecture-book/part-8-session-memory/04-compaction.md
-      - Multi-Agent: en/architecture-book/part-8-session-memory/05-multi-agent.md
-    - Dev Guide:
-      - Dev Workflow: en/architecture-book/part-9-dev-guide/01-dev-workflow.md
-      - Build System: en/architecture-book/part-9-dev-guide/02-build-system.md
-      - Testing: en/architecture-book/part-9-dev-guide/03-testing.md
-      - Debugging: en/architecture-book/part-9-dev-guide/04-debugging.md
-      - Deployment: en/architecture-book/part-9-dev-guide/05-deployment.md
-  - 📖 中文:
-    - 基础:
+  - 主页: index.md
+  - 基础:
       - 简介: zh/architecture-book/part-1-foundations/01-introduction.md
       - 系统概览: zh/architecture-book/part-1-foundations/02-system-overview.md
       - 核心概念: zh/architecture-book/part-1-foundations/03-core-concepts.md
       - 目录结构: zh/architecture-book/part-1-foundations/04-directory-structure.md
-    - 核心模块:
+  - 核心模块:
       - 网关: zh/architecture-book/part-2-core-modules/01-gateway.md
       - Agent: zh/architecture-book/part-2-core-modules/02-agents.md
       - 会话: zh/architecture-book/part-2-core-modules/03-sessions.md
@@ -128,42 +69,42 @@ nav:
       - MCP: zh/architecture-book/part-2-core-modules/06-mcp.md
       - Flow: zh/architecture-book/part-2-core-modules/07-flows.md
       - 任务: zh/architecture-book/part-2-core-modules/08-tasks.md
-    - 插件系统:
+  - 插件系统:
       - 插件架构: zh/architecture-book/part-3-plugin-system/01-plugin-architecture.md
       - 插件 SDK: zh/architecture-book/part-3-plugin-system/02-plugin-sdk.md
       - 插件合约: zh/architecture-book/part-3-plugin-system/03-plugin-contracts.md
       - 插件运行时: zh/architecture-book/part-3-plugin-system/04-plugin-runtime.md
       - 编写插件: zh/architecture-book/part-3-plugin-system/05-writing-plugins.md
       - 通道插件: zh/architecture-book/part-3-plugin-system/06-channel-plugins.md
-    - 网关协议:
+  - 网关协议:
       - 协议概览: zh/architecture-book/part-4-gateway-protocol/01-protocol-overview.md
       - WebSocket 传输: zh/architecture-book/part-4-gateway-protocol/02-ws-transport.md
       - 消息流: zh/architecture-book/part-4-gateway-protocol/03-message-flow.md
       - 事件和 RPC: zh/architecture-book/part-4-gateway-protocol/04-events-and-rpc.md
       - 认证和安全: zh/architecture-book/part-4-gateway-protocol/05-auth-security.md
-    - 通道:
+  - 通道:
       - 通道架构: zh/architecture-book/part-5-channels/01-channel-architecture.md
       - 通道抽象: zh/architecture-book/part-5-channels/02-channel-abstract.md
       - 入站事件: zh/architecture-book/part-5-channels/03-inbound-events.md
       - 消息处理: zh/architecture-book/part-5-channels/04-message-processing.md
       - 传输层: zh/architecture-book/part-5-channels/05-transport-layer.md
-    - SDK 和 API:
+  - SDK 和 API:
       - App SDK: zh/architecture-book/part-6-sdks-apis/01-app-sdk.md
       - 插件 SDK: zh/architecture-book/part-6-sdks-apis/02-plugin-sdk.md
       - Memory Host SDK: zh/architecture-book/part-6-sdks-apis/03-memory-host-sdk.md
       - API 参考: zh/architecture-book/part-6-sdks-apis/04-api-reference.md
-    - 配置系统:
+  - 配置系统:
       - 配置架构: zh/architecture-book/part-7-config-system/01-config-schema.md
       - Provider 配置: zh/architecture-book/part-7-config-system/03-provider-config.md
       - 通道配置: zh/architecture-book/part-7-config-system/04-channel-config.md
       - Agent 配置: zh/architecture-book/part-7-config-system/05-agent-config.md
       - 插件配置: zh/architecture-book/part-7-config-system/06-plugin-config.md
-    - 会话内存:
+  - 会话内存:
       - 会话内存概览: zh/architecture-book/part-8-session-memory/00-session-memory-overview.md
       - 上下文引擎: zh/architecture-book/part-8-session-memory/03-context-engine.md
       - 压缩: zh/architecture-book/part-8-session-memory/04-compaction.md
       - 多 Agent: zh/architecture-book/part-8-session-memory/05-multi-agent.md
-    - 开发指南:
+  - 开发指南:
       - 开发工作流: zh/architecture-book/part-9-dev-guide/01-dev-workflow.md
       - 构建系统: zh/architecture-book/part-9-dev-guide/02-build-system.md
       - 测试: zh/architecture-book/part-9-dev-guide/03-testing.md

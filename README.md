@@ -7,10 +7,7 @@
 
 ## 在线阅读
 
-本书籍已部署至 GitHub Pages：
-
-- **英文版**: [https://a576378368.github.io/openclaw_docs](https://a576378368.github.io/openclaw_docs)
-- **中文版**: [https://a576378368.github.io/openclaw_docs/zh](https://a576378368.github.io/openclaw_docs/zh)
+**https://a576378368.github.io/openclaw_docs**
 
 ## 关于本书
 
@@ -20,35 +17,17 @@ OpenClaw 是一个开源的多通道 AI 网关，用于将聊天平台与 AI Age
 
 本书分为九个部分，共 49 篇文档：
 
-### 📖 第一部分：基础
-- 简介 - OpenClaw 是什么以及为何存在
-- 系统概览 - 高层架构
-- 核心概念 - 关键设计概念
-- 目录结构 - 代码库组织
-
-### 🔧 第二部分：核心模块
-- Gateway、Agents、Sessions、Memory、Tools、MCP、Flows、Tasks
-
-### 🔌 第三部分：插件系统
-- 插件架构、SDK、契约、运行时、开发指南
-
-### 🌐 第四部分：网关协议
-- 协议概述、WebSocket 传输、消息流、事件和 RPC、认证和安全
-
-### 💬 第五部分：通道系统
-- 通道架构、抽象、入站事件、消息处理、传输层
-
-### 🛠 第六部分：SDK 和 API
-- App SDK、插件 SDK、Memory Host SDK、API 参考
-
-### ⚙️ 第七部分：配置系统
-- 配置架构、Provider 配置、通道配置、Agent 配置、插件配置
-
-### 🧠 第八部分：会话和内存
-- 会话内存概览、上下文引擎、压缩、多 Agent
-
-### 🚀 第九部分：开发者指南
-- 开发工作流、构建系统、测试、调试、部署
+| 章节 | 内容 |
+|------|------|
+| 基础 | 简介、系统概览、核心概念、目录结构 |
+| 核心模块 | 网关、Agent、会话、内存、工具、MCP、Flow、任务 |
+| 插件系统 | 插件架构、SDK、契约、运行时、开发指南 |
+| 网关协议 | 协议概述、WebSocket 传输、消息流、事件和 RPC、认证和安全 |
+| 通道系统 | 通道架构、抽象、入站事件、消息处理、传输层 |
+| SDK 和 API | App SDK、插件 SDK、Memory Host SDK、API 参考 |
+| 配置系统 | 配置架构、Provider 配置、通道配置、Agent 配置、插件配置 |
+| 会话内存 | 会话内存概览、上下文引擎、压缩、多 Agent |
+| 开发者指南 | 开发工作流、构建系统、测试、调试、部署 |
 
 ## 面向读者
 
@@ -74,19 +53,14 @@ pip install mkdocs mkdocs-material
 mkdocs serve --dev-addr 0.0.0.0:8000
 
 # 构建静态站点
-mkdocs build --strict
+mkdocs build
 ```
 
 ## 相关链接
 
 - [OpenClaw 官网](https://openclaw.ai)
-- [OpenClaw GitHub](https://github.com/openclaw/openclaw)
-- [OpenClaw 文档](https://docs.openclaw.ai)
-- [Issue 反馈](https://github.com/openclaw/openclaw/issues)
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
+- [GitHub 仓库](https://github.com/openclaw/openclaw)
+- [在线文档](https://docs.openclaw.ai)
 
 ## 许可
 
