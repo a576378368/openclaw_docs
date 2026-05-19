@@ -1,13 +1,21 @@
 ---
-summary: "OpenClaw 架构与实现综合教材"
-title: "OpenClaw 架构书籍"
+title: "OpenClaw Architecture Book"
+summary: "OpenClaw 架构与实现综合指南"
+description: "深入理解 OpenClaw 的设计理念、架构模式和实现细节"
 read_when:
   - 学习 OpenClaw 内部原理
   - 为 OpenClaw 做贡献
   - 构建插件和扩展
+  - 集成自定义平台
 ---
 
 # OpenClaw 架构书籍
+
+::: info 在线访问
+本书籍已部署至 GitHub Pages：[https://a576378368.github.io/openclaw_docs](https://a576378368368.github.io/openclaw_docs)
+
+中文版入口：[https://a576378368.github.io/openclaw_docs/architecture-book](https://a576378368368.github.io/openclaw_docs/architecture-book)
+:::
 
 全面指南，帮助理解 OpenClaw 的设计理念、架构模式和实现细节。
 
@@ -15,72 +23,97 @@ read_when:
 
 本教材深入介绍 OpenClaw，这是一个开源的多通道 AI 网关，用于将聊天平台与 AI Agent 连接起来。无论您是新的贡献者还是经验丰富的开发者，本书都将帮助您理解 OpenClaw 的工作原理。
 
+## 特点
+
+- **全面的架构解析** - 涵盖从核心模块到插件系统的完整架构
+- **实用的开发指南** - 包含测试、调试和部署的最佳实践
+- **详细的技术参考** - 提供 SDK、API 和配置系统的完整文档
+
 ## 结构
 
 本书分为九个部分：
 
-### 第一部分：基础
-- [简介](/architecture-book/zh/part-1-foundations/01-introduction) - OpenClaw 是什么以及为何存在
-- [系统概述](/architecture-book/zh/part-1-foundations/02-system-overview) - 高层架构
-- [核心概念](/architecture-book/zh/part-1-foundations/03-core-concepts) - 关键设计概念
-- [目录结构](/architecture-book/zh/part-1-foundations/04-directory-structure) - 代码库组织
+### [第一部分：基础](./part-1-foundations/01-introduction.md)
+学习 OpenClaw 的基本概念和设计理念，包括系统概述、核心概念和目录结构。
 
-### 第二部分：核心模块
-- [Gateway](/architecture-book/zh/part-2-core-modules/01-gateway) - Gateway 核心架构
-- [Agents](/architecture-book/zh/part-2-core-modules/02-agents) - Agent 系统和运行时
-- [Sessions](/architecture-book/zh/part-2-core-modules/03-sessions) - 会话管理
-- [Memory](/architecture-book/zh/part-2-core-modules/04-memory) - 内存系统
-- [Tools](/architecture-book/zh/part-2-core-modules/05-tools) - Agent 工具
-- [MCP](/architecture-book/zh/part-2-core-modules/06-mcp) - MCP 协议支持
-- [Flows](/architecture-book/zh/part-2-core-modules/07-flows) - 工作流编排
-- [Tasks](/architecture-book/zh/part-2-core-modules/08-tasks) - 任务管理
+- [简介](./part-1-foundations/01-introduction.md) - OpenClaw 是什么以及为何存在
+- [系统概述](./part-1-foundations/02-system-overview.md) - 高层架构和组件
+- [核心概念](./part-1-foundations/03-core-concepts.md) - 关键设计概念
+- [目录结构](./part-1-foundations/04-directory-structure.md) - 代码库组织
 
-### 第三部分：插件系统
-- [插件架构](/architecture-book/zh/part-3-plugin-system/01-plugin-architecture) - 插件系统设计
-- [插件 SDK](/architecture-book/zh/part-3-plugin-system/02-plugin-sdk) - SDK 结构
-- [插件契约](/architecture-book/zh/part-3-plugin-system/03-plugin-contracts) - 契约系统
-- [插件运行时](/architecture-book/zh/part-3-plugin-system/04-plugin-runtime) - 运行时加载
-- [编写插件](/architecture-book/zh/part-3-plugin-system/05-writing-plugins) - 插件开发
-- [通道插件](/architecture-book/zh/part-3-plugin-system/06-channel-plugins) - 通道实现
+### [第二部分：核心模块](./part-2-core-modules/01-gateway.md)
+深入了解 OpenClaw 的核心组件，包括 Gateway、Agent、会话管理和内存系统。
 
-### 第四部分：Gateway 协议
-- [协议概述](/architecture-book/zh/part-4-gateway-protocol/01-protocol-overview) - 协议设计
-- [WebSocket 传输](/architecture-book/zh/part-4-gateway-protocol/02-ws-transport) - 传输层
-- [消息流程](/architecture-book/zh/part-4-gateway-protocol/03-message-flow) - 消息处理
-- [事件和 RPC](/architecture-book/zh/part-4-gateway-protocol/04-events-and-rpc) - 通信模式
-- [认证和安全](/architecture-book/zh/part-4-gateway-protocol/05-auth-security) - 安全模型
+- [Gateway](./part-2-core-modules/01-gateway.md) - Gateway 核心架构
+- [Agents](./part-2-core-modules/02-agents.md) - Agent 系统和运行时
+- [Sessions](./part-2-core-modules/03-sessions.md) - 会话管理
+- [Memory](./part-2-core-modules/04-memory.md) - 内存系统
+- [Tools](./part-2-core-modules/05-tools.md) - Agent 工具
+- [MCP](./part-2-core-modules/06-mcp.md) - MCP 协议支持
+- [Flows](./part-2-core-modules/07-flows.md) - 工作流编排
+- [Tasks](./part-2-core-modules/08-tasks.md) - 任务管理
 
-### 第五部分：通道系统
-- [通道架构](/architecture-book/zh/part-5-channels/01-channel-architecture) - 通道设计
-- [通道抽象](/architecture-book/zh/part-5-channels/02-channel-abstract) - 抽象层
-- [入站事件](/architecture-book/zh/part-5-channels/03-inbound-events) - 事件处理
-- [消息处理](/architecture-book/zh/part-5-channels/04-message-processing) - 处理管道
-- [传输层](/architecture-book/zh/part-5-channels/05-transport-layer) - 网络传输
+### [第三部分：插件系统](./part-3-plugin-system/01-plugin-architecture.md)
+学习如何扩展 OpenClaw 功能，包括插件架构、SDK 和开发指南。
 
-### 第六部分：SDK 和 API
-- [App SDK](/architecture-book/zh/part-6-sdks-apis/01-app-sdk) - 客户端 SDK
-- [插件 SDK](/architecture-book/zh/part-6-sdks-apis/02-plugin-sdk) - 插件开发 SDK
-- [内存宿主 SDK](/architecture-book/zh/part-6-sdks-apis/03-memory-host-sdk) - 内存集成
-- [API 参考](/architecture-book/zh/part-6-sdks-apis/04-api-reference) - 完整 API 参考
+- [插件架构](./part-3-plugin-system/01-plugin-architecture.md) - 插件系统设计
+- [插件 SDK](./part-3-plugin-system/02-plugin-sdk.md) - SDK 结构和使用
+- [插件契约](./part-3-plugin-system/03-plugin-contracts.md) - 契约系统
+- [插件运行时](./part-3-plugin-system/04-plugin-runtime.md) - 运行时加载
+- [编写插件](./part-3-plugin-system/05-writing-plugins.md) - 插件开发指南
+- [通道插件](./part-3-plugin-system/06-channel-plugins.md) - 通道实现
 
-### 第七部分：配置
-- [配置概述](/architecture-book/zh/part-7-config-system/01-config-overview) - 配置系统
-- [配置模式](/architecture-book/zh/part-7-config-system/02-config-schema) - 模式定义
-- [提供商配置](/architecture-book/zh/part-7-config-system/03-provider-config) - 提供商配置
-- [通道配置](/architecture-book/zh/part-7-config-system/04-channel-config) - 通道配置
+### [第四部分：网关协议](./part-4-gateway-protocol/01-protocol-overview.md)
+了解 OpenClaw 的通信协议，包括 WebSocket 传输和消息流程。
 
-### 第八部分：会话和内存
-- [会话管理](/architecture-book/zh/part-8-session-memory/01-session-management) - 会话架构
-- [内存系统](/architecture-book/zh/part-8-session-memory/02-memory-system) - 内存架构
-- [上下文引擎](/architecture-book/zh/part-8-session-memory/03-context-engine) - 上下文组装
-- [压缩](/architecture-book/zh/part-8-session-memory/04-compaction) - 内存压缩
-- [多 Agent](/architecture-book/zh/part-8-session-memory/05-multi-agent) - 多 Agent 路由
+- [协议概述](./part-4-gateway-protocol/01-protocol-overview.md) - 协议设计
+- [WebSocket 传输](./part-4-gateway-protocol/02-ws-transport.md) - 传输层
+- [消息流](./part-4-gateway-protocol/03-message-flow.md) - 消息处理
+- [事件和 RPC](./part-4-gateway-protocol/04-events-and-rpc.md) - 通信模式
+- [认证和安全](./part-4-gateway-protocol/05-auth-security.md) - 安全模型
 
-### 第九部分：开发者指南
-- [构建系统](/architecture-book/zh/part-9-dev-guide/01-build-system) - 构建和打包
-- [测试](/architecture-book/zh/part-9-dev-guide/02-testing) - 测试策略
-- [调试](/architecture-book/zh/part-9-dev-guide/03-debugging) - 调试技术
-- [部署](/architecture-book/zh/part-9-dev-guide/04-deployment) - 生产部署
+### [第五部分：通道系统](./part-5-channels/01-channel-architecture.md)
+学习通道的抽象层和事件处理机制。
+
+- [通道架构](./part-5-channels/01-channel-architecture.md) - 通道设计
+- [通道抽象](./part-5-channels/02-channel-abstract.md) - 抽象层
+- [入站事件](./part-5-channels/03-inbound-events.md) - 事件处理
+- [消息处理](./part-5-channels/04-message-processing.md) - 处理管道
+- [传输层](./part-5-channels/05-transport-layer.md) - 网络传输
+
+### [第六部分：SDK 和 API](./part-6-sdks-apis/01-app-sdk.md)
+完整的 SDK 和 API 参考文档。
+
+- [App SDK](./part-6-sdks-apis/01-app-sdk.md) - 客户端 SDK
+- [插件 SDK](./part-6-sdks-apis/02-plugin-sdk.md) - 插件开发 SDK
+- [内存宿主 SDK](./part-6-sdks-apis/03-memory-host-sdk.md) - 内存集成
+- [API 参考](./part-6-sdks-apis/04-api-reference.md) - 完整 API 参考
+
+### [第七部分：配置系统](./part-7-config-system/01-config-schema.md)
+配置系统的完整参考。
+
+- [配置架构](./part-7-config-system/01-config-schema.md) - 配置概述
+- [Provider 配置](./part-7-config-system/03-provider-config.md) - 提供商配置
+- [通道配置](./part-7-config-system/04-channel-config.md) - 通道配置
+- [Agent 配置](./part-7-config-system/05-agent-config.md) - Agent 配置
+- [插件配置](./part-7-config-system/06-plugin-config.md) - 插件配置
+
+### [第八部分：会话和内存](./part-8-session-memory/00-session-memory-overview.md)
+会话管理和内存系统的深入解析。
+
+- [会话内存概览](./part-8-session-memory/00-session-memory-overview.md) - 概述
+- [上下文引擎](./part-8-session-memory/03-context-engine.md) - 上下文组装
+- [压缩](./part-8-session-memory/04-compaction.md) - 内存压缩
+- [多 Agent](./part-8-session-memory/05-multi-agent.md) - 多 Agent 路由
+
+### [第九部分：开发者指南](./part-9-dev-guide/01-dev-workflow.md)
+开发、测试和部署的最佳实践。
+
+- [开发工作流](./part-9-dev-guide/01-dev-workflow.md) - 开发流程
+- [构建系统](./part-9-dev-guide/02-build-system.md) - 构建和打包
+- [测试](./part-9-dev-guide/03-testing.md) - 测试策略
+- [调试](./part-9-dev-guide/04-debugging.md) - 调试技术
+- [部署](./part-9-dev-guide/05-deployment.md) - 生产部署
 
 ## 本书面向的读者
 
@@ -95,3 +128,10 @@ read_when:
 - 熟悉 AI/LLM 概念
 - 理解 WebSocket 通信
 - 基本了解插件/扩展模式
+
+## 相关链接
+
+- [OpenClaw 官网](https://openclaw.ai)
+- [OpenClaw GitHub](https://github.com/openclaw/openclaw)
+- [OpenClaw 文档](https://docs.openclaw.ai)
+- [Issue 反馈](https://github.com/openclaw/openclaw/issues)
