@@ -200,6 +200,4 @@ OpenClaw 采用 MIT 许可证发布，可免费用于个人和商业用途。
 
 ## 入门
 
-请参阅[快速入门指南](/start/quick-start)在几分钟内设置 OpenClaw。
-
-有关插件开发，请参阅[插件架构](/architecture-book/part-3-plugin-system/01-plugin-architecture)。
+下一章：[系统概览](02-system-overview) - 了解 OpenClaw 系统架构

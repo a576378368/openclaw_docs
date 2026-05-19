@@ -200,6 +200,4 @@ OpenClaw is released under the MIT License, making it free for personal and comm
 
 ## Getting Started
 
-See the [Quick Start Guide](/start/quick-start) to set up OpenClaw in minutes.
-
-For plugin development, see [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture).
+Next: [System Overview](02-system-overview) - Learn OpenClaw system architecture
