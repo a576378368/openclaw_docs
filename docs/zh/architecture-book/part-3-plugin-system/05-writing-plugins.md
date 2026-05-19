@@ -1,48 +1,48 @@
 ---
-summary: "Step-by-step guide to building OpenClaw plugins"
-title: "Writing Plugins"
+summary: "构建 OpenClaw 插件的分步指南"
+title: "编写插件"
 read_when:
-  - Creating a new plugin
-  - Understanding plugin structure
+  - 创建新插件
+  - 理解插件结构
 ---
 
-# Writing Plugins
+# 编写插件
 
-## Overview
+## 概述
 
-This guide walks through creating a complete OpenClaw plugin from scratch.
+本指南逐步介绍如何从头开始创建一个完整的 OpenClaw 插件。
 
 ```mermaid
 flowchart LR
-    A[Init] --> B[Manifest]
-    B --> C[Entry Point]
-    C --> D[Implementation]
-    D --> E[Test]
-    E --> F[Package]
+    A[初始化] --> B[清单]
+    B --> C[入口点]
+    C --> D[实现]
+    D --> E[测试]
+    E --> F[打包]
 ```
 
-## Plugin Types
+## 插件类型
 
-Choose your plugin type based on what you want to add:
+根据要添加的内容选择插件类型：
 
-| Type | Use Case | Entry Function |
+| 类型 | 使用场景 | 入口函数 |
 |------|----------|----------------|
-| provider | AI model access | `providerEntry()` |
-| channel | Messaging platform | `channelEntry()` |
-| tool | External capability | `toolEntry()` |
-| memory | Knowledge storage | `memoryEntry()` |
-| runtime | Agent execution | `runtimeEntry()` |
+| provider | AI 模型访问 | `providerEntry()` |
+| channel | 消息平台 | `channelEntry()` |
+| tool | 外部能力 | `toolEntry()` |
+| memory | 知识存储 | `memoryEntry()` |
+| runtime | Agent 执行 | `runtimeEntry()` |
 
-## Step 1: Project Setup
+## 第 1 步：项目设置
 
-### Create Plugin Directory
+### 创建插件目录
 
 ```bash
 mkdir -p extensions/my-plugin/src
 cd extensions/my-plugin
 ```
 
-### Initialize Package
+### 初始化包
 
 ```json
 {
@@ -70,7 +70,7 @@ cd extensions/my-plugin
 }
 ```
 
-### tsdown Configuration
+### tsdown 配置
 
 ```typescript
 // tsdown.config.ts
@@ -84,9 +84,9 @@ export default defineConfig({
 });
 ```
 
-## Step 2: Create Manifest
+## 第 2 步：创建清单
 
-### Manifest File
+### 清单文件
 
 ```json
 {
@@ -94,7 +94,7 @@ export default defineConfig({
   "name": "My Plugin",
   "version": "1.0.0",
   "type": "provider",
-  "description": "A custom AI provider plugin",
+  "description": "自定义 AI Provider 插件",
   "entry": "./dist/index.js",
   "runtime": {
     "node": ">=18.0.0"
@@ -108,7 +108,7 @@ export default defineConfig({
 }
 ```
 
-### Plugin JSON
+### 插件 JSON
 
 ```json
 {
@@ -116,13 +116,13 @@ export default defineConfig({
   "name": "My Plugin",
   "version": "1.0.0",
   "type": "provider",
-  "description": "A custom AI provider plugin"
+  "description": "自定义 AI Provider 插件"
 }
 ```
 
-## Step 3: Write Entry Point
+## 第 3 步：编写入口点
 
-### Basic Entry Structure
+### 基本入口结构
 
 ```typescript
 // src/index.ts
@@ -161,7 +161,7 @@ export const entry = providerEntry({
   async createCompletion(config, params) {
     const { model, messages, stream = true } = params;
 
-    // Call your API
+    // 调用你的 API
     const response = await callMyAPI({
       model: model.replace("my-provider:", ""),
       messages,
@@ -173,31 +173,31 @@ export const entry = providerEntry({
 });
 ```
 
-## Step 4: Implement Features
+## 第 4 步：实现功能
 
-### Configuration
+### 配置
 
 ```typescript
 import { defineConfig } from "@openclaw/plugin-sdk/config";
 
-// Configuration schema
+// 配置 schema
 export const config = defineConfig({
   apiKey: {
     type: "secret",
     required: true,
-    description: "API key for My Provider",
+    description: "My Provider 的 API 密钥",
   },
 
   baseUrl: {
     type: "string",
     default: "https://api.my-provider.com",
-    description: "API base URL",
+    description: "API 基础 URL",
   },
 
   model: {
     type: "string",
     default: "my-model-v1",
-    description: "Default model to use",
+    description: "默认使用的模型",
   },
 
   temperature: {
@@ -214,7 +214,7 @@ export const config = defineConfig({
 });
 ```
 
-### Activation with Config
+### 使用配置激活
 
 ```typescript
 import { providerEntry } from "@openclaw/plugin-sdk/runtime/provider";
@@ -223,20 +223,20 @@ import { config, type MyPluginConfig } from "./config.js";
 export const entry = providerEntry({
   id: "my-provider",
   name: "My Provider",
-  config,  // Attach config schema
+  config,  // 附加配置 schema
 
   async activate(context) {
     const { config, logger } = context;
 
-    // Use validated config
+    // 使用已验证的配置
     const apiKey = await context.secrets.get("MY_PROVIDER_API_KEY");
 
-    logger.info("My Provider plugin activated", {
+    logger.info("My Provider 插件已激活", {
       model: config.model,
       baseUrl: config.baseUrl,
     });
 
-    // Initialize API client
+    // 初始化 API 客户端
     context.state.client = createClient({
       apiKey,
       baseUrl: config.baseUrl,
@@ -244,12 +244,12 @@ export const entry = providerEntry({
   },
 
   async listModels(config) {
-    // Use config
+    // 使用配置
     return fetchModelList(config.baseUrl);
   },
 
   async createCompletion(config, params) {
-    // Use config
+    // 使用配置
     return this.state.client.complete({
       model: config.model,
       messages: params.messages,
@@ -261,7 +261,7 @@ export const entry = providerEntry({
 });
 ```
 
-### Error Handling
+### 错误处理
 
 ```typescript
 import { RetryableError, ProviderError } from "@openclaw/plugin-sdk/errors";
@@ -283,13 +283,13 @@ export const entry = providerEntry({
       return response;
     } catch (error) {
       if (error instanceof RateLimitError) {
-        throw new RetryableError("Rate limited", {
+        throw new RetryableError("速率限制", {
           retryAfter: error.retryAfter,
         });
       }
 
       if (error instanceof NetworkError) {
-        throw new RetryableError("Network error", {
+        throw new RetryableError("网络错误", {
           retryAfter: 1000,
         });
       }
@@ -300,9 +300,9 @@ export const entry = providerEntry({
 });
 ```
 
-## Step 5: Write Tests
+## 第 5 步：编写测试
 
-### Test Setup
+### 测试设置
 
 ```typescript
 // src/index.test.ts
@@ -310,7 +310,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createTestPlugin, mockContext } from "@openclaw/plugin-sdk/testing";
 import { entry } from "./index.js";
 
-describe("My Provider Plugin", () => {
+describe("My Provider 插件", () => {
   let plugin: TestPlugin;
   const mockCtx = mockContext({
     config: {
@@ -327,19 +327,19 @@ describe("My Provider Plugin", () => {
     });
   });
 
-  it("should activate successfully", async () => {
+  it("应该成功激活", async () => {
     await plugin.activate(mockCtx);
     expect(plugin.status).toBe("active");
   });
 
-  it("should list models", async () => {
+  it("应该列出模型", async () => {
     await plugin.activate(mockCtx);
     const models = await plugin.module.listModels();
     expect(models).toHaveLength(2);
     expect(models[0].ref).toBe("my-provider:my-model-v1");
   });
 
-  it("should create completion", async () => {
+  it("应该创建补全", async () => {
     await plugin.activate(mockCtx);
 
     const mockStream = new MockStream([
@@ -360,7 +360,7 @@ describe("My Provider Plugin", () => {
 });
 ```
 
-### Test Manifest
+### 测试清单
 
 ```typescript
 const testManifest = {
@@ -378,40 +378,40 @@ const testManifest = {
 };
 ```
 
-## Step 6: Build and Package
+## 第 6 步：构建和打包
 
-### Build
+### 构建
 
 ```bash
 pnpm build
 ```
 
-### Output Structure
+### 输出结构
 
 ```
 dist/
-├── index.js          # ESM bundle
-├── index.d.ts        # Type declarations
-└── index.d.ts.map    # Source map
+├── index.js          # ESM 打包
+├── index.d.ts        # 类型声明
+└── index.d.ts.map    # 源映射
 ```
 
-### Local Testing
+### 本地测试
 
 ```bash
-# Link plugin locally
+# 本地链接插件
 cd extensions/my-plugin
 npm link
 
-# In openclaw root
+# 在 openclaw 根目录
 npm link @openclaw/plugin-my-plugin
 
-# Test
+# 测试
 pnpm openclaw status
 ```
 
-## Complete Example
+## 完整示例
 
-### File Structure
+### 文件结构
 
 ```
 extensions/my-plugin/
@@ -426,7 +426,7 @@ extensions/my-plugin/
 └── README.md
 ```
 
-### Complete Source
+### 完整源代码
 
 ```typescript
 // src/index.ts
@@ -460,7 +460,7 @@ export const entry = providerEntry({
       apiKey,
       baseUrl: context.config.baseUrl,
     });
-    context.logger.info("My Provider activated");
+    context.logger.info("My Provider 已激活");
   },
 
   async listModels() {
@@ -488,32 +488,32 @@ export const entry = providerEntry({
 });
 ```
 
-## Publishing
+## 发布
 
-### npm Publish
+### npm 发布
 
 ```bash
-# Login
+# 登录
 npm login
 
-# Publish
+# 发布
 npm publish --access public
 ```
 
-### Version Management
+### 版本管理
 
 ```bash
-# Update version
+# 更新版本
 npm version patch  # 1.0.0 -> 1.0.1
 npm version minor  # 1.0.1 -> 1.1.0
 npm version major  # 1.1.0 -> 2.0.0
 
-# Publish
+# 发布
 npm publish
 ```
 
-## Related
+## 相关
 
-- [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture) - Plugin design
-- [Plugin SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK documentation
-- [Plugin Contracts](/architecture-book/part-3-plugin-system/03-plugin-contracts) - Contract system
+- [插件架构](/architecture-book/part-3-plugin-system/01-plugin-architecture) - 插件设计
+- [插件 SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK 文档
+- [插件契约](/architecture-book/part-3-plugin-system/03-plugin-contracts) - 契约系统

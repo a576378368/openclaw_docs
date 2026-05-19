@@ -1,22 +1,22 @@
 ---
-summary: "Contract definitions, boundaries, and invariants"
-title: "Plugin Contracts"
+summary: "契约定义、边界和不变式"
+title: "插件契约"
 read_when:
-  - Understanding contract system
-  - Ensuring plugin compatibility
+  - 理解契约系统
+  - 确保插件兼容性
 ---
 
-# Plugin Contracts
+# 插件契约
 
-## Overview
+## 概述
 
-OpenClaw uses a contract-based design to ensure type safety, validation, and clear boundaries between the core system and plugins.
+OpenClaw 使用基于契约的设计来确保类型安全、验证以及核心系统与插件之间的清晰边界。
 
 ```mermaid
 flowchart LR
-    Core[OpenClaw Core]
-    Contract[Contract Layer]
-    Plugin[Plugin Code]
+    Core[OpenClaw 核心]
+    Contract[契约层]
+    Plugin[插件代码]
 
     Core --> Contract
     Contract --> Plugin
@@ -26,133 +26,133 @@ flowchart LR
     style Contract fill:#fff3e0
 ```
 
-## Contract Design Principles
+## 契约设计原则
 
-### What is a Contract?
+### 什么是契约？
 
-A contract defines the agreed interface between two parties:
+契约定义了双方之间的约定接口：
 
-| Aspect | Description |
+| 方面 | 描述 |
 |--------|-------------|
-| Types | Data structures and interfaces |
-| Methods | Available operations |
-| Constraints | Preconditions and postconditions |
-| Events | Observable behaviors |
-| Errors | Error conditions and codes |
+| 类型 | 数据结构和接口 |
+| 方法 | 可用操作 |
+| 约束 | 前置条件和后置条件 |
+| 事件 | 可观察行为 |
+| 错误 | 错误条件和代码 |
 
-### Contract vs Interface
+### 契约与接口
 
 ```typescript
-// Interface: what methods exist
+// 接口：存在哪些方法
 interface Provider {
   listModels(): Promise<Model[]>;
   createCompletion(params: CompletionParams): Promise<CompletionResult>;
 }
 
-// Contract: interface + constraints + semantics
+// 契约：接口 + 约束 + 语义
 interface ProviderContract extends Provider {
-  // Constraint: listModels must return at least one model
+  // 约束：listModels 必须返回至少一个模型
   listModels(): Promise<Model[] & { length: number }>;
 
-  // Constraint: models must have unique refs
+  // 约束：模型必须有唯一的 ref
   listModels(): Promise<Model[]>; // { every m => isUnique(m.ref) }
 }
 ```
 
-## Registry Contracts
+## 注册表契约
 
-### Registry Interface
+### 注册表接口
 
 ```typescript
 interface RegistryContract {
-  // Discovery
+  // 发现
   discover(patterns: string[]): Promise<DiscoveredPlugin[]>;
   resolve(id: string): Promise<ResolvedPlugin>;
 
-  // Registration
+  // 注册
   register(plugin: RegisteredPlugin): void;
   unregister(id: string): void;
 
-  // Status
+  // 状态
   getStatus(id: string): PluginStatus;
   list(type?: PluginType): RegisteredPlugin[];
 
-  // Activation
+  // 激活
   activate(id: string): Promise<void>;
   deactivate(id: string): Promise<void>;
 }
 ```
 
-### Registry Invariants
+### 注册表不变量
 
-The registry maintains these invariants:
+注册表维护这些不变量：
 
 ```typescript
 const registryInvariants = {
-  // Unique IDs
-  uniqueId: () => "all plugins have unique ids",
+  // 唯一 ID
+  uniqueId: () => "所有插件都有唯一的 id",
 
-  // Type consistency
-  typeConsistent: () => "plugin.type matches manifest.type",
+  // 类型一致性
+  typeConsistent: () => "plugin.type 匹配 manifest.type",
 
-  // Lifecycle consistency
+  // 生命周期一致性
   lifecycleConsistent: (plugin) =>
     plugin.status === "active" ? plugin.activatedAt : !plugin.activatedAt,
 
-  // Dependency satisfied: () =>
-  //   "all plugin.dependencies resolve to registered plugins",
+  // 依赖满足: () =>
+  //   "所有 plugin.dependencies 解析为已注册的插件",
 };
 ```
 
-## Provider Contracts
+## Provider 契约
 
-### Provider Interface
+### Provider 接口
 
 ```typescript
 interface ProviderContract {
   readonly id: string;
   readonly name: string;
 
-  // Discovery
+  // 发现
   listModels(): Promise<Model[]>;
   getModel(ref: string): Promise<Model | null>;
 
-  // Inference
+  // 推理
   createCompletion(params: CompletionParams): Promise<AsyncIterable<CompletionDelta>>;
   createStructuredCompletion<T>(
     params: StructuredCompletionParams<T>
   ): Promise<T>;
 
-  // Health
+  // 健康
   healthCheck(): Promise<HealthStatus>;
 }
 ```
 
-### Provider Constraints
+### Provider 约束
 
 ```typescript
-// Constraints that provider plugins must satisfy
+// Provider 插件必须满足的约束
 
 interface ProviderConstraints {
-  // Models must have unique references
+  // 模型必须有唯一的引用
   uniqueModelRefs: (models: Model[]) =>
     new Set(models.map((m) => m.ref)).size === models.length,
 
-  // Model references must be namespaced
+  // 模型引用必须有命名空间
   namespacedRefs: (models: Model[]) =>
     models.every((m) => m.ref.includes(":")),
 
-  // Streaming must be supported if claimed
+  // 如果声明了流式支持则必须支持
   streamingSupport: (model: Model) =>
-    model.supportsStreaming ? true : true, // Provider supports streaming API
+    model.supportsStreaming ? true : true, // Provider 支持流式 API
 
-  // Vision models must accept images
+  // 视觉模型必须接受图像
   visionCapability: (model: Model) =>
     model.supportsVision ? true : true,
 }
 ```
 
-### Model Schema
+### 模型 Schema
 
 ```typescript
 const modelSchema = z.object({
@@ -160,26 +160,26 @@ const modelSchema = z.object({
   name: z.string(),
   provider: z.string(),
 
-  // Capabilities
+  // 能力
   maxTokens: z.number().positive(),
   supportsStreaming: z.boolean(),
   supportsFunctionCalling: z.boolean().default(false),
   supportsVision: z.boolean().default(false),
   supportsJSONMode: z.boolean().default(false),
 
-  // Context
+  // 上下文
   contextWindow: z.number().positive(),
   maxOutputTokens: z.number().positive(),
 
-  // Pricing
+  // 定价
   inputCost: z.number().nonnegative().optional(),
   outputCost: z.number().nonnegative().optional(),
 });
 ```
 
-## Channel Contracts
+## Channel 契约
 
-### Channel Interface
+### Channel 接口
 
 ```typescript
 interface ChannelContract {
@@ -187,47 +187,47 @@ interface ChannelContract {
   readonly name: string;
   readonly platform: string;
 
-  // Connection lifecycle
+  // 连接生命周期
   connect(config: ChannelConfig): Promise<void>;
   disconnect(): Promise<void>;
   isConnected(): boolean;
 
-  // Messaging
+  // 消息
   send(target: ChannelTarget, message: OutboundMessage): Promise<void>;
   editMessage(target: ChannelTarget, messageId: string, content: string): Promise<void>;
   deleteMessage(target: ChannelTarget, messageId: string): Promise<void>;
 
-  // Media
+  // 媒体
   uploadMedia(data: Buffer, type: MediaType): Promise<MediaId>;
 
-  // Events
+  // 事件
   onMessage(handler: MessageHandler): void;
   onEdit(handler: EditHandler): void;
   onReaction(handler: ReactionHandler): void;
 }
 ```
 
-### Channel Constraints
+### Channel 约束
 
 ```typescript
 interface ChannelConstraints {
-  // Target must be valid
+  // 目标必须有效
   validTarget: (target: ChannelTarget) =>
     target.peer && typeof target.peer === "string",
 
-  // Message must have content or media
+  // 消息必须有内容或媒体
   nonEmptyMessage: (message: OutboundMessage) =>
     message.content || message.media,
 
-  // Target must match channel type
+  // 目标必须匹配 Channel 类型
   channelTargetMatch: (target: ChannelTarget, channel: Channel) =>
     channel.platform === target.channel,
 }
 ```
 
-## Tool Contracts
+## Tool 契约
 
-### Tool Interface
+### Tool 接口
 
 ```typescript
 interface ToolContract {
@@ -240,31 +240,31 @@ interface ToolContract {
 }
 ```
 
-### Tool Constraints
+### Tool 约束
 
 ```typescript
 interface ToolConstraints {
-  // Schema must be valid JSON Schema
+  // Schema 必须是有效的 JSON Schema
   validSchema: (schema: JsonSchema) =>
     isValidJsonSchema(schema),
 
-  // Name must be alphanumeric with underscores
+  // 名称必须是字母数字加下划线
   validName: (name: string) =>
     /^[a-z][a-z0-9_]*$/.test(name),
 
-  // Result must have content
+  // 结果必须有内容
   nonEmptyResult: (result: ToolResult) =>
     result.success && result.content !== null,
 
-  // Timeout must be positive
+  // 超时时间必须为正数
   validTimeout: (timeout?: number) =>
     timeout === undefined || timeout > 0,
 }
 ```
 
-## Runtime Contracts
+## Runtime 契约
 
-### Runtime Interface
+### Runtime 接口
 
 ```typescript
 interface RuntimeContract {
@@ -272,21 +272,21 @@ interface RuntimeContract {
   readonly type: RuntimeType;
   readonly capabilities: RuntimeCapabilities;
 
-  // Lifecycle
+  // 生命周期
   start(config: RuntimeConfig): Promise<void>;
   stop(): Promise<void>;
 
-  // Execution
+  // 执行
   run(params: RunParams): AsyncIterable<RunEvent>;
   abort(runId: string): Promise<void>;
 
-  // Tools
+  // 工具
   registerTools(tools: Tool[]): void;
   unregisterTools(names: string[]): void;
 }
 ```
 
-### Runtime Capabilities
+### Runtime 能力
 
 ```typescript
 interface RuntimeCapabilities {
@@ -298,21 +298,21 @@ interface RuntimeCapabilities {
 }
 ```
 
-## Contract Validation
+## 契约验证
 
-### Validation Pipeline
+### 验证流水线
 
 ```mermaid
 flowchart TB
-    A[Raw Manifest] --> B[Schema Validation]
-    B --> C[Type Validation]
-    C --> D[Semantic Validation]
-    D --> E{Valid?}
-    E -->|Yes| F[Validated Manifest]
-    E -->|No| G[Validation Error]
+    A[原始清单] --> B[Schema 验证]
+    B --> C[类型验证]
+    C --> D[语义验证]
+    D --> E{有效?}
+    E -->|是| F[验证后的清单]
+    E -->|否| G[验证错误]
 ```
 
-### Validation Functions
+### 验证函数
 
 ```typescript
 interface ValidationResult {
@@ -321,19 +321,19 @@ interface ValidationResult {
 }
 
 function validateProviderManifest(manifest: unknown): ValidationResult {
-  // Step 1: Schema validation
+  // 第 1 步：Schema 验证
   const schemaResult = providerManifestSchema.safeParse(manifest);
   if (!schemaResult.success) {
     return { valid: false, errors: schemaResult.error.issues };
   }
 
-  // Step 2: Model uniqueness
+  // 第 2 步：模型唯一性
   const refs = schemaResult.data.providers.flatMap(p => p.models);
   const uniqueRefs = new Set(refs);
   if (refs.length !== uniqueRefs.size) {
     return {
       valid: false,
-      errors: [{ path: "providers.models", message: "Duplicate model refs" }],
+      errors: [{ path: "providers.models", message: "重复的模型 ref" }],
     };
   }
 
@@ -341,9 +341,9 @@ function validateProviderManifest(manifest: unknown): ValidationResult {
 }
 ```
 
-## Extension Package Contracts
+## 扩展包契约
 
-### Extension Package Schema
+### 扩展包 Schema
 
 ```typescript
 const extensionPackageSchema = z.object({
@@ -351,7 +351,7 @@ const extensionPackageSchema = z.object({
   version: z.string(),
   type: z.literal("openclaw-plugin"),
 
-  // Plugin metadata
+  // 插件元数据
   openclaw: z.object({
     id: z.string(),
     type: z.enum(["provider", "channel", "tool", "memory", "runtime"]),
@@ -359,13 +359,13 @@ const extensionPackageSchema = z.object({
     description: z.string().optional(),
   }),
 
-  // Entry points
+  // 入口点
   exports: z.object({
     entry: z.string(),
     types: z.string().optional(),
   }),
 
-  // Runtime requirements
+  // 运行时要求
   runtime: z.object({
     node: z.string().optional(),
     openclaw: z.string(),
@@ -373,26 +373,26 @@ const extensionPackageSchema = z.object({
 });
 ```
 
-## Contract Testing
+## 契约测试
 
-### Contract Tests
+### 契约测试
 
 ```typescript
-describe("Provider Contract", () => {
-  it("should enforce model uniqueness", () => {
+describe("Provider 契约", () => {
+  it("应该强制模型唯一性", () => {
     const manifest = {
-      providers: [{ id: "test", models: ["m1", "m1"] }], // Duplicate!
+      providers: [{ id: "test", models: ["m1", "m1"] }], // 重复！
     };
     const result = validateProviderManifest(manifest);
     expect(result.valid).toBe(false);
     expect(result.errors).toContainEqual(
-      expect.objectContaining({ message: expect.stringContaining("Duplicate") })
+      expect.objectContaining({ message: expect.stringContaining("重复") })
     );
   });
 
-  it("should enforce namespaced refs", () => {
+  it("应该强制有命名空间的 ref", () => {
     const manifest = {
-      providers: [{ id: "test", models: ["invalid"] }], // No namespace!
+      providers: [{ id: "test", models: ["invalid"] }], // 没有命名空间！
     };
     const result = validateProviderManifest(manifest);
     expect(result.valid).toBe(false);
@@ -400,11 +400,11 @@ describe("Provider Contract", () => {
 });
 ```
 
-### Invariant Testing
+### 不变量测试
 
 ```typescript
-describe("Registry Invariants", () => {
-  it("should maintain unique plugin IDs", () => {
+describe("注册表不变量", () => {
+  it("应该维护唯一的插件 ID", () => {
     const registry = new PluginRegistry();
     registry.register(plugin1);
     registry.register(plugin2);
@@ -412,7 +412,7 @@ describe("Registry Invariants", () => {
     expect(() => registry.register(pluginWithDuplicateId)).toThrow();
   });
 
-  it("should maintain lifecycle consistency", () => {
+  it("应该维护生命周期一致性", () => {
     const plugin = registry.get("test-plugin");
 
     expect(plugin.status).toBe("registered");
@@ -426,9 +426,9 @@ describe("Registry Invariants", () => {
 });
 ```
 
-## Error Codes
+## 错误代码
 
-### Contract Errors
+### 契约错误
 
 ```typescript
 const CONTRACT_ERRORS = {
@@ -444,8 +444,8 @@ const CONTRACT_ERRORS = {
 };
 ```
 
-## Related
+## 相关
 
-- [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture) - Plugin design
-- [Plugin SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK documentation
-- [Plugin Runtime](/architecture-book/part-3-plugin-system/04-plugin-runtime) - Runtime implementation
+- [插件架构](/architecture-book/part-3-plugin-system/01-plugin-architecture) - 插件设计
+- [插件 SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK 文档
+- [插件运行时](/architecture-book/part-3-plugin-system/04-plugin-runtime) - 运行时实现

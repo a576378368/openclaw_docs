@@ -1,35 +1,35 @@
 ---
-summary: "Plugin loading, activation, and runtime management"
-title: "Plugin Runtime"
+summary: "插件加载、激活和运行时管理"
+title: "插件运行时"
 read_when:
-  - Understanding runtime loading
-  - Optimizing plugin performance
+  - 理解运行时加载
+  - 优化插件性能
 ---
 
-# Plugin Runtime
+# 插件运行时
 
-## Overview
+## 概述
 
-The Plugin Runtime manages plugin loading, activation, and execution, providing lazy loading, dependency resolution, and isolation.
+插件运行时管理插件的加载、激活和执行，提供懒加载、依赖解析和隔离。
 
 ```mermaid
 flowchart TB
-    A[Discover] --> B[Resolve]
-    B --> C[Load Module]
-    C --> D[Validate]
-    D --> E{Valid?}
-    E -->|Yes| F[Register]
-    E -->|No| G[Error]
-    F --> H[Wait for Activation]
-    H --> I[Activate]
-    I --> J[Running]
-    J --> K[Deactivate]
-    K --> L[Unload]
+    A[发现] --> B[解析]
+    B --> C[加载模块]
+    C --> D[验证]
+    D --> E{有效?}
+    E -->|是| F[注册]
+    E -->|否| G[错误]
+    F --> H[等待激活]
+    H --> I[激活]
+    I --> J[运行中]
+    J --> K[停用]
+    K --> L[卸载]
 ```
 
-## Loading Architecture
+## 加载架构
 
-### Module Loader
+### 模块加载器
 
 ```typescript
 interface PluginModuleLoader {
@@ -40,7 +40,7 @@ interface PluginModuleLoader {
 }
 ```
 
-### Lazy Loading Strategy
+### 懒加载策略
 
 ```typescript
 class LazyPluginLoader {
@@ -48,10 +48,10 @@ class LazyPluginLoader {
   private activations = new Map<string, ActivationPromise>();
 
   async load(id: string, path: string): Promise<PluginModule> {
-    // Don't load until needed
+    // 不要在需要之前加载
     const lazyModule = new LazyModule(path);
 
-    // Validate manifest only (lightweight)
+    // 仅验证清单（轻量级）
     const manifest = await lazyModule.loadManifest();
     this.validateManifest(manifest);
 
@@ -60,16 +60,16 @@ class LazyPluginLoader {
   }
 
   async activate(id: string): Promise<void> {
-    // Only now load full module
+    // 现在才加载完整模块
     if (this.activations.has(id)) {
       return this.activations.get(id);
     }
 
     const activation = (async () => {
       const lazyModule = this.modules.get(id);
-      if (!lazyModule) throw new Error("Module not loaded");
+      if (!lazyModule) throw new Error("模块未加载");
 
-      // Full load only on activation
+      // 仅在激活时完整加载
       const module = await lazyModule.loadFull();
       const context = await this.createContext(id);
 
@@ -82,9 +82,9 @@ class LazyPluginLoader {
 }
 ```
 
-## Request Scope
+## 请求作用域
 
-### Scope Isolation
+### 作用域隔离
 
 ```typescript
 interface RequestScope {
@@ -93,7 +93,7 @@ interface RequestScope {
   readonly config: PluginConfig;
   readonly logger: ScopedLogger;
 
-  // Services scoped to request
+  // 作用域服务
   services: {
     http: ScopedHttpClient;
     storage: ScopedStorage;
@@ -101,7 +101,7 @@ interface RequestScope {
   };
 }
 
-// Creating a request scope
+// 创建请求作用域
 function createRequestScope(pluginId: string): RequestScope {
   return {
     id: crypto.randomUUID(),
@@ -117,7 +117,7 @@ function createRequestScope(pluginId: string): RequestScope {
 }
 ```
 
-### Scope Lifecycle
+### 作用域生命周期
 
 ```mermaid
 sequenceDiagram
@@ -129,15 +129,15 @@ sequenceDiagram
     Request->>Runtime: invoke(plugin, method, params)
     Runtime->>Scope: createRequestScope()
     Runtime->>Plugin: call(method, params, scope)
-    Plugin->>Scope: use services
-    Plugin-->>Runtime: result
+    Plugin->>Scope: 使用服务
+    Plugin-->>Runtime: 结果
     Runtime->>Scope: dispose()
-    Runtime-->>Request: response
+    Runtime-->>Request: 响应
 ```
 
-## Registry Loader
+## 注册表加载器
 
-### Registry Operations
+### 注册表操作
 
 ```typescript
 class RegistryLoader {
@@ -160,7 +160,7 @@ class RegistryLoader {
 
   async activate(id: string): Promise<void> {
     const plugin = this.registry.get(id);
-    if (!plugin) throw new Error(`Plugin not found: ${id}`);
+    if (!plugin) throw new Error(`找不到插件: ${id}`);
 
     if (plugin.status === "active") return;
 
@@ -178,22 +178,22 @@ class RegistryLoader {
 }
 ```
 
-## Task Flow Runtime
+## 任务流运行时
 
-### Task Execution
+### 任务执行
 
 ```typescript
 interface TaskFlowRuntime {
-  // Start a task flow
-  startFlow(flowId: string, input: unknown): Promise<string>; // returns runId
+  // 启动任务流
+  startFlow(flowId: string, input: unknown): Promise<string>; // 返回 runId
 
-  // Check status
+  // 检查状态
   getStatus(runId: string): FlowStatus;
 
-  // Wait for completion
+  // 等待完成
   awaitCompletion(runId: string): Promise<FlowResult>;
 
-  // Cancel
+  // 取消
   cancel(runId: string): Promise<void>;
 }
 
@@ -207,7 +207,7 @@ interface FlowStatus {
 }
 ```
 
-### Flow Runtime Implementation
+### 流运行时实现
 
 ```typescript
 class TaskFlowRuntimeImpl implements TaskFlowRuntime {
@@ -216,7 +216,7 @@ class TaskFlowRuntimeImpl implements TaskFlowRuntime {
 
   async startFlow(flowId: string, input: unknown): Promise<string> {
     const flow = this.flows.get(flowId);
-    if (!flow) throw new Error(`Flow not found: ${flowId}`);
+    if (!flow) throw new Error(`找不到流: ${flowId}`);
 
     const run: FlowRun = {
       id: crypto.randomUUID(),
@@ -247,7 +247,7 @@ class TaskFlowRuntimeImpl implements TaskFlowRuntime {
           run.error = String(error);
           return;
         }
-        // Handle error step
+        // 处理错误步骤
       }
     }
 
@@ -257,9 +257,9 @@ class TaskFlowRuntimeImpl implements TaskFlowRuntime {
 }
 ```
 
-## Channel Runtime
+## Channel 运行时
 
-### Channel Context
+### Channel 上下文
 
 ```typescript
 interface ChannelRuntimeContext {
@@ -267,20 +267,20 @@ interface ChannelRuntimeContext {
   readonly config: ChannelConfig;
   readonly connection: ChannelConnection;
 
-  // Messaging
+  // 消息
   send(target: ChannelTarget, message: OutboundMessage): Promise<void>;
 
-  // State
+  // 状态
   getState<T>(key: string, defaultValue: T): T;
   setState<T>(key: string, value: T): void;
 
-  // Events
+  // 事件
   onMessage(handler: MessageHandler): void;
   onError(handler: ErrorHandler): void;
 }
 ```
 
-### Channel Runtime Implementation
+### Channel 运行时实现
 
 ```mermaid
 sequenceDiagram
@@ -290,42 +290,42 @@ sequenceDiagram
     participant Plugin
 
     Gateway->>ChannelRuntime: send(target, message)
-    ChannelRuntime->>ChannelRuntime: validate target
+    ChannelRuntime->>ChannelRuntime: 验证目标
     ChannelRuntime->>Connection: send(target, message)
-    Connection-->>ChannelRuntime: sent
-    ChannelRuntime-->>Gateway: success
+    Connection-->>ChannelRuntime: 已发送
+    ChannelRuntime-->>Gateway: 成功
 
-    loop Inbound Messages
-        Connection->>ChannelRuntime: inbound event
-        ChannelRuntime->>Plugin: transform event
-        ChannelRuntime->>Gateway: normalized message
+    loop 传入消息
+        Connection->>ChannelRuntime: 传入事件
+        ChannelRuntime->>Plugin: 转换事件
+        ChannelRuntime->>Gateway: 规范化消息
     end
 ```
 
-## Memory Runtime
+## Memory 运行时
 
-### Memory Context
+### Memory 上下文
 
 ```typescript
 interface MemoryRuntimeContext {
-  // Store operations
+  // 存储操作
   store(entry: MemoryEntry): Promise<void>;
   get(key: string): Promise<MemoryEntry | null>;
   update(key: string, updates: Partial<MemoryEntry>): Promise<void>;
   delete(key: string): Promise<void>;
 
-  // Search
+  // 搜索
   search(query: string, options?: SearchOptions): Promise<MemoryResult[]>;
 
-  // Context building
+  // 上下文构建
   buildContext(sessionId: string, prompt: string): Promise<MemoryContext>;
 
-  // Compaction
+  // 压缩
   compact(sessionId: string, strategy?: CompactionStrategy): Promise<void>;
 }
 ```
 
-### Memory Runtime Implementation
+### Memory 运行时实现
 
 ```typescript
 class MemoryRuntimeImpl implements MemoryRuntime {
@@ -333,20 +333,20 @@ class MemoryRuntimeImpl implements MemoryRuntime {
   private index: SearchIndex;
 
   async search(query: string, options?: SearchOptions): Promise<MemoryResult[]> {
-    // Vector search
+    // 向量搜索
     const embedding = await this.embed(query);
     const results = await this.index.search(embedding, {
       limit: options?.limit ?? 10,
       threshold: options?.threshold ?? 0.7,
     });
 
-    // Filter by category
+    // 按类别过滤
     let filtered = results;
     if (options?.categories) {
       filtered = filtered.filter(r => options.categories!.includes(r.entry.type));
     }
 
-    // Transform to MemoryResult
+    // 转换为 MemoryResult
     return filtered.map(result => ({
       entry: result.entry,
       score: result.score,
@@ -356,42 +356,42 @@ class MemoryRuntimeImpl implements MemoryRuntime {
 }
 ```
 
-## Dependency Resolution
+## 依赖解析
 
-### Dependency Graph
+### 依赖图
 
 ```typescript
 interface DependencyGraph {
   nodes: Map<string, PluginNode>;
-  edges: Map<string, string[]>;  // plugin -> dependencies
+  edges: Map<string, string[]>;  // 插件 -> 依赖
 
   addNode(plugin: PluginManifest): void;
   removeNode(id: string): void;
   getDependencies(id: string): string[];
   getDependents(id: string): string[];
 
-  // Topological sort for activation order
+  // 拓扑排序以确定激活顺序
   getActivationOrder(): string[];
 
-  // Cycle detection
+  // 循环检测
   hasCycle(): boolean;
   getCycle(): string[] | null;
 }
 ```
 
-### Resolution Algorithm
+### 解析算法
 
 ```typescript
 function resolveDependencies(plugins: PluginManifest[]): ResolutionOrder {
   const graph = buildGraph(plugins);
 
-  // Check for cycles
+  // 检查循环
   if (graph.hasCycle()) {
     const cycle = graph.getCycle();
     throw new CyclicDependencyError(cycle);
   }
 
-  // Topological sort
+  // 拓扑排序
   const order: string[] = [];
   const visited = new Set<string>();
   const temp = new Set<string>();
@@ -417,13 +417,13 @@ function resolveDependencies(plugins: PluginManifest[]): ResolutionOrder {
 }
 ```
 
-## Performance Optimization
+## 性能优化
 
-### Hot Path Optimization
+### 热路径优化
 
 ```typescript
 class OptimizedPluginLoader {
-  // Pre-compute facts in hot paths
+  // 在热路径中预计算事实
   private pluginFacts = new Map<string, PluginFacts>();
 
   async preloadFacts(id: string): Promise<void> {
@@ -436,22 +436,22 @@ class OptimizedPluginLoader {
     });
   }
 
-  // Avoid repeated lookups in hot paths
+  // 避免在热路径中重复查找
   getProviderId(id: string): string | undefined {
-    // Use pre-computed fact
+    // 使用预计算的事实
     return this.pluginFacts.get(id)?.providerId;
   }
 }
 ```
 
-### Memory Optimization
+### 内存优化
 
 ```typescript
 class MemoryOptimizedLoader {
-  // Use WeakMap for automatic cleanup
+  // 使用 WeakMap 进行自动清理
   private contexts = new WeakMap<PluginModule, PluginContext>();
 
-  // Lazy initialization of heavy objects
+  // 延迟初始化重型对象
   private heavyObjects = new Map<string, () => unknown>();
 
   registerHeavy(id: string, factory: () => unknown): void {
@@ -465,8 +465,8 @@ class MemoryOptimizedLoader {
 }
 ```
 
-## Related
+## 相关
 
-- [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture) - Plugin design
-- [Plugin Contracts](/architecture-book/part-3-plugin-system/03-plugin-contracts) - Contract system
-- [Writing Plugins](/architecture-book/part-3-plugin-system/05-writing-plugins) - Plugin development
+- [插件架构](/architecture-book/part-3-plugin-system/01-plugin-architecture) - 插件设计
+- [插件契约](/architecture-book/part-3-plugin-system/03-plugin-contracts) - 契约系统
+- [编写插件](/architecture-book/part-3-plugin-system/05-writing-plugins) - 插件开发

@@ -1,29 +1,29 @@
 ---
-summary: "Channel plugin implementation, transport, and event handling"
-title: "Channel Plugins"
+summary: "Channel 插件实现、传输和事件处理"
+title: "Channel 插件"
 read_when:
-  - Building channel plugins
-  - Understanding platform integration
+  - 构建 Channel 插件
+  - 理解平台集成
 ---
 
-# Channel Plugins
+# Channel 插件
 
-## Overview
+## 概述
 
-Channel plugins connect OpenClaw to messaging platforms, handling the transport, message format conversion, and event normalization.
+Channel 插件将 OpenClaw 连接到消息平台，处理传输、消息格式转换和事件规范化。
 
 ```mermaid
 flowchart TB
-    A[Platform] --> B[Channel Plugin]
-    B --> C[Gateway]
+    A[平台] --> B[Channel 插件]
+    B --> C[网关]
     C --> B
-    B --> D[Platform]
+    B --> D[平台]
 
     subgraph ChannelPlugin
-        E[Transport]
-        F[Parser]
-        G[Formatter]
-        H[Event Handler]
+        E[传输]
+        F[解析器]
+        G[格式化器]
+        H[事件处理器]
     end
 
     A --> E
@@ -33,9 +33,9 @@ flowchart TB
     G --> D
 ```
 
-## Channel Plugin Structure
+## Channel 插件结构
 
-### Entry Point
+### 入口点
 
 ```typescript
 import { channelEntry } from "@openclaw/plugin-sdk/runtime/channel";
@@ -44,7 +44,7 @@ export const entry = channelEntry({
   id: "telegram",
   name: "Telegram",
 
-  // Lifecycle
+  // 生命周期
   async connect(config) {
     return new TelegramBot(config.token, config.options);
   },
@@ -53,44 +53,44 @@ export const entry = channelEntry({
     await bot.close();
   },
 
-  // Messaging
+  // 消息
   async send(target, message, bot) {
-    // Implementation
+    // 实现
   },
 
-  // Event handling
+  // 事件处理
   onMessage(bot, handler) {
     bot.on("message", handler);
   },
 
-  // Media handling
+  // 媒体处理
   async uploadMedia(bot, data, type) {
-    // Implementation
+    // 实现
   },
 });
 ```
 
-## Transport Layer
+## 传输层
 
-### Transport Interface
+### 传输接口
 
 ```typescript
 interface ChannelTransport {
-  // Connection management
+  // 连接管理
   connect(config: TransportConfig): Promise<void>;
   disconnect(): Promise<void>;
   isConnected(): boolean;
 
-  // Sending
+  // 发送
   send(target: Target, payload: PlatformPayload): Promise<void>;
 
-  // Receiving
+  // 接收
   onMessage(handler: MessageHandler): void;
   onDisconnect(handler: DisconnectHandler): void;
 }
 ```
 
-### Transport Implementation
+### 传输实现
 
 ```typescript
 class TelegramTransport implements ChannelTransport {
@@ -101,14 +101,14 @@ class TelegramTransport implements ChannelTransport {
   async connect(config: TelegramConfig): Promise<void> {
     this.bot = new TelegramBot(config.token);
 
-    // Set up webhook or long polling
+    // 设置 webhook 或长轮询
     if (config.useWebhook) {
       await this.bot.setWebhook(config.webhookUrl);
     } else {
       this.bot.on("polling", { interval: 1000 });
     }
 
-    // Forward messages to handlers
+    // 将消息转发给处理器
     this.bot.on("message", (msg) => {
       const normalized = this.normalizeMessage(msg);
       this.messageHandlers.forEach((h) => h(normalized));
@@ -125,7 +125,7 @@ class TelegramTransport implements ChannelTransport {
   }
 
   async send(target: Target, payload: PlatformPayload): Promise<void> {
-    if (!this.bot) throw new Error("Not connected");
+    if (!this.bot) throw new Error("未连接");
 
     if (payload.text) {
       await this.bot.sendMessage(target.peer, payload.text, {
@@ -148,9 +148,9 @@ class TelegramTransport implements ChannelTransport {
 }
 ```
 
-## Message Format Conversion
+## 消息格式转换
 
-### Outbound Formatting
+### 传出格式化
 
 ```typescript
 interface OutboundFormatter {
@@ -183,7 +183,7 @@ class TelegramFormatter implements OutboundFormatter {
     if (typeof content === "string") {
       return content;
     }
-    // Handle structured content
+    // 处理结构化内容
     return content.blocks.map((b) => b.text).join("\n");
   }
 
@@ -203,7 +203,7 @@ class TelegramFormatter implements OutboundFormatter {
 }
 ```
 
-### Inbound Normalization
+### 传入规范化
 
 ```typescript
 interface MessageNormalizer {
@@ -236,9 +236,9 @@ class TelegramNormalizer implements MessageNormalizer {
   private extractContent(msg: TelegramMessage): string {
     if (msg.text) return msg.text;
     if (msg.caption) return msg.caption;
-    if (msg.photo) return "[Photo]";
-    if (msg.document) return "[Document]";
-    if (msg.sticker) return "[Sticker]";
+    if (msg.photo) return "[图片]";
+    if (msg.document) return "[文档]";
+    if (msg.sticker) return "[表情包]";
     return "";
   }
 
@@ -248,7 +248,7 @@ class TelegramNormalizer implements MessageNormalizer {
       return {
         type: "image",
         id: largest.file_id,
-        url: largest.file_id, // Will be resolved later
+        url: largest.file_id, // 稍后解析
         mimeType: "image/jpeg",
         width: largest.width,
         height: largest.height,
@@ -269,9 +269,9 @@ class TelegramNormalizer implements MessageNormalizer {
 }
 ```
 
-## Event Handling
+## 事件处理
 
-### Event Types
+### 事件类型
 
 ```typescript
 interface ChannelEvents {
@@ -289,7 +289,7 @@ type CommandHandler = (command: Command) => void | Promise<void>;
 type CallbackHandler = (callback: Callback) => void | Promise<void>;
 ```
 
-### Command Handling
+### 命令处理
 
 ```typescript
 class TelegramCommandHandler {
@@ -304,7 +304,7 @@ class TelegramCommandHandler {
     if (!text.startsWith("/")) return;
 
     const parts = text.slice(1).split(" ");
-    const command = parts[0].split("@")[0]; // Remove @botname
+    const command = parts[0].split("@")[0]; // 移除 @机器人名
     const args = parts.slice(1);
 
     const handler = this.commands.get(command);
@@ -319,20 +319,20 @@ class TelegramCommandHandler {
   }
 }
 
-// Usage
+// 使用
 const cmdHandler = new TelegramCommandHandler();
 cmdHandler.register("start", async ({ message }) => {
-  // Handle /start command
+  // 处理 /start 命令
 });
 
 bot.on("message", (msg) => {
   const normalized = normalizer.normalize(msg);
   cmdHandler.handle(normalized);
-  // Also forward to general message handler
+  // 也转发到通用消息处理器
 });
 ```
 
-### Callback Queries
+### 回调查询
 
 ```typescript
 interface CallbackHandler {
@@ -345,7 +345,7 @@ interface CallbackHandler {
   }): void | Promise<void>;
 }
 
-// Implementation
+// 实现
 bot.on("callback_query", async (query) => {
   const callback = {
     id: query.id,
@@ -364,9 +364,9 @@ bot.on("callback_query", async (query) => {
 });
 ```
 
-## Media Handling
+## 媒体处理
 
-### Media Upload
+### 媒体上传
 
 ```typescript
 class TelegramMediaHandler {
@@ -409,7 +409,7 @@ class TelegramMediaHandler {
 }
 ```
 
-### Media Resolution
+### 媒体解析
 
 ```typescript
 interface MediaResolver {
@@ -418,16 +418,16 @@ interface MediaResolver {
 
 class TelegramMediaResolver implements MediaResolver {
   async resolveMediaUrl(media: MediaAttachment): Promise<string> {
-    // Get file path from Telegram API
+    // 从 Telegram API 获取文件路径
     const file = await this.bot.getFile(media.id);
     return `https://api.telegram.org/file/bot${this.bot.token}/${file.file_path}`;
   }
 }
 ```
 
-## Platform-Specific Features
+## 平台特定功能
 
-### Feature Detection
+### 功能检测
 
 ```typescript
 interface ChannelCapabilities {
@@ -458,14 +458,14 @@ const telegramCapabilities: ChannelCapabilities = {
   buttons: true,
   inlineButtons: true,
   reactions: true,
-  threads: false,  // Not in 1:1 DMs
+  threads: false,  // 私聊中不可用
   replies: true,
   forward: true,
   stickers: true,
 };
 ```
 
-### Platform Limitations
+### 平台限制
 
 ```typescript
 const platformLimitations = {
@@ -489,9 +489,9 @@ const platformLimitations = {
 };
 ```
 
-## Error Handling
+## 错误处理
 
-### Retry Logic
+### 重试逻辑
 
 ```typescript
 interface RetryConfig {
@@ -531,7 +531,7 @@ async function sendWithRetry(
 }
 
 function isRetryableError(error: Error): boolean {
-  // Network errors, rate limits, temporary failures
+  // 网络错误、速率限制、临时失败
   return (
     error instanceof NetworkError ||
     error instanceof RateLimitError ||
@@ -540,9 +540,9 @@ function isRetryableError(error: Error): boolean {
 }
 ```
 
-## Testing
+## 测试
 
-### Mock Transport
+### Mock 传输
 
 ```typescript
 class MockChannelTransport implements ChannelTransport {
@@ -562,14 +562,14 @@ class MockChannelTransport implements ChannelTransport {
   }
 
   async send(): Promise<void> {
-    // No-op for testing
+    // 测试时为空操作
   }
 
   onMessage(handler: MessageHandler): void {
-    // Store handler for test injection
+    // 存储处理器以供测试注入
   }
 
-  // Test helpers
+  // 测试辅助方法
   injectMessage(message: InboundMessage): void {
     this.messages.push(message);
     this.messageHandlers.forEach((h) => h(message));
@@ -577,11 +577,11 @@ class MockChannelTransport implements ChannelTransport {
 }
 ```
 
-### Integration Test
+### 集成测试
 
 ```typescript
-describe("Telegram Channel Plugin", () => {
-  it("should handle incoming messages", async () => {
+describe("Telegram Channel 插件", () => {
+  it("应该处理传入消息", async () => {
     const plugin = createTestChannelPlugin({
       entry: telegramEntry,
       config: { token: "test-token" },
@@ -590,7 +590,7 @@ describe("Telegram Channel Plugin", () => {
     await plugin.activate();
     await plugin.connect();
 
-    // Simulate incoming message
+    // 模拟传入消息
     const mockUpdate = {
       message_id: 1,
       chat: { id: 123, type: "private" },
@@ -602,14 +602,14 @@ describe("Telegram Channel Plugin", () => {
     const handler = plugin.getMessageHandler();
     handler(telegramNormalizer.normalize(mockUpdate));
 
-    // Verify behavior
+    // 验证行为
     expect(plugin.sentMessages).toHaveLength(1);
   });
 });
 ```
 
-## Related
+## 相关
 
-- [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture) - Plugin design
-- [Plugin SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK documentation
-- [Channel System](/architecture-book/part-5-channels/01-channel-architecture) - Channel architecture
+- [插件架构](/architecture-book/part-3-plugin-system/01-plugin-architecture) - 插件设计
+- [插件 SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK 文档
+- [Channel 系统](/architecture-book/part-5-channels/01-channel-architecture) - Channel 架构

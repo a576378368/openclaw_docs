@@ -1,64 +1,64 @@
 ---
-summary: "Plugin SDK structure, exports, and usage"
-title: "Plugin SDK"
+summary: "插件 SDK 结构、导出和使用"
+title: "插件 SDK"
 read_when:
-  - Using the Plugin SDK
-  - Building plugin entry points
+  - 使用插件 SDK
+  - 构建插件入口点
 ---
 
-# Plugin SDK
+# 插件 SDK
 
-## Overview
+## 概述
 
-The Plugin SDK (`@openclaw/plugin-sdk`) provides the APIs and utilities for building OpenClaw plugins.
+插件 SDK（`@openclaw/plugin-sdk`）提供了构建 OpenClaw 插件的 API 和工具。
 
 ```mermaid
 flowchart LR
-    A[Plugin Code] --> B[@openclaw/plugin-sdk]
-    B --> C[Runtime APIs]
-    B --> D[Config APIs]
-    B --> E[Testing]
-    B --> F[Types]
+    A[插件代码] --> B[@openclaw/plugin-sdk]
+    B --> C[运行时 API]
+    B --> D[配置 API]
+    B --> E[测试]
+    B --> F[类型]
 ```
 
-## Package Structure
+## 包结构
 
-### Package Exports
+### 包导出
 
-The SDK exports from 50+ subpaths:
+SDK 从 50+ 个子路径导出：
 
 ```typescript
-// Core entry
+// 核心入口
 import { ... } from "@openclaw/plugin-sdk";
 
-// Runtime APIs
+// 运行时 API
 import { pluginRuntime, channelRuntime, providerEntry } from "@openclaw/plugin-sdk/runtime";
 
-// Config APIs
+// 配置 API
 import { configRuntime, defineConfig } from "@openclaw/plugin-sdk/config";
 
-// Testing
+// 测试
 import { createTestPlugin, mockContext } from "@openclaw/plugin-sdk/testing";
 
-// Types
+// 类型
 import type { PluginManifest, PluginContext } from "@openclaw/plugin-sdk/types";
 ```
 
-### Subpath Exports
+### 子路径导出
 
-| Subpath | Description |
+| 子路径 | 描述 |
 |---------|-------------|
-| `runtime` | Plugin runtime entry points |
-| `runtime/channel` | Channel plugin runtime |
-| `runtime/provider` | Provider plugin runtime |
-| `runtime/tool` | Tool plugin runtime |
-| `config` | Configuration utilities |
-| `testing` | Test utilities |
-| `types` | TypeScript types |
+| `runtime` | 插件运行时入口点 |
+| `runtime/channel` | Channel 插件运行时 |
+| `runtime/provider` | Provider 插件运行时 |
+| `runtime/tool` | Tool 插件运行时 |
+| `config` | 配置工具 |
+| `testing` | 测试工具 |
+| `types` | TypeScript 类型 |
 
-## Entry Points
+## 入口点
 
-### Provider Entry
+### Provider 入口
 
 ```typescript
 import { providerEntry } from "@openclaw/plugin-sdk/runtime/provider";
@@ -68,7 +68,7 @@ export const entry = providerEntry({
   name: "OpenAI",
   models: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
 
-  // Required methods
+  // 必需方法
   async listModels(config) {
     const client = new OpenAI(config.apiKey);
     const models = await client.models.list();
@@ -90,7 +90,7 @@ export const entry = providerEntry({
 });
 ```
 
-### Channel Entry
+### Channel 入口
 
 ```typescript
 import { channelEntry } from "@openclaw/plugin-sdk/runtime/channel";
@@ -100,7 +100,7 @@ export const entry = channelEntry({
   name: "Telegram",
   features: ["text", "media", "commands"],
 
-  // Lifecycle
+  // 生命周期
   async connect(config) {
     return new TelegramBot(config.token, config.options);
   },
@@ -109,7 +109,7 @@ export const entry = channelEntry({
     await bot.close();
   },
 
-  // Messaging
+  // 消息
   async send(target, message, bot) {
     if (message.content) {
       await bot.sendMessage(target.peer, message.content);
@@ -119,14 +119,14 @@ export const entry = channelEntry({
     }
   },
 
-  // Event handling
+  // 事件处理
   onMessage(bot, handler) {
     bot.on("message", handler);
   },
 });
 ```
 
-### Tool Entry
+### Tool 入口
 
 ```typescript
 import { toolEntry } from "@openclaw/plugin-sdk/runtime/tool";
@@ -138,11 +138,11 @@ export const entry = toolEntry({
   tools: [
     {
       name: "web_search",
-      description: "Search the web for information",
+      description: "搜索网络获取信息",
       schema: {
         type: "object",
         properties: {
-          query: { type: "string", description: "Search query" },
+          query: { type: "string", description: "搜索查询" },
           limit: { type: "number", default: 10 },
         },
         required: ["query"],
@@ -162,9 +162,9 @@ export const entry = toolEntry({
 });
 ```
 
-## Runtime APIs
+## 运行时 API
 
-### Plugin Context
+### 插件上下文
 
 ```typescript
 import { pluginContext } from "@openclaw/plugin-sdk/runtime";
@@ -172,13 +172,13 @@ import { pluginContext } from "@openclaw/plugin-sdk/runtime";
 export async function activate() {
   const ctx = pluginContext.get();
 
-  // Configuration
+  // 配置
   const apiKey = await ctx.secrets.get("API_KEY");
 
-  // Services
-  ctx.logger.info("Plugin activated");
+  // 服务
+  ctx.logger.info("插件已激活");
 
-  // APIs
+  // API
   ctx.session.onMessage(myHandler);
 }
 ```
@@ -187,10 +187,10 @@ export async function activate() {
 
 ```typescript
 interface SessionAPI {
-  // Get current session
+  // 获取当前会话
   getCurrent(): Session;
 
-  // Session operations
+  // 会话操作
   addMessage(sessionKey: string, message: Message): Promise<void>;
   getHistory(sessionKey: string, limit?: number): Promise<Message[]>;
   reset(sessionKey: string): Promise<void>;
@@ -201,15 +201,15 @@ interface SessionAPI {
 
 ```typescript
 interface ToolsAPI {
-  // Register tools
+  // 注册工具
   register(tools: Tool[]): void;
   unregister(names: string[]): void;
 
-  // Get tool info
+  // 获取工具信息
   get(name: string): Tool | undefined;
   list(): Tool[];
 
-  // Hooks
+  // 钩子
   addHook(hook: ToolHook): void;
 }
 ```
@@ -218,22 +218,22 @@ interface ToolsAPI {
 
 ```typescript
 interface MemoryAPI {
-  // Store
+  // 存储
   store(entry: MemoryEntry): Promise<void>;
   update(key: string, entry: Partial<MemoryEntry>): Promise<void>;
 
-  // Retrieve
+  // 检索
   get(key: string): Promise<MemoryEntry | null>;
   search(query: string, options?: SearchOptions): Promise<MemoryResult[]>;
 
-  // Context
+  // 上下文
   buildContext(prompt: string): Promise<MemoryContext>;
 }
 ```
 
-## Configuration APIs
+## 配置 API
 
-### Config Definition
+### 配置定义
 
 ```typescript
 import { defineConfig } from "@openclaw/plugin-sdk/config";
@@ -242,13 +242,13 @@ export const config = defineConfig({
   apiKey: {
     type: "secret",
     required: true,
-    description: "API key for authentication",
+    description: "用于认证的 API 密钥",
   },
 
   model: {
     type: "string",
     default: "gpt-4o",
-    description: "Default model to use",
+    description: "默认使用的模型",
     enum: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
   },
 
@@ -266,13 +266,13 @@ export const config = defineConfig({
 });
 ```
 
-### Config Schema
+### 配置 Schema
 
 ```typescript
-// Generated Zod schema from config definition
+// 从配置定义生成的 Zod schema
 const configSchema = config.toSchema();
 
-// Validate configuration
+// 验证配置
 const validated = configSchema.safeParse(rawConfig);
 
 if (!validated.success) {
@@ -280,25 +280,25 @@ if (!validated.success) {
 }
 ```
 
-### Config Runtime
+### 配置运行时
 
 ```typescript
 import { configRuntime } from "@openclaw/plugin-sdk/config";
 
 export async function activate(context: PluginContext) {
-  // Access validated config
+  // 访问已验证的配置
   const config = configRuntime.get();
 
-  // Watch for config changes
+  // 监听配置变更
   configRuntime.onChange((newConfig) => {
-    context.logger.info("Config updated", newConfig);
+    context.logger.info("配置已更新", newConfig);
   });
 }
 ```
 
-## Testing APIs
+## 测试 API
 
-### Test Plugin
+### 测试插件
 
 ```typescript
 import {
@@ -307,13 +307,13 @@ import {
   mockProvider,
 } from "@openclaw/plugin-sdk/testing";
 
-describe("My Plugin", () => {
+describe("我的插件", () => {
   const plugin = createTestPlugin({
     manifest: testManifest,
     entry: myPluginEntry,
   });
 
-  it("should activate", async () => {
+  it("应该能激活", async () => {
     const ctx = mockContext();
     await plugin.activate(ctx);
     expect(plugin.status).toBe("active");
@@ -321,7 +321,7 @@ describe("My Plugin", () => {
 });
 ```
 
-### Mock Context
+### Mock 上下文
 
 ```typescript
 const mockCtx = mockContext({
@@ -348,9 +348,9 @@ const mockProv = mockProvider({
 });
 ```
 
-## Types
+## 类型
 
-### Plugin Types
+### 插件类型
 
 ```typescript
 import type {
@@ -361,7 +361,7 @@ import type {
 } from "@openclaw/plugin-sdk/types";
 ```
 
-### Provider Types
+### Provider 类型
 
 ```typescript
 import type {
@@ -373,7 +373,7 @@ import type {
 } from "@openclaw/plugin-sdk/types";
 ```
 
-### Channel Types
+### Channel 类型
 
 ```typescript
 import type {
@@ -386,7 +386,7 @@ import type {
 } from "@openclaw/plugin-sdk/types";
 ```
 
-### Tool Types
+### Tool 类型
 
 ```typescript
 import type {
@@ -398,9 +398,9 @@ import type {
 } from "@openclaw/plugin-sdk/types";
 ```
 
-## SDK Versioning
+## SDK 版本控制
 
-### Version Compatibility
+### 版本兼容性
 
 ```json
 {
@@ -411,69 +411,69 @@ import type {
 }
 ```
 
-### Migration Guide
+### 迁移指南
 
-When upgrading SDK versions:
+升级 SDK 版本时：
 
-1. Check breaking changes in CHANGELOG
-2. Update entry point imports if needed
-3. Update type references
-4. Run tests to verify compatibility
+1. 检查 CHANGELOG 中的破坏性变更
+2. 必要时更新入口点导入
+3. 更新类型引用
+4. 运行测试以验证兼容性
 
-## Best Practices
+## 最佳实践
 
-### Import Organization
+### 导入组织
 
 ```typescript
-// 1. External imports
+// 1. 外部导入
 import { z } from "zod";
 import OpenAI from "openai";
 
-// 2. SDK imports
+// 2. SDK 导入
 import { providerEntry } from "@openclaw/plugin-sdk/runtime/provider";
 import type { Model } from "@openclaw/plugin-sdk/types";
 
-// 3. Internal imports
+// 3. 内部导入
 import { myUtils } from "./utils.js";
 ```
 
-### Error Handling
+### 错误处理
 
 ```typescript
 export const entry = providerEntry({
   async createCompletion(config, params) {
     try {
-      // Implementation
+      // 实现
       return await doCompletion(params);
     } catch (error) {
       if (error instanceof RateLimitError) {
-        throw new RetryableError("Rate limited", { retryAfter: 5000 });
+        throw new RetryableError("速率限制", { retryAfter: 5000 });
       }
-      throw new ProviderError("Completion failed", { cause: error });
+      throw new ProviderError("补全失败", { cause: error });
     }
   },
 });
 ```
 
-### Logging
+### 日志记录
 
 ```typescript
 export async function activate(context: PluginContext) {
   const log = context.logger.child({ plugin: "my-plugin" });
 
-  log.info("Activating plugin");
+  log.info("正在激活插件");
   try {
     await initialize();
-    log.info("Plugin activated successfully");
+    log.info("插件激活成功");
   } catch (error) {
-    log.error({ error }, "Failed to activate plugin");
+    log.error({ error }, "插件激活失败");
     throw error;
   }
 }
 ```
 
-## Related
+## 相关
 
-- [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture) - Plugin design
-- [Plugin Contracts](/architecture-book/part-3-plugin-system/03-plugin-contracts) - Contract system
-- [Writing Plugins](/architecture-book/part-3-plugin-system/05-writing-plugins) - Plugin development
+- [插件架构](/architecture-book/part-3-plugin-system/01-plugin-architecture) - 插件设计
+- [插件契约](/architecture-book/part-3-plugin-system/03-plugin-contracts) - 契约系统
+- [编写插件](/architecture-book/part-3-plugin-system/05-writing-plugins) - 插件开发

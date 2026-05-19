@@ -1,36 +1,36 @@
 ---
-summary: "Plugin system design, types, and architecture"
-title: "Plugin Architecture"
+summary: "插件系统设计、类型和架构"
+title: "插件架构"
 read_when:
-  - Understanding the plugin system
-  - Planning plugin development
+  - 理解插件系统
+  - 规划插件开发
 ---
 
-# Plugin Architecture
+# 插件架构
 
-## Overview
+## 概述
 
-OpenClaw uses a plugin-based architecture that allows the core system to remain agnostic while enabling extensive customization through plugins.
+OpenClaw 使用基于插件的架构，使核心系统保持中立，同时通过插件实现广泛的定制能力。
 
 ```mermaid
 flowchart TB
     subgraph Core
-        Registry[Plugin Registry]
-        Loader[Plugin Loader]
-        Runtime[Plugin Runtime]
+        Registry[插件注册表]
+        Loader[插件加载器]
+        Runtime[插件运行时]
     end
 
     subgraph PluginTypes
-        Provider[Provider Plugin]
-        Channel[Channel Plugin]
-        Tool[Tool Plugin]
-        Memory[Memory Plugin]
-        Runtime[Runtimes Plugin]
+        Provider[Provider 插件]
+        Channel[Channel 插件]
+        Tool[Tool 插件]
+        Memory[Memory 插件]
+        Runtime[Runtimes 插件]
     end
 
     subgraph External
-        Files[Plugin Files]
-        NPM[Package Registry]
+        Files[插件文件]
+        NPM[包注册表]
     end
 
     Registry --> Loader
@@ -44,21 +44,21 @@ flowchart TB
     NPM --> Loader
 ```
 
-## Design Principles
+## 设计原则
 
-### Core Stays Plugin-Agnostic
+### 核心保持插件中立
 
-The core system has no built-in knowledge of:
-- Specific providers (OpenAI, Anthropic, etc.)
-- Specific channels (Telegram, Discord, etc.)
-- Specific tools
-- Specific AI models
+核心系统没有内置以下知识：
+- 特定 Provider（OpenAI、Anthropic 等）
+- 特定 Channel（Telegram、Discord 等）
+- 特定工具
+- 特定 AI 模型
 
-All capabilities come through well-defined plugin interfaces.
+所有能力都通过良好定义的插件接口提供。
 
-### Contract-First Design
+### 契约优先设计
 
-Plugins communicate through strict contracts:
+插件通过严格契约进行通信：
 
 ```typescript
 interface PluginContract {
@@ -67,27 +67,27 @@ interface PluginContract {
   readonly version: string;
   readonly type: PluginType;
 
-  // Lifecycle
+  // 生命周期
   activate(context: PluginContext): Promise<void>;
   deactivate(): Promise<void>;
 }
 ```
 
-### Manifest-First Behavior
+### 清单优先行为
 
-Plugin configuration is derived from manifest metadata before runtime:
+插件配置在运行时之前从清单元数据派生：
 
 ```typescript
-// 1. Control plane: validate manifest
+// 1. 控制平面：验证清单
 const validatedConfig = await registry.validate(manifest);
 
-// 2. Runtime plane: execute with validated config
+// 2. 运行时平面：使用验证后的配置执行
 await provider.createCompletion(validatedConfig);
 ```
 
-### Lazy Loading
+### 懒加载
 
-Plugins are loaded on-demand:
+插件按需加载：
 
 ```typescript
 const loader = new PluginLoader({
@@ -95,25 +95,25 @@ const loader = new PluginLoader({
   activationPolicy: "on-demand",
 });
 
-// Plugin activated only when first used
+// 插件仅在首次使用时激活
 await loader.activate("provider/openai");
 ```
 
-## Plugin Types
+## 插件类型
 
-### Type Hierarchy
+### 类型层次结构
 
-| Type | Description | Entry Point |
+| 类型 | 描述 | 入口点 |
 |------|-------------|-------------|
-| provider | AI model providers | `providerEntry()` |
-| channel | Messaging platforms | `channelEntry()` |
-| tool | External capabilities | `toolEntry()` |
-| memory | Knowledge storage | `memoryEntry()` |
-| runtime | Agent execution | `runtimeEntry()` |
+| provider | AI 模型 Provider | `providerEntry()` |
+| channel | 消息平台 | `channelEntry()` |
+| tool | 外部能力 | `toolEntry()` |
+| memory | 知识存储 | `memoryEntry()` |
+| runtime | Agent 执行 | `runtimeEntry()` |
 
-### Provider Plugins
+### Provider 插件
 
-Connect to AI model providers:
+连接到 AI 模型 Provider：
 
 ```typescript
 // extensions/openai/src/index.ts
@@ -121,9 +121,9 @@ export const entry = providerEntry({
   id: "openai",
   name: "OpenAI",
 
-  // Provider methods
+  // Provider 方法
   async listModels() {
-    // Return available models
+    // 返回可用模型
     return [
       { ref: "openai:gpt-4o", name: "GPT-4o", ... },
       { ref: "openai:gpt-4o-mini", name: "GPT-4o Mini", ... },
@@ -131,15 +131,15 @@ export const entry = providerEntry({
   },
 
   async createCompletion(params) {
-    // Create completion
+    // 创建补全
     return openai.chat.completions.create(params);
   },
 });
 ```
 
-### Channel Plugins
+### Channel 插件
 
-Connect to messaging platforms:
+连接到消息平台：
 
 ```typescript
 // extensions/telegram/src/index.ts
@@ -148,25 +148,25 @@ export const entry = channelEntry({
   name: "Telegram",
 
   async connect(config) {
-    // Connect to Telegram
+    // 连接到 Telegram
     return new TelegramBot(config.token);
   },
 
   async send(target, message) {
-    // Send message
+    // 发送消息
     await bot.sendMessage(target.peer, message.content);
   },
 
   onMessage(handler) {
-    // Handle incoming messages
+    // 处理传入消息
     bot.on("message", handler);
   },
 });
 ```
 
-### Tool Plugins
+### Tool 插件
 
-Provide external capabilities:
+提供外部能力：
 
 ```typescript
 // extensions/tavily/src/index.ts
@@ -176,7 +176,7 @@ export const entry = toolEntry({
   tools: [
     {
       name: "web_search",
-      description: "Search the web",
+      description: "搜索网络",
       schema: { query: "string" },
     },
   ],
@@ -188,9 +188,9 @@ export const entry = toolEntry({
 });
 ```
 
-## Plugin Manifest
+## 插件清单
 
-### Manifest Structure
+### 清单结构
 
 ```json
 {
@@ -198,7 +198,7 @@ export const entry = toolEntry({
   "name": "OpenAI Provider",
   "version": "1.0.0",
   "type": "provider",
-  "description": "OpenAI GPT models provider",
+  "description": "OpenAI GPT 模型 Provider",
   "entry": "./dist/index.js",
   "runtime": {
     "node": ">=18.0.0"
@@ -219,7 +219,7 @@ export const entry = toolEntry({
 }
 ```
 
-### Manifest Validation
+### 清单验证
 
 ```typescript
 const manifestSchema = z.object({
@@ -239,132 +239,132 @@ function validateManifest(manifest: unknown) {
 }
 ```
 
-## Plugin Lifecycle
+## 插件生命周期
 
-### Lifecycle States
+### 生命周期状态
 
 ```mermaid
 stateDiagram-v2
     [*] --> Discovered
-    Discovered --> Resolved: Load manifest
-    Resolved --> Registered: Add to registry
-    Registered --> Activated: First use
-    Activated --> Deactivated: Shutdown
-    Deactivated --> Activated: Resume
-    Deactivated --> Unloaded: Cleanup
+    Discovered --> Resolved: 加载清单
+    Resolved --> Registered: 添加到注册表
+    Registered --> Activated: 首次使用
+    Activated --> Deactivated: 关闭
+    Deactivated --> Activated: 恢复
+    Deactivated --> Unloaded: 清理
 ```
 
-### Lifecycle Methods
+### 生命周期方法
 
 ```typescript
 interface PluginLifecycle {
-  // Called when plugin is first activated
+  // 插件首次激活时调用
   activate(context: PluginContext): Promise<void>;
 
-  // Called when plugin is deactivated
+  // 插件停用时调用
   deactivate(): Promise<void>;
 
-  // Health check
+  // 健康检查
   healthCheck(): Promise<HealthStatus>;
 }
 ```
 
-## Plugin Registry
+## 插件注册表
 
-### Registry Interface
+### 注册表接口
 
 ```typescript
 interface PluginRegistry {
-  // Discovery
+  // 发现
   discover(patterns: string[]): Promise<DiscoveredPlugin[]>;
   resolve(id: string): Promise<ResolvedPlugin>;
 
-  // Registration
+  // 注册
   register(plugin: Plugin): void;
   unregister(id: string): void;
   get(id: string): Plugin | undefined;
   list(type?: PluginType): Plugin[];
 
-  // Activation
+  // 激活
   activate(id: string, options?: ActivationOptions): Promise<void>;
   deactivate(id: string): Promise<void>;
 
-  // Status
+  // 状态
   getStatus(id: string): PluginStatus;
 }
 ```
 
-### Registry Operations
+### 注册表操作
 
 ```typescript
-// Discover plugins
+// 发现插件
 const plugins = await registry.discover([
   "extensions/providers/*",
   "extensions/channels/*",
 ]);
 
-// Register a plugin
+// 注册插件
 registry.register({
   manifest: validatedManifest,
   module: loadedModule,
 });
 
-// Activate on demand
+// 按需激活
 await registry.activate("provider/openai");
 
-// Check status
+// 检查状态
 const status = registry.getStatus("provider/openai");
 // { status: "active", activatedAt: Date, ... }
 ```
 
-## Plugin Context
+## 插件上下文
 
-### Context Object
+### 上下文对象
 
 ```typescript
 interface PluginContext {
-  // Configuration
+  // 配置
   config: Readonly<PluginConfig>;
   secrets: SecretsManager;
 
-  // Services
+  // 服务
   logger: Logger;
   httpClient: HttpClient;
   storage: Storage;
 
-  // OpenClaw APIs
+  // OpenClaw API
   session: SessionAPI;
   memory: MemoryAPI;
   tools: ToolsAPI;
 
-  // Lifecycle hooks
+  // 生命周期钩子
   hooks: HooksAPI;
 }
 ```
 
-### Using Context
+### 使用上下文
 
 ```typescript
 export async function activate(context: PluginContext) {
   const { config, logger, secrets } = context;
 
-  // Access configuration
+  // 访问配置
   const apiKey = await secrets.get("OPENAI_API_KEY");
 
-  // Use services
-  logger.info("Initializing OpenAI provider");
+  // 使用服务
+  logger.info("初始化 OpenAI Provider");
 
-  // Register with APIs
+  // 注册到 API
   context.tools.register(myTools);
 
-  // Register hooks
+  // 注册钩子
   context.hooks.on("before:message", myHandler);
 }
 ```
 
-## Plugin Discovery
+## 插件发现
 
-### Discovery Sources
+### 发现源
 
 ```typescript
 interface DiscoverySource {
@@ -373,20 +373,20 @@ interface DiscoverySource {
   patterns?: string[];
 }
 
-// Built-in discovery
+// 内置发现
 const sources: DiscoverySource[] = [
   { type: "directory", path: "./extensions" },
   { type: "directory", path: "~/.openclaw/plugins" },
 ];
 
-// Custom discovery
+// 自定义发现
 await registry.addSource({
   type: "npm",
   package: "@openclaw/plugin-*",
 });
 ```
 
-### Discovery Process
+### 发现过程
 
 ```mermaid
 sequenceDiagram
@@ -396,22 +396,22 @@ sequenceDiagram
     participant Validator
 
     Registry->>Source: scan()
-    Source-->>Registry: manifest files
-    Registry->>Loader: load manifest
-    Loader-->>Registry: raw manifest
-    Registry->>Validator: validate
-    Validator-->>Registry: validated manifest
-    Registry->>Registry: add to registry
+    Source-->>Registry: manifest 文件
+    Registry->>Loader: 加载清单
+    Loader-->>Registry: 原始清单
+    Registry->>Validator: 验证
+    Validator-->>Registry: 验证后的清单
+    Registry->>Registry: 添加到注册表
 ```
 
-## Bundled vs External Plugins
+## 内置与外部插件
 
-### Bundled Plugins
+### 内置插件
 
-Built into the OpenClaw distribution:
+内置于 OpenClaw 发行版：
 
 ```
-extensions/              # Bundled in core
+extensions/              # 内置于核心
 ├── providers/
 │   ├── openai/
 │   ├── anthropic/
@@ -425,16 +425,16 @@ extensions/              # Bundled in core
     └── ...
 ```
 
-### External Plugins
+### 外部插件
 
-Installed separately:
+单独安装：
 
 ```bash
 npm install @openclaw/plugin-custom-provider
 ```
 
 ```typescript
-// Configuration
+// 配置
 const config = {
   plugins: {
     external: [
@@ -447,20 +447,20 @@ const config = {
 };
 ```
 
-## Security Considerations
+## 安全注意事项
 
-### Plugin Isolation
+### 插件隔离
 
-Plugins run with minimal privileges:
+插件以最小权限运行：
 
-| Permission | Default | Configurable |
+| 权限 | 默认值 | 可配置 |
 |------------|---------|--------------|
-| File system | Read current dir | Per-plugin |
-| Network | None | Per-plugin |
-| Secrets | None | Explicit grant |
-| Tools | None | Explicit grant |
+| 文件系统 | 读取当前目录 | 按插件配置 |
+| 网络 | 无 | 按插件配置 |
+| 密钥 | 无 | 显式授权 |
+| 工具 | 无 | 显式授权 |
 
-### Sandboxing
+### 沙箱
 
 ```typescript
 const sandboxConfig = {
@@ -474,9 +474,9 @@ const sandboxConfig = {
 };
 ```
 
-## Related
+## 相关
 
-- [Plugin SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK documentation
-- [Plugin Contracts](/architecture-book/part-3-plugin-system/03-plugin-contracts) - Contract definitions
-- [Plugin Runtime](/architecture-book/part-3-plugin-system/04-plugin-runtime) - Runtime implementation
-- [Writing Plugins](/architecture-book/part-3-plugin-system/05-writing-plugins) - Plugin development
+- [插件 SDK](/architecture-book/part-3-plugin-system/02-plugin-sdk) - SDK 文档
+- [插件契约](/architecture-book/part-3-plugin-system/03-plugin-contracts) - 契约定义
+- [插件运行时](/architecture-book/part-3-plugin-system/04-plugin-runtime) - 运行时实现
+- [编写插件](/architecture-book/part-3-plugin-system/05-writing-plugins) - 插件开发
