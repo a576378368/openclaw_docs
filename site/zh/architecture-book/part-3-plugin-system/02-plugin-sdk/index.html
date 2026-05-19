@@ -1,0 +1,5403 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OpenClaw 系统架构文档 - 深入理解设计理念、架构模式和实现细节">
+      
+      
+        <meta name="author" content="OpenClaw Team">
+      
+      
+        <link rel="canonical" href="https://a576378368.github.io/openclaw_docs/zh/architecture-book/part-3-plugin-system/02-plugin-sdk/">
+      
+      
+        <link rel="prev" href="../01-plugin-architecture/">
+      
+      
+        <link rel="next" href="../03-plugin-contracts/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Plugin SDK - OpenClaw Architecture Book</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plugin-sdk" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="OpenClaw Architecture Book" class="md-header__button md-logo" aria-label="OpenClaw Architecture Book" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw Architecture Book
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plugin SDK
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/openclaw/openclaw_docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openclaw/openclaw_docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.." class="md-tabs__link">
+          
+  
+  
+  home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-1-foundations/01-introduction/" class="md-tabs__link">
+          
+  
+  
+  Foundations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-2-core-modules/01-gateway/" class="md-tabs__link">
+          
+  
+  
+  Core Modules
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-3-plugin-system/01-plugin-architecture/" class="md-tabs__link">
+          
+  
+  
+  Plugin System
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-4-gateway-protocol/01-protocol-overview/" class="md-tabs__link">
+          
+  
+  
+  Gateway Protocol
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-5-channels/01-channel-architecture/" class="md-tabs__link">
+          
+  
+  
+  Channels
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-6-sdks-apis/01-app-sdk/" class="md-tabs__link">
+          
+  
+  
+  SDK and API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-7-config-system/01-config-schema/" class="md-tabs__link">
+          
+  
+  
+  Config System
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-8-session-memory/00-session-memory-overview/" class="md-tabs__link">
+          
+  
+  
+  Session Memory
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../en/architecture-book/part-9-dev-guide/01-dev-workflow/" class="md-tabs__link">
+          
+  
+  
+  Dev Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-1-foundations/01-introduction/" class="md-tabs__link">
+          
+  
+  
+  基础
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-2-core-modules/01-gateway/" class="md-tabs__link">
+          
+  
+  
+  核心模块
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01-plugin-architecture/" class="md-tabs__link">
+          
+  
+  
+  插件系统
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-4-gateway-protocol/01-protocol-overview/" class="md-tabs__link">
+          
+  
+  
+  网关协议
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-5-channels/01-channel-architecture/" class="md-tabs__link">
+          
+  
+  
+  通道
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-6-sdks-apis/01-app-sdk/" class="md-tabs__link">
+          
+  
+  
+  SDK 和 API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-7-config-system/01-config-schema/" class="md-tabs__link">
+          
+  
+  
+  配置系统
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-8-session-memory/00-session-memory-overview/" class="md-tabs__link">
+          
+  
+  
+  会话内存
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../part-9-dev-guide/01-dev-workflow/" class="md-tabs__link">
+          
+  
+  
+  开发指南
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="OpenClaw Architecture Book" class="md-nav__button md-logo" aria-label="OpenClaw Architecture Book" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw Architecture Book
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/openclaw/openclaw_docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openclaw/openclaw_docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    home
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    home
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Foundations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-1-foundations/01-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-1-foundations/02-system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-1-foundations/03-core-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-1-foundations/04-directory-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Directory Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/01-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/02-agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/03-sessions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sessions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/04-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/05-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/06-mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/07-flows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-2-core-modules/08-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Plugin System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-3-plugin-system/01-plugin-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-3-plugin-system/02-plugin-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-3-plugin-system/03-plugin-contracts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-3-plugin-system/04-plugin-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-3-plugin-system/05-writing-plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writing Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-3-plugin-system/06-channel-plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channel Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gateway Protocol
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Gateway Protocol
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-4-gateway-protocol/01-protocol-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-4-gateway-protocol/02-ws-transport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WebSocket Transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-4-gateway-protocol/03-message-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Message Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-4-gateway-protocol/04-events-and-rpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Events and RPC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-4-gateway-protocol/05-auth-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auth and Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channels
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Channels
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-5-channels/01-channel-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channel Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-5-channels/02-channel-abstract/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channel Abstract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-5-channels/03-inbound-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inbound Events
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-5-channels/04-message-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Message Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-5-channels/05-transport-layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transport Layer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK and API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK and API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-6-sdks-apis/01-app-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-6-sdks-apis/02-plugin-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-6-sdks-apis/03-memory-host-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Host SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-6-sdks-apis/04-api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config System
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Config System
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-7-config-system/01-config-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-7-config-system/03-provider-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-7-config-system/04-channel-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channel Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-7-config-system/05-agent-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-7-config-system/06-plugin-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Memory
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Session Memory
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-8-session-memory/00-session-memory-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-8-session-memory/03-context-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-8-session-memory/04-compaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-8-session-memory/05-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-9-dev-guide/01-dev-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-9-dev-guide/02-build-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-9-dev-guide/03-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-9-dev-guide/04-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../en/architecture-book/part-9-dev-guide/05-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基础
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    基础
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/01-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    简介
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/02-system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统概览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/03-core-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心概念
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/04-directory-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    目录结构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心模块
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    核心模块
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/01-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    网关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/02-agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/03-sessions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    会话
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/04-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/05-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/06-mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/07-flows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/08-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    任务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    插件系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-plugin-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件 SDK
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件 SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#package-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Package Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Package Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#package-exports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Package Exports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subpath-exports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subpath Exports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry Points
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Entry Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#provider-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider Entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channel-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel Entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Entry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tools-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tools API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provider-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channel-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sdk-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDK Versioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SDK Versioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-plugin-contracts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件合约
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-plugin-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件运行时
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-writing-plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    编写插件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-channel-plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道插件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    网关协议
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    网关协议
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/01-protocol-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    协议概览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/02-ws-transport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WebSocket 传输
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/03-message-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息流
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/04-events-and-rpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    事件和 RPC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/05-auth-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    认证和安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    通道
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/01-channel-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/02-channel-abstract/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道抽象
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/03-inbound-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    入站事件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/04-message-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/05-transport-layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    传输层
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK 和 API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK 和 API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/01-app-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/02-plugin-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件 SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/03-memory-host-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Host SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/04-api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 参考
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    配置系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    配置系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/01-config-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    配置架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/03-provider-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider 配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/04-channel-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/05-agent-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent 配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/06-plugin-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    会话内存
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    会话内存
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/00-session-memory-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    会话内存概览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/03-context-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    上下文引擎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/04-compaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    压缩
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/05-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多 Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_19" id="__nav_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发指南
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    开发指南
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/01-dev-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发工作流
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/02-build-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构建系统
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/03-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/04-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    调试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/05-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    部署
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/openclaw/openclaw_docs/edit/master/docs/zh/architecture-book/part-3-plugin-system/02-plugin-sdk.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/openclaw/openclaw_docs/raw/master/docs/zh/architecture-book/part-3-plugin-system/02-plugin-sdk.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h1 id="plugin-sdk">Plugin SDK<a class="headerlink" href="#plugin-sdk" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The Plugin SDK (<code>@openclaw/plugin-sdk</code>) provides the APIs and utilities for building OpenClaw plugins.</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Plugin Code] --&gt; B[@openclaw/plugin-sdk]
+    B --&gt; C[Runtime APIs]
+    B --&gt; D[Config APIs]
+    B --&gt; E[Testing]
+    B --&gt; F[Types]</code></pre>
+<h2 id="package-structure">Package Structure<a class="headerlink" href="#package-structure" title="Permanent link">&para;</a></h2>
+<h3 id="package-exports">Package Exports<a class="headerlink" href="#package-exports" title="Permanent link">&para;</a></h3>
+<p>The SDK exports from 50+ subpaths:</p>
+<div class="highlight"><pre><span></span><code><a id="local-0-1" name="local-0-1" href="#local-0-1"></a><span class="c1">// Core entry</span>
+<a id="local-0-2" name="local-0-2" href="#local-0-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk&quot;</span><span class="p">;</span>
+<a id="local-0-3" name="local-0-3" href="#local-0-3"></a>
+<a id="local-0-4" name="local-0-4" href="#local-0-4"></a><span class="c1">// Runtime APIs</span>
+<a id="local-0-5" name="local-0-5" href="#local-0-5"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">pluginRuntime</span><span class="p">,</span><span class="w"> </span><span class="nx">channelRuntime</span><span class="p">,</span><span class="w"> </span><span class="nx">providerEntry</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/runtime&quot;</span><span class="p">;</span>
+<a id="local-0-6" name="local-0-6" href="#local-0-6"></a>
+<a id="local-0-7" name="local-0-7" href="#local-0-7"></a><span class="c1">// Config APIs</span>
+<a id="local-0-8" name="local-0-8" href="#local-0-8"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">configRuntime</span><span class="p">,</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/config&quot;</span><span class="p">;</span>
+<a id="local-0-9" name="local-0-9" href="#local-0-9"></a>
+<a id="local-0-10" name="local-0-10" href="#local-0-10"></a><span class="c1">// Testing</span>
+<a id="local-0-11" name="local-0-11" href="#local-0-11"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createTestPlugin</span><span class="p">,</span><span class="w"> </span><span class="nx">mockContext</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/testing&quot;</span><span class="p">;</span>
+<a id="local-0-12" name="local-0-12" href="#local-0-12"></a>
+<a id="local-0-13" name="local-0-13" href="#local-0-13"></a><span class="c1">// Types</span>
+<a id="local-0-14" name="local-0-14" href="#local-0-14"></a><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">PluginManifest</span><span class="p">,</span><span class="w"> </span><span class="nx">PluginContext</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/types&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="subpath-exports">Subpath Exports<a class="headerlink" href="#subpath-exports" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Subpath</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>runtime</code></td>
+<td>Plugin runtime entry points</td>
+</tr>
+<tr>
+<td><code>runtime/channel</code></td>
+<td>Channel plugin runtime</td>
+</tr>
+<tr>
+<td><code>runtime/provider</code></td>
+<td>Provider plugin runtime</td>
+</tr>
+<tr>
+<td><code>runtime/tool</code></td>
+<td>Tool plugin runtime</td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td>Configuration utilities</td>
+</tr>
+<tr>
+<td><code>testing</code></td>
+<td>Test utilities</td>
+</tr>
+<tr>
+<td><code>types</code></td>
+<td>TypeScript types</td>
+</tr>
+</tbody>
+</table>
+<h2 id="entry-points">Entry Points<a class="headerlink" href="#entry-points" title="Permanent link">&para;</a></h2>
+<h3 id="provider-entry">Provider Entry<a class="headerlink" href="#provider-entry" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-1-1" name="local-1-1" href="#local-1-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">providerEntry</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/runtime/provider&quot;</span><span class="p">;</span>
+<a id="local-1-2" name="local-1-2" href="#local-1-2"></a>
+<a id="local-1-3" name="local-1-3" href="#local-1-3"></a><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">providerEntry</span><span class="p">({</span>
+<a id="local-1-4" name="local-1-4" href="#local-1-4"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;openai&quot;</span><span class="p">,</span>
+<a id="local-1-5" name="local-1-5" href="#local-1-5"></a><span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;OpenAI&quot;</span><span class="p">,</span>
+<a id="local-1-6" name="local-1-6" href="#local-1-6"></a><span class="w">  </span><span class="nx">models</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">],</span>
+<a id="local-1-7" name="local-1-7" href="#local-1-7"></a>
+<a id="local-1-8" name="local-1-8" href="#local-1-8"></a><span class="w">  </span><span class="c1">// Required methods</span>
+<a id="local-1-9" name="local-1-9" href="#local-1-9"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">listModels</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-1-10" name="local-1-10" href="#local-1-10"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAI</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">);</span>
+<a id="local-1-11" name="local-1-11" href="#local-1-11"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">list</span><span class="p">();</span>
+<a id="local-1-12" name="local-1-12" href="#local-1-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">model</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<a id="local-1-13" name="local-1-13" href="#local-1-13"></a><span class="w">      </span><span class="nx">ref</span><span class="o">:</span><span class="w"> </span><span class="sb">`openai:</span><span class="si">${</span><span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+<a id="local-1-14" name="local-1-14" href="#local-1-14"></a><span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">model.id</span><span class="p">,</span>
+<a id="local-1-15" name="local-1-15" href="#local-1-15"></a><span class="w">      </span><span class="nx">capabilities</span><span class="o">:</span><span class="w"> </span><span class="kt">extractCapabilities</span><span class="p">(</span><span class="nx">model</span><span class="p">),</span>
+<a id="local-1-16" name="local-1-16" href="#local-1-16"></a><span class="w">    </span><span class="p">}));</span>
+<a id="local-1-17" name="local-1-17" href="#local-1-17"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-1-18" name="local-1-18" href="#local-1-18"></a>
+<a id="local-1-19" name="local-1-19" href="#local-1-19"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">createCompletion</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-1-20" name="local-1-20" href="#local-1-20"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAI</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">);</span>
+<a id="local-1-21" name="local-1-21" href="#local-1-21"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<a id="local-1-22" name="local-1-22" href="#local-1-22"></a><span class="w">      </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="kt">params.model</span><span class="p">,</span>
+<a id="local-1-23" name="local-1-23" href="#local-1-23"></a><span class="w">      </span><span class="nx">messages</span><span class="o">:</span><span class="w"> </span><span class="kt">params.messages</span><span class="p">,</span>
+<a id="local-1-24" name="local-1-24" href="#local-1-24"></a><span class="w">      </span><span class="nx">stream</span><span class="o">:</span><span class="w"> </span><span class="kt">params.stream</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="local-1-25" name="local-1-25" href="#local-1-25"></a><span class="w">    </span><span class="p">});</span>
+<a id="local-1-26" name="local-1-26" href="#local-1-26"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-1-27" name="local-1-27" href="#local-1-27"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="channel-entry">Channel Entry<a class="headerlink" href="#channel-entry" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-2-1" name="local-2-1" href="#local-2-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">channelEntry</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/runtime/channel&quot;</span><span class="p">;</span>
+<a id="local-2-2" name="local-2-2" href="#local-2-2"></a>
+<a id="local-2-3" name="local-2-3" href="#local-2-3"></a><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">channelEntry</span><span class="p">({</span>
+<a id="local-2-4" name="local-2-4" href="#local-2-4"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;telegram&quot;</span><span class="p">,</span>
+<a id="local-2-5" name="local-2-5" href="#local-2-5"></a><span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Telegram&quot;</span><span class="p">,</span>
+<a id="local-2-6" name="local-2-6" href="#local-2-6"></a><span class="w">  </span><span class="nx">features</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;media&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;commands&quot;</span><span class="p">],</span>
+<a id="local-2-7" name="local-2-7" href="#local-2-7"></a>
+<a id="local-2-8" name="local-2-8" href="#local-2-8"></a><span class="w">  </span><span class="c1">// Lifecycle</span>
+<a id="local-2-9" name="local-2-9" href="#local-2-9"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">connect</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-2-10" name="local-2-10" href="#local-2-10"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">TelegramBot</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">token</span><span class="p">,</span><span class="w"> </span><span class="nx">config</span><span class="p">.</span><span class="nx">options</span><span class="p">);</span>
+<a id="local-2-11" name="local-2-11" href="#local-2-11"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-2-12" name="local-2-12" href="#local-2-12"></a>
+<a id="local-2-13" name="local-2-13" href="#local-2-13"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">disconnect</span><span class="p">(</span><span class="nx">bot</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-2-14" name="local-2-14" href="#local-2-14"></a><span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nx">bot</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+<a id="local-2-15" name="local-2-15" href="#local-2-15"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-2-16" name="local-2-16" href="#local-2-16"></a>
+<a id="local-2-17" name="local-2-17" href="#local-2-17"></a><span class="w">  </span><span class="c1">// Messaging</span>
+<a id="local-2-18" name="local-2-18" href="#local-2-18"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">send</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="p">,</span><span class="w"> </span><span class="nx">bot</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-2-19" name="local-2-19" href="#local-2-19"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-2-20" name="local-2-20" href="#local-2-20"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">bot</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">(</span><span class="nx">target</span><span class="p">.</span><span class="nx">peer</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<a id="local-2-21" name="local-2-21" href="#local-2-21"></a><span class="w">    </span><span class="p">}</span>
+<a id="local-2-22" name="local-2-22" href="#local-2-22"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">media</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-2-23" name="local-2-23" href="#local-2-23"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">bot</span><span class="p">.</span><span class="nx">sendMedia</span><span class="p">(</span><span class="nx">target</span><span class="p">.</span><span class="nx">peer</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">media</span><span class="p">);</span>
+<a id="local-2-24" name="local-2-24" href="#local-2-24"></a><span class="w">    </span><span class="p">}</span>
+<a id="local-2-25" name="local-2-25" href="#local-2-25"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-2-26" name="local-2-26" href="#local-2-26"></a>
+<a id="local-2-27" name="local-2-27" href="#local-2-27"></a><span class="w">  </span><span class="c1">// Event handling</span>
+<a id="local-2-28" name="local-2-28" href="#local-2-28"></a><span class="w">  </span><span class="nx">onMessage</span><span class="p">(</span><span class="nx">bot</span><span class="p">,</span><span class="w"> </span><span class="nx">handler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-2-29" name="local-2-29" href="#local-2-29"></a><span class="w">    </span><span class="nx">bot</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">handler</span><span class="p">);</span>
+<a id="local-2-30" name="local-2-30" href="#local-2-30"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-2-31" name="local-2-31" href="#local-2-31"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="tool-entry">Tool Entry<a class="headerlink" href="#tool-entry" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-3-1" name="local-3-1" href="#local-3-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">toolEntry</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/runtime/tool&quot;</span><span class="p">;</span>
+<a id="local-3-2" name="local-3-2" href="#local-3-2"></a>
+<a id="local-3-3" name="local-3-3" href="#local-3-3"></a><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">toolEntry</span><span class="p">({</span>
+<a id="local-3-4" name="local-3-4" href="#local-3-4"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;tavily&quot;</span><span class="p">,</span>
+<a id="local-3-5" name="local-3-5" href="#local-3-5"></a><span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Tavily Search&quot;</span><span class="p">,</span>
+<a id="local-3-6" name="local-3-6" href="#local-3-6"></a>
+<a id="local-3-7" name="local-3-7" href="#local-3-7"></a><span class="w">  </span><span class="nx">tools</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<a id="local-3-8" name="local-3-8" href="#local-3-8"></a><span class="w">    </span><span class="p">{</span>
+<a id="local-3-9" name="local-3-9" href="#local-3-9"></a><span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;web_search&quot;</span><span class="p">,</span>
+<a id="local-3-10" name="local-3-10" href="#local-3-10"></a><span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Search the web for information&quot;</span><span class="p">,</span>
+<a id="local-3-11" name="local-3-11" href="#local-3-11"></a><span class="w">      </span><span class="nx">schema</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-3-12" name="local-3-12" href="#local-3-12"></a><span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<a id="local-3-13" name="local-3-13" href="#local-3-13"></a><span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-3-14" name="local-3-14" href="#local-3-14"></a><span class="w">          </span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Search query&quot;</span><span class="w"> </span><span class="p">},</span>
+<a id="local-3-15" name="local-3-15" href="#local-3-15"></a><span class="w">          </span><span class="nx">limit</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">default</span><span class="o">:</span><span class="w"> </span><span class="kt">10</span><span class="w"> </span><span class="p">},</span>
+<a id="local-3-16" name="local-3-16" href="#local-3-16"></a><span class="w">        </span><span class="p">},</span>
+<a id="local-3-17" name="local-3-17" href="#local-3-17"></a><span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+<a id="local-3-18" name="local-3-18" href="#local-3-18"></a><span class="w">      </span><span class="p">},</span>
+<a id="local-3-19" name="local-3-19" href="#local-3-19"></a><span class="w">    </span><span class="p">},</span>
+<a id="local-3-20" name="local-3-20" href="#local-3-20"></a><span class="w">  </span><span class="p">],</span>
+<a id="local-3-21" name="local-3-21" href="#local-3-21"></a>
+<a id="local-3-22" name="local-3-22" href="#local-3-22"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">execute</span><span class="p">(</span><span class="nx">tool</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="p">,</span><span class="w"> </span><span class="nx">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-3-23" name="local-3-23" href="#local-3-23"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">tavily</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<a id="local-3-24" name="local-3-24" href="#local-3-24"></a><span class="w">      </span><span class="nx">limit</span><span class="o">:</span><span class="w"> </span><span class="kt">params.limit</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span>
+<a id="local-3-25" name="local-3-25" href="#local-3-25"></a><span class="w">    </span><span class="p">});</span>
+<a id="local-3-26" name="local-3-26" href="#local-3-26"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<a id="local-3-27" name="local-3-27" href="#local-3-27"></a><span class="w">      </span><span class="nx">success</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<a id="local-3-28" name="local-3-28" href="#local-3-28"></a><span class="w">      </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">JSON.stringify</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<a id="local-3-29" name="local-3-29" href="#local-3-29"></a><span class="w">    </span><span class="p">};</span>
+<a id="local-3-30" name="local-3-30" href="#local-3-30"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-3-31" name="local-3-31" href="#local-3-31"></a><span class="p">});</span>
+</code></pre></div>
+<h2 id="runtime-apis">Runtime APIs<a class="headerlink" href="#runtime-apis" title="Permanent link">&para;</a></h2>
+<h3 id="plugin-context">Plugin Context<a class="headerlink" href="#plugin-context" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-4-1" name="local-4-1" href="#local-4-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">pluginContext</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/runtime&quot;</span><span class="p">;</span>
+<a id="local-4-2" name="local-4-2" href="#local-4-2"></a>
+<a id="local-4-3" name="local-4-3" href="#local-4-3"></a><span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">activate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="local-4-4" name="local-4-4" href="#local-4-4"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pluginContext</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span>
+<a id="local-4-5" name="local-4-5" href="#local-4-5"></a>
+<a id="local-4-6" name="local-4-6" href="#local-4-6"></a><span class="w">  </span><span class="c1">// Configuration</span>
+<a id="local-4-7" name="local-4-7" href="#local-4-7"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">apiKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">secrets</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;API_KEY&quot;</span><span class="p">);</span>
+<a id="local-4-8" name="local-4-8" href="#local-4-8"></a>
+<a id="local-4-9" name="local-4-9" href="#local-4-9"></a><span class="w">  </span><span class="c1">// Services</span>
+<a id="local-4-10" name="local-4-10" href="#local-4-10"></a><span class="w">  </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">&quot;Plugin activated&quot;</span><span class="p">);</span>
+<a id="local-4-11" name="local-4-11" href="#local-4-11"></a>
+<a id="local-4-12" name="local-4-12" href="#local-4-12"></a><span class="w">  </span><span class="c1">// APIs</span>
+<a id="local-4-13" name="local-4-13" href="#local-4-13"></a><span class="w">  </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">(</span><span class="nx">myHandler</span><span class="p">);</span>
+<a id="local-4-14" name="local-4-14" href="#local-4-14"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="session-api">Session API<a class="headerlink" href="#session-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-5-1" name="local-5-1" href="#local-5-1"></a><span class="kd">interface</span><span class="w"> </span><span class="nx">SessionAPI</span><span class="w"> </span><span class="p">{</span>
+<a id="local-5-2" name="local-5-2" href="#local-5-2"></a><span class="w">  </span><span class="c1">// Get current session</span>
+<a id="local-5-3" name="local-5-3" href="#local-5-3"></a><span class="w">  </span><span class="nx">getCurrent</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Session</span><span class="p">;</span>
+<a id="local-5-4" name="local-5-4" href="#local-5-4"></a>
+<a id="local-5-5" name="local-5-5" href="#local-5-5"></a><span class="w">  </span><span class="c1">// Session operations</span>
+<a id="local-5-6" name="local-5-6" href="#local-5-6"></a><span class="w">  </span><span class="nx">addMessage</span><span class="p">(</span><span class="nx">sessionKey</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">Message</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-5-7" name="local-5-7" href="#local-5-7"></a><span class="w">  </span><span class="nx">getHistory</span><span class="p">(</span><span class="nx">sessionKey</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">limit?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Message</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-5-8" name="local-5-8" href="#local-5-8"></a><span class="w">  </span><span class="nx">reset</span><span class="p">(</span><span class="nx">sessionKey</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-5-9" name="local-5-9" href="#local-5-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="tools-api">Tools API<a class="headerlink" href="#tools-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-6-1" name="local-6-1" href="#local-6-1"></a><span class="kd">interface</span><span class="w"> </span><span class="nx">ToolsAPI</span><span class="w"> </span><span class="p">{</span>
+<a id="local-6-2" name="local-6-2" href="#local-6-2"></a><span class="w">  </span><span class="c1">// Register tools</span>
+<a id="local-6-3" name="local-6-3" href="#local-6-3"></a><span class="w">  </span><span class="nx">register</span><span class="p">(</span><span class="nx">tools</span><span class="o">:</span><span class="w"> </span><span class="kt">Tool</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<a id="local-6-4" name="local-6-4" href="#local-6-4"></a><span class="w">  </span><span class="nx">unregister</span><span class="p">(</span><span class="nx">names</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<a id="local-6-5" name="local-6-5" href="#local-6-5"></a>
+<a id="local-6-6" name="local-6-6" href="#local-6-6"></a><span class="w">  </span><span class="c1">// Get tool info</span>
+<a id="local-6-7" name="local-6-7" href="#local-6-7"></a><span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Tool</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+<a id="local-6-8" name="local-6-8" href="#local-6-8"></a><span class="w">  </span><span class="nx">list</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Tool</span><span class="p">[];</span>
+<a id="local-6-9" name="local-6-9" href="#local-6-9"></a>
+<a id="local-6-10" name="local-6-10" href="#local-6-10"></a><span class="w">  </span><span class="c1">// Hooks</span>
+<a id="local-6-11" name="local-6-11" href="#local-6-11"></a><span class="w">  </span><span class="nx">addHook</span><span class="p">(</span><span class="nx">hook</span><span class="o">:</span><span class="w"> </span><span class="kt">ToolHook</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<a id="local-6-12" name="local-6-12" href="#local-6-12"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="memory-api">Memory API<a class="headerlink" href="#memory-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-7-1" name="local-7-1" href="#local-7-1"></a><span class="kd">interface</span><span class="w"> </span><span class="nx">MemoryAPI</span><span class="w"> </span><span class="p">{</span>
+<a id="local-7-2" name="local-7-2" href="#local-7-2"></a><span class="w">  </span><span class="c1">// Store</span>
+<a id="local-7-3" name="local-7-3" href="#local-7-3"></a><span class="w">  </span><span class="nx">store</span><span class="p">(</span><span class="nx">entry</span><span class="o">:</span><span class="w"> </span><span class="kt">MemoryEntry</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-7-4" name="local-7-4" href="#local-7-4"></a><span class="w">  </span><span class="nx">update</span><span class="p">(</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="o">:</span><span class="w"> </span><span class="kt">Partial</span><span class="o">&lt;</span><span class="nx">MemoryEntry</span><span class="o">&gt;</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-7-5" name="local-7-5" href="#local-7-5"></a>
+<a id="local-7-6" name="local-7-6" href="#local-7-6"></a><span class="w">  </span><span class="c1">// Retrieve</span>
+<a id="local-7-7" name="local-7-7" href="#local-7-7"></a><span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">MemoryEntry</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-7-8" name="local-7-8" href="#local-7-8"></a><span class="w">  </span><span class="nx">search</span><span class="p">(</span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">options?</span><span class="o">:</span><span class="w"> </span><span class="kt">SearchOptions</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">MemoryResult</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-7-9" name="local-7-9" href="#local-7-9"></a>
+<a id="local-7-10" name="local-7-10" href="#local-7-10"></a><span class="w">  </span><span class="c1">// Context</span>
+<a id="local-7-11" name="local-7-11" href="#local-7-11"></a><span class="w">  </span><span class="nx">buildContext</span><span class="p">(</span><span class="nx">prompt</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">MemoryContext</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="local-7-12" name="local-7-12" href="#local-7-12"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="configuration-apis">Configuration APIs<a class="headerlink" href="#configuration-apis" title="Permanent link">&para;</a></h2>
+<h3 id="config-definition">Config Definition<a class="headerlink" href="#config-definition" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-8-1" name="local-8-1" href="#local-8-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/config&quot;</span><span class="p">;</span>
+<a id="local-8-2" name="local-8-2" href="#local-8-2"></a>
+<a id="local-8-3" name="local-8-3" href="#local-8-3"></a><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<a id="local-8-4" name="local-8-4" href="#local-8-4"></a><span class="w">  </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-8-5" name="local-8-5" href="#local-8-5"></a><span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;secret&quot;</span><span class="p">,</span>
+<a id="local-8-6" name="local-8-6" href="#local-8-6"></a><span class="w">    </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<a id="local-8-7" name="local-8-7" href="#local-8-7"></a><span class="w">    </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;API key for authentication&quot;</span><span class="p">,</span>
+<a id="local-8-8" name="local-8-8" href="#local-8-8"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-8-9" name="local-8-9" href="#local-8-9"></a>
+<a id="local-8-10" name="local-8-10" href="#local-8-10"></a><span class="w">  </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-8-11" name="local-8-11" href="#local-8-11"></a><span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<a id="local-8-12" name="local-8-12" href="#local-8-12"></a><span class="w">    </span><span class="k">default</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+<a id="local-8-13" name="local-8-13" href="#local-8-13"></a><span class="w">    </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Default model to use&quot;</span><span class="p">,</span>
+<a id="local-8-14" name="local-8-14" href="#local-8-14"></a><span class="w">    </span><span class="kd">enum</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">],</span>
+<a id="local-8-15" name="local-8-15" href="#local-8-15"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-8-16" name="local-8-16" href="#local-8-16"></a>
+<a id="local-8-17" name="local-8-17" href="#local-8-17"></a><span class="w">  </span><span class="nx">temperature</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-8-18" name="local-8-18" href="#local-8-18"></a><span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<a id="local-8-19" name="local-8-19" href="#local-8-19"></a><span class="w">    </span><span class="nx">default</span><span class="o">:</span><span class="w"> </span><span class="kt">0.7</span><span class="p">,</span>
+<a id="local-8-20" name="local-8-20" href="#local-8-20"></a><span class="w">    </span><span class="nx">min</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span>
+<a id="local-8-21" name="local-8-21" href="#local-8-21"></a><span class="w">    </span><span class="nx">max</span><span class="o">:</span><span class="w"> </span><span class="kt">2</span><span class="p">,</span>
+<a id="local-8-22" name="local-8-22" href="#local-8-22"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-8-23" name="local-8-23" href="#local-8-23"></a>
+<a id="local-8-24" name="local-8-24" href="#local-8-24"></a><span class="w">  </span><span class="nx">maxTokens</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-8-25" name="local-8-25" href="#local-8-25"></a><span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+<a id="local-8-26" name="local-8-26" href="#local-8-26"></a><span class="w">    </span><span class="nx">default</span><span class="o">:</span><span class="w"> </span><span class="kt">4096</span><span class="p">,</span>
+<a id="local-8-27" name="local-8-27" href="#local-8-27"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-8-28" name="local-8-28" href="#local-8-28"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="config-schema">Config Schema<a class="headerlink" href="#config-schema" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-9-1" name="local-9-1" href="#local-9-1"></a><span class="c1">// Generated Zod schema from config definition</span>
+<a id="local-9-2" name="local-9-2" href="#local-9-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">configSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">config</span><span class="p">.</span><span class="nx">toSchema</span><span class="p">();</span>
+<a id="local-9-3" name="local-9-3" href="#local-9-3"></a>
+<a id="local-9-4" name="local-9-4" href="#local-9-4"></a><span class="c1">// Validate configuration</span>
+<a id="local-9-5" name="local-9-5" href="#local-9-5"></a><span class="kd">const</span><span class="w"> </span><span class="nx">validated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">configSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">(</span><span class="nx">rawConfig</span><span class="p">);</span>
+<a id="local-9-6" name="local-9-6" href="#local-9-6"></a>
+<a id="local-9-7" name="local-9-7" href="#local-9-7"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">validated</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-9-8" name="local-9-8" href="#local-9-8"></a><span class="w">  </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ConfigError</span><span class="p">(</span><span class="nx">validated</span><span class="p">.</span><span class="nx">error</span><span class="p">);</span>
+<a id="local-9-9" name="local-9-9" href="#local-9-9"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="config-runtime">Config Runtime<a class="headerlink" href="#config-runtime" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-10-1" name="local-10-1" href="#local-10-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">configRuntime</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/config&quot;</span><span class="p">;</span>
+<a id="local-10-2" name="local-10-2" href="#local-10-2"></a>
+<a id="local-10-3" name="local-10-3" href="#local-10-3"></a><span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">activate</span><span class="p">(</span><span class="nx">context</span><span class="o">:</span><span class="w"> </span><span class="kt">PluginContext</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-10-4" name="local-10-4" href="#local-10-4"></a><span class="w">  </span><span class="c1">// Access validated config</span>
+<a id="local-10-5" name="local-10-5" href="#local-10-5"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">configRuntime</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span>
+<a id="local-10-6" name="local-10-6" href="#local-10-6"></a>
+<a id="local-10-7" name="local-10-7" href="#local-10-7"></a><span class="w">  </span><span class="c1">// Watch for config changes</span>
+<a id="local-10-8" name="local-10-8" href="#local-10-8"></a><span class="w">  </span><span class="nx">configRuntime</span><span class="p">.</span><span class="nx">onChange</span><span class="p">((</span><span class="nx">newConfig</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="local-10-9" name="local-10-9" href="#local-10-9"></a><span class="w">    </span><span class="nx">context</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">&quot;Config updated&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">newConfig</span><span class="p">);</span>
+<a id="local-10-10" name="local-10-10" href="#local-10-10"></a><span class="w">  </span><span class="p">});</span>
+<a id="local-10-11" name="local-10-11" href="#local-10-11"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="testing-apis">Testing APIs<a class="headerlink" href="#testing-apis" title="Permanent link">&para;</a></h2>
+<h3 id="test-plugin">Test Plugin<a class="headerlink" href="#test-plugin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-11-1" name="local-11-1" href="#local-11-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span>
+<a id="local-11-2" name="local-11-2" href="#local-11-2"></a><span class="w">  </span><span class="nx">createTestPlugin</span><span class="p">,</span>
+<a id="local-11-3" name="local-11-3" href="#local-11-3"></a><span class="w">  </span><span class="nx">mockContext</span><span class="p">,</span>
+<a id="local-11-4" name="local-11-4" href="#local-11-4"></a><span class="w">  </span><span class="nx">mockProvider</span><span class="p">,</span>
+<a id="local-11-5" name="local-11-5" href="#local-11-5"></a><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/testing&quot;</span><span class="p">;</span>
+<a id="local-11-6" name="local-11-6" href="#local-11-6"></a>
+<a id="local-11-7" name="local-11-7" href="#local-11-7"></a><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;My Plugin&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="local-11-8" name="local-11-8" href="#local-11-8"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">plugin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createTestPlugin</span><span class="p">({</span>
+<a id="local-11-9" name="local-11-9" href="#local-11-9"></a><span class="w">    </span><span class="nx">manifest</span><span class="o">:</span><span class="w"> </span><span class="kt">testManifest</span><span class="p">,</span>
+<a id="local-11-10" name="local-11-10" href="#local-11-10"></a><span class="w">    </span><span class="nx">entry</span><span class="o">:</span><span class="w"> </span><span class="kt">myPluginEntry</span><span class="p">,</span>
+<a id="local-11-11" name="local-11-11" href="#local-11-11"></a><span class="w">  </span><span class="p">});</span>
+<a id="local-11-12" name="local-11-12" href="#local-11-12"></a>
+<a id="local-11-13" name="local-11-13" href="#local-11-13"></a><span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should activate&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="local-11-14" name="local-11-14" href="#local-11-14"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">mockContext</span><span class="p">();</span>
+<a id="local-11-15" name="local-11-15" href="#local-11-15"></a><span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nx">plugin</span><span class="p">.</span><span class="nx">activate</span><span class="p">(</span><span class="nx">ctx</span><span class="p">);</span>
+<a id="local-11-16" name="local-11-16" href="#local-11-16"></a><span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">);</span>
+<a id="local-11-17" name="local-11-17" href="#local-11-17"></a><span class="w">  </span><span class="p">});</span>
+<a id="local-11-18" name="local-11-18" href="#local-11-18"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="mock-context">Mock Context<a class="headerlink" href="#mock-context" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-12-1" name="local-12-1" href="#local-12-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mockCtx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">mockContext</span><span class="p">({</span>
+<a id="local-12-2" name="local-12-2" href="#local-12-2"></a><span class="w">  </span><span class="nx">config</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;test-key&quot;</span><span class="w"> </span><span class="p">},</span>
+<a id="local-12-3" name="local-12-3" href="#local-12-3"></a><span class="w">  </span><span class="nx">secrets</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-12-4" name="local-12-4" href="#local-12-4"></a><span class="w">    </span><span class="nx">get</span><span class="o">:</span><span class="w"> </span><span class="kt">async</span><span class="w"> </span><span class="p">(</span><span class="nx">key</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="s2">&quot;mock-value&quot;</span><span class="p">,</span>
+<a id="local-12-5" name="local-12-5" href="#local-12-5"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-12-6" name="local-12-6" href="#local-12-6"></a><span class="w">  </span><span class="nx">logger</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-12-7" name="local-12-7" href="#local-12-7"></a><span class="w">    </span><span class="nx">info</span><span class="o">:</span><span class="w"> </span><span class="kt">vi.fn</span><span class="p">(),</span>
+<a id="local-12-8" name="local-12-8" href="#local-12-8"></a><span class="w">    </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">vi.fn</span><span class="p">(),</span>
+<a id="local-12-9" name="local-12-9" href="#local-12-9"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-12-10" name="local-12-10" href="#local-12-10"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="mock-provider">Mock Provider<a class="headerlink" href="#mock-provider" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-13-1" name="local-13-1" href="#local-13-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mockProv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">mockProvider</span><span class="p">({</span>
+<a id="local-13-2" name="local-13-2" href="#local-13-2"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+<a id="local-13-3" name="local-13-3" href="#local-13-3"></a><span class="w">  </span><span class="nx">models</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">ref</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;test:model&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Test Model&quot;</span><span class="w"> </span><span class="p">}],</span>
+<a id="local-13-4" name="local-13-4" href="#local-13-4"></a><span class="w">  </span><span class="nx">createCompletion</span><span class="o">:</span><span class="w"> </span><span class="kt">vi.fn</span><span class="p">().</span><span class="nx">mockResolvedValue</span><span class="p">({</span>
+<a id="local-13-5" name="local-13-5" href="#local-13-5"></a><span class="w">    </span><span class="nx">choices</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;test response&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}],</span>
+<a id="local-13-6" name="local-13-6" href="#local-13-6"></a><span class="w">  </span><span class="p">}),</span>
+<a id="local-13-7" name="local-13-7" href="#local-13-7"></a><span class="p">});</span>
+</code></pre></div>
+<h2 id="types">Types<a class="headerlink" href="#types" title="Permanent link">&para;</a></h2>
+<h3 id="plugin-types">Plugin Types<a class="headerlink" href="#plugin-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-14-1" name="local-14-1" href="#local-14-1"></a><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span>
+<a id="local-14-2" name="local-14-2" href="#local-14-2"></a><span class="w">  </span><span class="nx">PluginManifest</span><span class="p">,</span>
+<a id="local-14-3" name="local-14-3" href="#local-14-3"></a><span class="w">  </span><span class="nx">PluginContext</span><span class="p">,</span>
+<a id="local-14-4" name="local-14-4" href="#local-14-4"></a><span class="w">  </span><span class="nx">PluginLifecycle</span><span class="p">,</span>
+<a id="local-14-5" name="local-14-5" href="#local-14-5"></a><span class="w">  </span><span class="nx">PluginStatus</span><span class="p">,</span>
+<a id="local-14-6" name="local-14-6" href="#local-14-6"></a><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/types&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="provider-types">Provider Types<a class="headerlink" href="#provider-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-15-1" name="local-15-1" href="#local-15-1"></a><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span>
+<a id="local-15-2" name="local-15-2" href="#local-15-2"></a><span class="w">  </span><span class="nx">Provider</span><span class="p">,</span>
+<a id="local-15-3" name="local-15-3" href="#local-15-3"></a><span class="w">  </span><span class="nx">Model</span><span class="p">,</span>
+<a id="local-15-4" name="local-15-4" href="#local-15-4"></a><span class="w">  </span><span class="nx">CompletionParams</span><span class="p">,</span>
+<a id="local-15-5" name="local-15-5" href="#local-15-5"></a><span class="w">  </span><span class="nx">CompletionResult</span><span class="p">,</span>
+<a id="local-15-6" name="local-15-6" href="#local-15-6"></a><span class="w">  </span><span class="nx">ModelCapabilities</span><span class="p">,</span>
+<a id="local-15-7" name="local-15-7" href="#local-15-7"></a><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/types&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="channel-types">Channel Types<a class="headerlink" href="#channel-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-16-1" name="local-16-1" href="#local-16-1"></a><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span>
+<a id="local-16-2" name="local-16-2" href="#local-16-2"></a><span class="w">  </span><span class="nx">Channel</span><span class="p">,</span>
+<a id="local-16-3" name="local-16-3" href="#local-16-3"></a><span class="w">  </span><span class="nx">ChannelTarget</span><span class="p">,</span>
+<a id="local-16-4" name="local-16-4" href="#local-16-4"></a><span class="w">  </span><span class="nx">InboundMessage</span><span class="p">,</span>
+<a id="local-16-5" name="local-16-5" href="#local-16-5"></a><span class="w">  </span><span class="nx">OutboundMessage</span><span class="p">,</span>
+<a id="local-16-6" name="local-16-6" href="#local-16-6"></a><span class="w">  </span><span class="nx">MessageContent</span><span class="p">,</span>
+<a id="local-16-7" name="local-16-7" href="#local-16-7"></a><span class="w">  </span><span class="nx">MediaAttachment</span><span class="p">,</span>
+<a id="local-16-8" name="local-16-8" href="#local-16-8"></a><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/types&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="tool-types">Tool Types<a class="headerlink" href="#tool-types" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-17-1" name="local-17-1" href="#local-17-1"></a><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span>
+<a id="local-17-2" name="local-17-2" href="#local-17-2"></a><span class="w">  </span><span class="nx">Tool</span><span class="p">,</span>
+<a id="local-17-3" name="local-17-3" href="#local-17-3"></a><span class="w">  </span><span class="nx">ToolDefinition</span><span class="p">,</span>
+<a id="local-17-4" name="local-17-4" href="#local-17-4"></a><span class="w">  </span><span class="nx">ToolResult</span><span class="p">,</span>
+<a id="local-17-5" name="local-17-5" href="#local-17-5"></a><span class="w">  </span><span class="nx">ToolContext</span><span class="p">,</span>
+<a id="local-17-6" name="local-17-6" href="#local-17-6"></a><span class="w">  </span><span class="nx">ToolContent</span><span class="p">,</span>
+<a id="local-17-7" name="local-17-7" href="#local-17-7"></a><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/types&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h2 id="sdk-versioning">SDK Versioning<a class="headerlink" href="#sdk-versioning" title="Permanent link">&para;</a></h2>
+<h3 id="version-compatibility">Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-18-1" name="local-18-1" href="#local-18-1"></a><span class="p">{</span>
+<a id="local-18-2" name="local-18-2" href="#local-18-2"></a><span class="w">  </span><span class="nt">&quot;@openclaw/plugin-sdk&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^1.0.0&quot;</span><span class="p">,</span>
+<a id="local-18-3" name="local-18-3" href="#local-18-3"></a><span class="w">  </span><span class="nt">&quot;peerDependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="local-18-4" name="local-18-4" href="#local-18-4"></a><span class="w">    </span><span class="nt">&quot;openclaw&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&gt;=1.0.0&quot;</span>
+<a id="local-18-5" name="local-18-5" href="#local-18-5"></a><span class="w">  </span><span class="p">}</span>
+<a id="local-18-6" name="local-18-6" href="#local-18-6"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h3>
+<p>When upgrading SDK versions:</p>
+<ol>
+<li>Check breaking changes in CHANGELOG</li>
+<li>Update entry point imports if needed</li>
+<li>Update type references</li>
+<li>Run tests to verify compatibility</li>
+</ol>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="import-organization">Import Organization<a class="headerlink" href="#import-organization" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-19-1" name="local-19-1" href="#local-19-1"></a><span class="c1">// 1. External imports</span>
+<a id="local-19-2" name="local-19-2" href="#local-19-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;zod&quot;</span><span class="p">;</span>
+<a id="local-19-3" name="local-19-3" href="#local-19-3"></a><span class="k">import</span><span class="w"> </span><span class="nx">OpenAI</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;openai&quot;</span><span class="p">;</span>
+<a id="local-19-4" name="local-19-4" href="#local-19-4"></a>
+<a id="local-19-5" name="local-19-5" href="#local-19-5"></a><span class="c1">// 2. SDK imports</span>
+<a id="local-19-6" name="local-19-6" href="#local-19-6"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">providerEntry</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/runtime/provider&quot;</span><span class="p">;</span>
+<a id="local-19-7" name="local-19-7" href="#local-19-7"></a><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Model</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@openclaw/plugin-sdk/types&quot;</span><span class="p">;</span>
+<a id="local-19-8" name="local-19-8" href="#local-19-8"></a>
+<a id="local-19-9" name="local-19-9" href="#local-19-9"></a><span class="c1">// 3. Internal imports</span>
+<a id="local-19-10" name="local-19-10" href="#local-19-10"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">myUtils</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./utils.js&quot;</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-20-1" name="local-20-1" href="#local-20-1"></a><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">providerEntry</span><span class="p">({</span>
+<a id="local-20-2" name="local-20-2" href="#local-20-2"></a><span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">createCompletion</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-20-3" name="local-20-3" href="#local-20-3"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="local-20-4" name="local-20-4" href="#local-20-4"></a><span class="w">      </span><span class="c1">// Implementation</span>
+<a id="local-20-5" name="local-20-5" href="#local-20-5"></a><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">doCompletion</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+<a id="local-20-6" name="local-20-6" href="#local-20-6"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-20-7" name="local-20-7" href="#local-20-7"></a><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nx">RateLimitError</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-20-8" name="local-20-8" href="#local-20-8"></a><span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">RetryableError</span><span class="p">(</span><span class="s2">&quot;Rate limited&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">retryAfter</span><span class="o">:</span><span class="w"> </span><span class="kt">5000</span><span class="w"> </span><span class="p">});</span>
+<a id="local-20-9" name="local-20-9" href="#local-20-9"></a><span class="w">      </span><span class="p">}</span>
+<a id="local-20-10" name="local-20-10" href="#local-20-10"></a><span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ProviderError</span><span class="p">(</span><span class="s2">&quot;Completion failed&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">cause</span><span class="o">:</span><span class="w"> </span><span class="kt">error</span><span class="w"> </span><span class="p">});</span>
+<a id="local-20-11" name="local-20-11" href="#local-20-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="local-20-12" name="local-20-12" href="#local-20-12"></a><span class="w">  </span><span class="p">},</span>
+<a id="local-20-13" name="local-20-13" href="#local-20-13"></a><span class="p">});</span>
+</code></pre></div>
+<h3 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="local-21-1" name="local-21-1" href="#local-21-1"></a><span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">activate</span><span class="p">(</span><span class="nx">context</span><span class="o">:</span><span class="w"> </span><span class="kt">PluginContext</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-21-2" name="local-21-2" href="#local-21-2"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">child</span><span class="p">({</span><span class="w"> </span><span class="nx">plugin</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;my-plugin&quot;</span><span class="w"> </span><span class="p">});</span>
+<a id="local-21-3" name="local-21-3" href="#local-21-3"></a>
+<a id="local-21-4" name="local-21-4" href="#local-21-4"></a><span class="w">  </span><span class="nx">log</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">&quot;Activating plugin&quot;</span><span class="p">);</span>
+<a id="local-21-5" name="local-21-5" href="#local-21-5"></a><span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="local-21-6" name="local-21-6" href="#local-21-6"></a><span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nx">initialize</span><span class="p">();</span>
+<a id="local-21-7" name="local-21-7" href="#local-21-7"></a><span class="w">    </span><span class="nx">log</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">&quot;Plugin activated successfully&quot;</span><span class="p">);</span>
+<a id="local-21-8" name="local-21-8" href="#local-21-8"></a><span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="local-21-9" name="local-21-9" href="#local-21-9"></a><span class="w">    </span><span class="nx">log</span><span class="p">.</span><span class="nx">error</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;Failed to activate plugin&quot;</span><span class="p">);</span>
+<a id="local-21-10" name="local-21-10" href="#local-21-10"></a><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="nx">error</span><span class="p">;</span>
+<a id="local-21-11" name="local-21-11" href="#local-21-11"></a><span class="w">  </span><span class="p">}</span>
+<a id="local-21-12" name="local-21-12" href="#local-21-12"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="/architecture-book/part-3-plugin-system/01-plugin-architecture">Plugin Architecture</a> - Plugin design</li>
+<li><a href="/architecture-book/part-3-plugin-system/03-plugin-contracts">Plugin Contracts</a> - Contract system</li>
+<li><a href="/architecture-book/part-3-plugin-system/05-writing-plugins">Writing Plugins</a> - Plugin development</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.instant", "navigation.tracking", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.action.edit", "content.action.view", "announce.dismiss"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

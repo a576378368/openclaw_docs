@@ -37,12 +37,13 @@ flowchart TB
 Sessions are identified by a composite key:
 
 ```typescript
-type SessionKey = string;  // Format: {channel}:{scope}:{target}
+type SessionKey = string;
+// Format: {channel}:{scope}:{target}
 
-examples:
-  "telegram:dm:123456789"      // Telegram DM with user 123456789
-  "discord:group:987654321"     // Discord group 987654321
-  "main"                        // Main shared session
+// Examples:
+const dmKey = "telegram:dm:123456789";      // Telegram DM with user 123456789
+const groupKey = "discord:group:987654321"; // Discord group 987654321
+const mainKey = "main";                     // Main shared session
 ```
 
 ### Key Components
