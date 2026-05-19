@@ -1,38 +1,38 @@
 ---
-summary: "Message flow from inbound to outbound, session routing"
-title: "Message Flow"
+summary: "从入站到出站的消息流程、会话路由"
+title: "消息流"
 read_when:
-  - Tracing message paths
-  - Understanding routing logic
+  - 追踪消息路径
+  - 理解路由逻辑
 ---
 
-# Message Flow
+# 消息流
 
-## Overview
+## 概述
 
-Messages flow through OpenClaw in a well-defined pipeline, from inbound channel events through session resolution to agent execution and outbound delivery.
+消息通过明确定义的管道在 OpenClaw 中流动，从入站 Channel 事件通过会话解析到 Agent 执行和出站传递。
 
-## Message Flow Overview
+## 消息流概述
 
 ```mermaid
 flowchart TB
-    subgraph Inbound["Inbound Path"]
-        Channel[Channel Event]
-        Normalize[Normalize]
-        Classify[Classify]
-        Resolve[Resolve Session]
+    subgraph Inbound["入站路径"]
+        Channel[Channel 事件]
+        Normalize[规范化]
+        Classify[分类]
+        Resolve[解析会话]
     end
 
-    subgraph Execution["Execution Path"]
-        Route[Route to Agent]
-        Context[Build Context]
-        Infer[Model Inference]
-        Format[Format Response]
+    subgraph Execution["执行路径"]
+        Route[路由到 Agent]
+        Context[构建上下文]
+        Infer[模型推理]
+        Format[格式化响应]
     end
 
-    subgraph Outbound["Outbound Path"]
-        Send[Send Message]
-        Deliver[Deliver to Channel]
+    subgraph Outbound["出站路径"]
+        Send[发送消息]
+        Deliver[传递到 Channel]
     end
 
     Channel --> Normalize
@@ -46,9 +46,9 @@ flowchart TB
     Send --> Deliver
 ```
 
-## Inbound Path
+## 入站路径
 
-### Channel Event Reception
+### Channel 事件接收
 
 ```mermaid
 sequenceDiagram
@@ -57,13 +57,13 @@ sequenceDiagram
     participant Gateway
     participant Normalizer
 
-    Platform->>ChannelPlugin: Platform event
-    ChannelPlugin->>Normalizer: Transform
-    Normalizer-->>ChannelPlugin: Normalized event
+    Platform->>ChannelPlugin: 平台事件
+    ChannelPlugin->>Normalizer: 转换
+    Normalizer-->>ChannelPlugin: 规范化事件
     ChannelPlugin->>Gateway: InboundMessage
 ```
 
-### Message Normalization
+### 消息规范化
 
 ```typescript
 interface InboundMessage {
@@ -87,7 +87,7 @@ interface Sender {
 }
 ```
 
-### Message Classification
+### 消息分类
 
 ```typescript
 interface MessageClassification {
@@ -97,17 +97,17 @@ interface MessageClassification {
 }
 
 function classifyMessage(msg: InboundMessage): MessageClassification {
-  // Check for command prefix
+  // 检查命令前缀
   if (msg.content.startsWith("/")) {
     return { type: "command", intent: extractCommand(msg.content) };
   }
 
-  // Check for bot mention
+  // 检查机器人提及
   if (msg.content.includes("@bot")) {
     return { type: "mention", intent: extractIntent(msg.content) };
   }
 
-  // Check for callback query
+  // 检查回调查询
   if (msg.metadata.callbackQuery) {
     return { type: "callback", intent: msg.metadata.callbackQuery.data };
   }
@@ -116,9 +116,9 @@ function classifyMessage(msg: InboundMessage): MessageClassification {
 }
 ```
 
-## Session Resolution
+## 会话解析
 
-### Session Key Derivation
+### 会话键派生
 
 ```typescript
 interface SessionResolution {
@@ -144,34 +144,34 @@ function resolveSession(msg: InboundMessage, config: Config): SessionResolution 
       break;
   }
 
-  // Derive session key
+  // 派生会话键
   const sessionKey = scope === "global"
     ? "main"
     : `${channel}:${scope}:${peer}`;
 
-  // Resolve agent
+  // 解析 Agent
   const agentId = resolveAgent(sessionKey, config);
 
   return { sessionKey, agentId, scope };
 }
 ```
 
-### Session Lookup
+### 会话查找
 
 ```mermaid
 flowchart TB
-    A[Message] --> B[Extract channel + peer]
-    B --> C{Lookup Session}
-    C -->|Found| D[Use Existing Session]
-    C -->|Not Found| E[Create New Session]
-    D --> F[Add to History]
+    A[消息] --> B[提取 channel + peer]
+    B --> C{查找会话}
+    C -->|找到| D[使用现有会话]
+    C -->|未找到| E[创建新会话]
+    D --> F[添加到历史]
     E --> F
-    F --> G[Route to Agent]
+    F --> G[路由到 Agent]
 ```
 
-## Execution Path
+## 执行路径
 
-### Agent Routing
+### Agent 路由
 
 ```typescript
 interface AgentRouting {
@@ -185,22 +185,22 @@ function routeToAgent(
   session: Session,
   config: Config
 ): AgentRouting {
-  // Check for explicit agent selection
+  // 检查显式 Agent 选择
   if (msg.metadata.agentId) {
     return { agentId: msg.metadata.agentId };
   }
 
-  // Check session binding
+  // 检查会话绑定
   if (session.agentId) {
     return { agentId: session.agentId };
   }
 
-  // Use default agent
+  // 使用默认 Agent
   return { agentId: config.agents.default };
 }
 ```
 
-### Context Building
+### 上下文构建
 
 ```mermaid
 sequenceDiagram
@@ -210,16 +210,16 @@ sequenceDiagram
     participant Config
 
     Agent->>ContextBuilder: buildContext(message, session)
-    ContextBuilder->>Memory: get recent history
-    Memory-->>ContextBuilder: messages
-    ContextBuilder->>Memory: search relevant memories
-    Memory-->>ContextBuilder: memories
-    ContextBuilder->>Config: get system prompt
-    Config-->>ContextBuilder: system prompt
-    ContextBuilder-->>Agent: assembled context
+    ContextBuilder->>Memory: 获取最近历史
+    Memory-->>ContextBuilder: 消息
+    ContextBuilder->>Memory: 搜索相关记忆
+    Memory-->>ContextBuilder: 记忆
+    ContextBuilder->>Config: 获取系统提示
+    Config-->>ContextBuilder: 系统提示
+    ContextBuilder-->>Agent: 组装的上下文
 ```
 
-### Inference Pipeline
+### 推理管道
 
 ```typescript
 async function runInference(
@@ -227,7 +227,7 @@ async function runInference(
 ): Promise<AsyncIterable<InferenceEvent>> {
   const context = await buildContext(params);
 
-  // Stream response
+  // 流式响应
   const stream = await provider.createCompletion({
     model: params.modelRef,
     messages: context.messages,
@@ -243,10 +243,10 @@ async function runInference(
       usage: chunk.usage,
     };
 
-    // Handle tool calls
+    // 处理工具调用
     if (chunk.toolCalls) {
       yield { type: "tool_calls", calls: chunk.toolCalls };
-      // Execute tools and continue...
+      // 执行工具并继续...
     }
   }
 
@@ -254,9 +254,9 @@ async function runInference(
 }
 ```
 
-## Outbound Path
+## 出站路径
 
-### Response Formatting
+### 响应格式化
 
 ```typescript
 interface OutboundFormatter {
@@ -289,7 +289,7 @@ class ResponseFormatter implements OutboundFormatter {
 }
 ```
 
-### Channel Delivery
+### Channel 传递
 
 ```mermaid
 sequenceDiagram
@@ -298,15 +298,15 @@ sequenceDiagram
     participant ChannelPlugin
     participant Platform
 
-    Gateway->>Formatter: format response
-    Formatter-->>Gateway: formatted message
+    Gateway->>Formatter: 格式化响应
+    Formatter-->>Gateway: 格式化消息
     Gateway->>ChannelPlugin: send(target, message)
-    ChannelPlugin->>Platform: platform API call
-    Platform-->>ChannelPlugin: sent confirmation
+    ChannelPlugin->>Platform: 平台 API 调用
+    Platform-->>ChannelPlugin: 发送确认
     ChannelPlugin-->>Gateway: messageId
 ```
 
-### Send Pipeline
+### 发送管道
 
 ```typescript
 async function sendMessage(
@@ -314,16 +314,16 @@ async function sendMessage(
   message: OutboundMessage,
   options: SendOptions = {}
 ): Promise<SendResult> {
-  // Validate target
+  // 验证目标
   validateTarget(target);
 
-  // Format message
+  // 格式化消息
   const formatted = formatter.format(message, options.format);
 
-  // Check rate limits
+  // 检查速率限制
   await rateLimiter.check(target.channel);
 
-  // Send with retry
+  // 带重试发送
   const result = await withRetry(
     () => channel.send(target, formatted),
     {
@@ -339,27 +339,27 @@ async function sendMessage(
 }
 ```
 
-## Error Flow
+## 错误流
 
-### Error Handling Pipeline
+### 错误处理管道
 
 ```mermaid
 flowchart TB
-    A[Error Occurs] --> B{Error Type}
-    B -->|Retryable| C[Retry with backoff]
-    B -->|Permanent| D[Return error]
-    B -->|Partial| E[Partial success]
+    A[发生错误] --> B{错误类型}
+    B -->|可重试| C[带退避重试]
+    B -->|永久| D[返回错误]
+    B -->|部分| E[部分成功]
 
-    C --> F{Retry count < max?}
-    F -->|Yes| G[Execute again]
-    F -->|No| H[Give up]
+    C --> F{重试次数 < 最大?}
+    F -->|是| G[再次执行]
+    F -->|否| H[放弃]
 
-    D --> I[Format error response]
-    E --> J[Return partial + error]
+    D --> I[格式化错误响应]
+    E --> J[返回部分 + 错误]
     H --> I
 ```
 
-### Error Recovery
+### 错误恢复
 
 ```typescript
 async function withErrorRecovery<T>(
@@ -389,9 +389,9 @@ function isRetryableError(error: Error): boolean {
 }
 ```
 
-## Idempotency
+## 幂等性
 
-### Idempotency Flow
+### 幂等流
 
 ```typescript
 interface IdempotentOperation {
@@ -405,15 +405,15 @@ async function executeIdempotent(
 ): Promise<Result> {
   const { idemKey, operation, cache } = op;
 
-  // Check cache
+  // 检查缓存
   if (cache.has(idemKey)) {
     return cache.get(idemKey).result;
   }
 
-  // Execute operation
+  // 执行操作
   const result = await operation();
 
-  // Cache result (short TTL)
+  // 缓存结果（短期 TTL）
   cache.set(idemKey, {
     result,
     expiresAt: Date.now() + 60000,
@@ -423,8 +423,8 @@ async function executeIdempotent(
 }
 ```
 
-## Related
+## 相关
 
-- [Protocol Overview](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - Protocol design
-- [WebSocket Transport](/architecture-book/part-4-gateway-protocol/02-ws-transport) - Transport layer
-- [Events and RPC](/architecture-book/part-4-gateway-protocol/04-events-and-rpc) - Communication patterns
+- [协议概述](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - 协议设计
+- [WebSocket 传输](/architecture-book/part-4-gateway-protocol/02-ws-transport) - 传输层
+- [事件和 RPC](/architecture-book/part-4-gateway-protocol/04-events-and-rpc) - 通信模式

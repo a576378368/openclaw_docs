@@ -1,33 +1,33 @@
 ---
-summary: "Authentication modes, device pairing, and security hardening"
-title: "Auth and Security"
+summary: "认证模式、设备配对和安全加固"
+title: "认证与安全"
 read_when:
-  - Understanding security model
-  - Configuring authentication
+  - 理解安全模型
+  - 配置认证
 ---
 
-# Auth and Security
+# 认证与安全
 
-## Overview
+## 概述
 
-OpenClaw implements multiple authentication modes and security measures to protect gateway access and device pairing.
+OpenClaw 实现多种认证模式和安全措施，以保护网关访问和设备配对。
 
-## Authentication Modes
+## 认证模式
 
-### Mode Comparison
+### 模式对比
 
-| Mode | Use Case | Credentials | Trust Source |
+| 模式 | 使用场景 | 凭证 | 信任源 |
 |------|----------|-------------|--------------|
-| `token` | Default | Shared secret token | Connect params |
-| `password` | Simple auth | Password | Connect params |
-| `tailscale` | Remote access | None | Tailscale identity |
-| `trusted-proxy` | Behind proxy | None | Proxy headers |
-| `none` | Local only | None | Loopback only |
+| `token` | 默认 | 共享密钥 | 连接参数 |
+| `password` | 简单认证 | 密码 | 连接参数 |
+| `tailscale` | 远程访问 | 无 | Tailscale 身份 |
+| `trusted-proxy` | 代理后 | 无 | 代理头 |
+| `none` | 仅本地 | 无 | 仅回环 |
 
-### Token Authentication
+### Token 认证
 
 ```typescript
-// Configuration
+// 配置
 const config = {
   gateway: {
     auth: {
@@ -37,7 +37,7 @@ const config = {
   }
 };
 
-// Client connect
+// 客户端连接
 {
   type: "connect",
   params: {
@@ -49,7 +49,7 @@ const config = {
 }
 ```
 
-### Password Authentication
+### 密码认证
 
 ```typescript
 const config = {
@@ -62,9 +62,9 @@ const config = {
 };
 ```
 
-## Device Pairing
+## 设备配对
 
-### Pairing Flow
+### 配对流程
 
 ```mermaid
 sequenceDiagram
@@ -72,23 +72,23 @@ sequenceDiagram
     participant Gateway
     participant User
 
-    Device->>Gateway: connect (new device)
+    Device->>Gateway: connect (新设备)
     Gateway-->>Device: pairing_required
     User->>Gateway: approve_device(deviceId)
     Gateway-->>Device: pairing_approved
     Gateway-->>Device: device_token
-    Device->>Gateway: connect (with device_token)
+    Device->>Gateway: connect (使用 device_token)
     Gateway-->>Device: connected
 ```
 
-### Device Metadata
+### 设备元数据
 
 ```typescript
 interface DeviceMetadata {
-  id: string;            // Unique device ID
-  name: string;          // User-friendly name
-  platform: string;      // macos, ios, android, etc.
-  family?: string;       // iPhone, MacBook, etc.
+  id: string;            // 唯一设备 ID
+  name: string;          // 用户友好名称
+  platform: string;      // macos、ios、android 等
+  family?: string;       // iPhone、MacBook 等
   createdAt: string;
   lastSeen?: string;
   status: "pending" | "paired" | "rejected";
@@ -102,22 +102,22 @@ interface DeviceToken {
 }
 ```
 
-### Pairing States
+### 配对状态
 
 ```mermaid
 stateDiagram-v2
     [*] --> Unpaired
-    Unpaired --> Pending: User requests pairing
-    Pending --> Paired: Admin approves
-    Pending --> Rejected: Admin rejects
-    Rejected --> Unpaired: User retries
-    Paired --> Unpaired: Admin revokes
+    Unpaired --> Pending: 用户请求配对
+    Pending --> Paired: 管理员批准
+    Pending --> Rejected: 管理员拒绝
+    Rejected --> Unpaired: 用户重试
+    Paired --> Unpaired: 管理员撤销
     Unpaired --> [*]
 ```
 
-## Tailscale Integration
+## Tailscale 集成
 
-### Tailscale Auth Mode
+### Tailscale 认证模式
 
 ```typescript
 const config = {
@@ -130,12 +130,12 @@ const config = {
 };
 ```
 
-### Tailscale Identity
+### Tailscale 身份
 
-When `allowTailscale: true`, the gateway trusts Tailscale identity from request headers:
+当 `allowTailscale: true` 时，网关信任请求头中的 Tailscale 身份：
 
 ```typescript
-// No auth params needed - use Tailscale identity
+// 不需要认证参数 - 使用 Tailscale 身份
 {
   type: "connect",
   params: {
@@ -144,41 +144,41 @@ When `allowTailscale: true`, the gateway trusts Tailscale identity from request 
       name: "my-device",
       platform: "macos"
     },
-    // No auth field
+    // 没有 auth 字段
   }
 }
 
-// Gateway uses:
-// - Tailscale identity (user@tailnet)
-// - Device name from Tailscale
-// - No additional auth required
+// 网关使用：
+// - Tailscale 身份 (user@tailnet)
+// - Tailscale 中的设备名称
+// - 无需额外认证
 ```
 
-### Tailscale-Specific Rules
+### Tailscale 特定规则
 
-| Aspect | Behavior |
+| 方面 | 行为 |
 |--------|----------|
-| Loopback | Auto-approved |
-| Tailnet | Requires pairing approval |
-| LAN | Requires explicit pairing |
-| Remote | Tailscale identity trusted |
+| 回环 | 自动批准 |
+| Tailnet | 需要配对批准 |
+| LAN | 需要显式配对 |
+| 远程 | 信任 Tailscale 身份 |
 
-## Signature Verification
+## 签名验证
 
-### Challenge-Response
+### 质询-响应
 
 ```typescript
 interface ChallengeRequest {
   type: "challenge";
-  challenge: string;     // Random nonce
-  timestamp: number;     // Request timestamp
+  challenge: string;     // 随机 nonce
+  timestamp: number;     // 请求时间戳
 }
 
-// Client must sign the challenge
+// 客户端必须签名质询
 interface SignedConnect {
   type: "connect";
   challenge: string;
-  signature: string;      // HMAC of challenge
+  signature: string;      // 质询的 HMAC
   signatureVersion: "v3";
 }
 
@@ -186,14 +186,14 @@ function signChallenge(challenge: string, secret: string): string {
   return crypto
     .createHmac("sha256", secret)
     .update(challenge)
-    .update(VERSION)      // "v3" binds platform + deviceFamily
+    .update(VERSION)      // "v3" 绑定平台 + deviceFamily
     .digest("hex");
 }
 ```
 
-### Signature Version v3
+### 签名版本 v3
 
-The v3 signature binds additional metadata:
+v3 签名绑定额外的元数据：
 
 ```typescript
 function createSignatureV3(params: {
@@ -215,59 +215,59 @@ function createSignatureV3(params: {
 }
 ```
 
-## Trust Boundaries
+## 信任边界
 
-### Connection Origins
+### 连接来源
 
 ```mermaid
 flowchart TB
-    subgraph Local["Local Connections"]
+    subgraph Local["本地连接"]
         Loop[127.0.0.1] --> Gateway
         TailscaleLocal[localhost tailnet] --> Gateway
     end
 
-    subgraph Remote["Remote Connections"]
-        Tailnet[Tailnet peer] --> Gateway
-        LAN[LAN peer] --> Gateway
-        Internet[Internet] --> Gateway
+    subgraph Remote["远程连接"]
+        Tailnet[Tailnet 对等] --> Gateway
+        LAN[LAN 对等] --> Gateway
+        Internet[互联网] --> Gateway
     end
 
-    Gateway --> Auth[Auth System]
+    Gateway --> Auth[认证系统]
 
-    Auth -->|Auto| Local
-    Auth -->|Pairing| Remote
+    Auth -->|自动| Local
+    Auth -->|配对| Remote
 ```
 
-### Trust Levels
+### 信任级别
 
-| Origin | Trust Level | Auth Required |
+| 来源 | 信任级别 | 所需认证 |
 |--------|-------------|---------------|
-| Loopback (127.0.0.1) | High | Minimal |
-| Tailscale (same tailnet) | High | Device pairing |
-| LAN (same network) | Medium | Device pairing + auth |
-| Internet | Low | Full auth + pairing |
+| 回环 (127.0.0.1) | 高 | 最小 |
+| Tailscale（同 tailnet） | 高 | 设备配对 |
+| LAN（同网络） | 中 | 设备配对 + 认证 |
+| 互联网 | 低 | 完全认证 + 配对 |
 
-## Security Hardening
+## 安全加固
 
-### Recommended Configuration
+### 推荐配置
 
 ```typescript
 const hardenedConfig = {
   gateway: {
     auth: {
       mode: "token",
-      token: process.env.SECURE_TOKEN,  // Use strong token
-      allowTailscale: true,            // Remote access via Tailscale
-      allowLocalAutoApprove: false,    // Require pairing even locally
+      token: process.env.SECURE_TOKEN,  // 使用强 token
+      allowTailscale: true,            // 通过 Tailscale 远程访问
+      allowLocalAutoApprove: false,    // 本地也需要配对
     },
 
-    // Rate limiting
+    // 速率限制
     rateLimit: {
-      windowMs: 60000,    // 1 minute window
-      maxRequests: 100,   // Max requests per window
+      windowMs: 60000,    // 1 分钟窗口
+      maxRequests: 100,   // 每个窗口最大请求数
     },
 
-    // TLS (for non-local access)
+    // TLS（用于非本地访问）
     tls: {
       enabled: true,
       certPath: "/path/to/cert.pem",
@@ -277,47 +277,47 @@ const hardenedConfig = {
 };
 ```
 
-### Token Generation
+### Token 生成
 
 ```bash
-# Generate secure token
+# 生成安全 token
 openssl rand -hex 32
 
-# Or use Python
+# 或使用 Python
 python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
-## Rate Limiting
+## 速率限制
 
-### Rate Limit Configuration
+### 速率限制配置
 
 ```typescript
 interface RateLimitConfig {
-  windowMs: number;        // Time window in ms
-  maxRequests: number;     // Max requests per window
-  maxTokens: number;       // Max tokens per window (for token auth)
-  blockDuration: number;   // Block duration after limit
+  windowMs: number;        // 时间窗口（毫秒）
+  maxRequests: number;     // 每个窗口最大请求数
+  maxTokens: number;       // 每个窗口最大 token 数（用于 token 认证）
+  blockDuration: number;   // 超过限制后的阻止时间
 }
 
 const rateLimit: RateLimitConfig = {
-  windowMs: 60000,         // 1 minute
+  windowMs: 60000,         // 1 分钟
   maxRequests: 100,
   maxTokens: 10000,
-  blockDuration: 60000,    // Block 1 minute on breach
+  blockDuration: 60000,    // 超过时阻止 1 分钟
 };
 ```
 
-### Rate Limit Response
+### 速率限制响应
 
 ```typescript
-// When rate limited
+// 当被速率限制时
 {
   type: "res",
   id: "req-123",
   ok: false,
   error: {
     code: "RATE_LIMITED",
-    message: "Too many requests",
+    message: "请求过多",
     details: {
       limit: 100,
       window: "1m",
@@ -327,20 +327,20 @@ const rateLimit: RateLimitConfig = {
 }
 ```
 
-## Error Codes
+## 错误代码
 
-### Auth Errors
+### 认证错误
 
-| Code | Description | Action |
+| 代码 | 描述 | 操作 |
 |------|-------------|--------|
-| `AUTH_FAILED` | Invalid credentials | Check credentials |
-| `AUTH_EXPIRED` | Token/secret expired | Regenerate |
-| `AUTH_REQUIRED` | Auth not provided | Include auth |
-| `DEVICE_NOT_PAIRED` | Device not approved | Request pairing |
-| `DEVICE_REJECTED` | Pairing rejected | Contact admin |
-| `SIGNATURE_INVALID` | Challenge signature bad | Retry signing |
+| `AUTH_FAILED` | 无效凭证 | 检查凭证 |
+| `AUTH_EXPIRED` | Token/密钥过期 | 重新生成 |
+| `AUTH_REQUIRED` | 未提供认证 | 包含认证 |
+| `DEVICE_NOT_PAIRED` | 设备未批准 | 请求配对 |
+| `DEVICE_REJECTED` | 配对被拒绝 | 联系管理员 |
+| `SIGNATURE_INVALID` | 质询签名错误 | 重试签名 |
 
-### Error Response Format
+### 错误响应格式
 
 ```typescript
 {
@@ -349,30 +349,30 @@ const rateLimit: RateLimitConfig = {
   ok: false,
   error: {
     code: "AUTH_FAILED",
-    message: "Invalid authentication token",
+    message: "无效的认证 token",
     details: {
-      reason: "Token does not match",
-      hint: "Ensure OPENCLAW_GATEWAY_TOKEN is correct"
+      reason: "Token 不匹配",
+      hint: "确保 OPENCLAW_GATEWAY_TOKEN 正确"
     }
   }
 }
 ```
 
-## Best Practices
+## 最佳实践
 
-### Security Checklist
+### 安全清单
 
-- [ ] Use strong, randomly generated tokens
-- [ ] Enable TLS for remote connections
-- [ ] Prefer Tailscale over exposing to internet
-- [ ] Require device pairing for new devices
-- [ ] Enable rate limiting
-- [ ] Monitor authentication failures
-- [ ] Rotate tokens periodically
-- [ ] Use environment variables for secrets
+- [ ] 使用强随机生成的 token
+- [ ] 为远程连接启用 TLS
+- [ ] 优先使用 Tailscale 而非暴露到互联网
+- [ ] 新设备需要设备配对
+- [ ] 启用速率限制
+- [ ] 监控认证失败
+- [ ] 定期轮换 token
+- [ ] 使用环境变量存储密钥
 
-## Related
+## 相关
 
-- [Protocol Overview](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - Protocol design
-- [WebSocket Transport](/architecture-book/part-4-gateway-protocol/02-ws-transport) - Transport layer
-- [Gateway Core](/architecture-book/part-2-core-modules/01-gateway) - Gateway implementation
+- [协议概述](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - 协议设计
+- [WebSocket 传输](/architecture-book/part-4-gateway-protocol/02-ws-transport) - 传输层
+- [Gateway 核心](/architecture-book/part-2-core-modules/01-gateway) - Gateway 实现

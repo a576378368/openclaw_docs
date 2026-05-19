@@ -1,89 +1,89 @@
 ---
-summary: "WebSocket connection lifecycle, handshake, and transport details"
-title: "WebSocket Transport"
+summary: "WebSocket 连接生命周期、握手和传输细节"
+title: "WebSocket 传输"
 read_when:
-  - Understanding transport layer
-  - Debugging connections
+  - 理解传输层
+  - 调试连接
 ---
 
-# WebSocket Transport
+# WebSocket 传输
 
-## Overview
+## 概述
 
-The Gateway uses WebSocket as its transport layer, with a mandatory handshake protocol for connection establishment.
+Gateway 使用 WebSocket 作为其传输层，具有用于连接建立的强制握手协议。
 
-## Connection Architecture
+## 连接架构
 
 ```mermaid
 flowchart TB
-    Client[Client]
-    WS[WebSocket Server]
-    Gateway[Gateway Core]
-    Registry[Plugin Registry]
+    Client[客户端]
+    WS[WebSocket 服务器]
+    Gateway[Gateway 核心]
+    Registry[插件注册表]
 
     Client --> WS
     WS --> Gateway
     Gateway --> Registry
 
-    WS -.->|Auth| Auth[Auth System]
-    WS -.->|Routing| Router[Message Router]
+    WS -.->|认证| Auth[认证系统]
+    WS -.->|路由| Router[消息路由器]
 ```
 
-## Connection Lifecycle
+## 连接生命周期
 
-### Lifecycle States
+### 生命周期状态
 
 ```mermaid
 stateDiagram-v2
     [*] --> Disconnected
     Disconnected --> Connecting: connect()
     Connecting --> Handshake: TCP + TLS
-    Handshake --> Authenticating: First frame
-    Authenticating --> Authenticated: Valid auth
-    Authenticated --> Connected: hello-ok sent
+    Handshake --> Authenticating: 第一个帧
+    Authenticating --> Authenticated: 有效认证
+    Authenticated --> Connected: 发送 hello-ok
     Connected --> Disconnecting: close()
-    Disconnecting --> Disconnected: cleanup
-    Authenticating --> Disconnected: Auth failed
-    Connected --> Disconnected: Error/Timeout
+    Disconnecting --> Disconnected: 清理
+    Authenticating --> Disconnected: 认证失败
+    Connected --> Disconnected: 错误/超时
 ```
 
-### First Frame Requirement
+### 第一个帧要求
 
-**Critical**: The first frame on a new WebSocket connection MUST be a `connect` request. Any other frame results in immediate connection closure.
+**关键**：新 WebSocket 连接上的第一个帧必须是 `connect` 请求。任何其他帧都会导致立即关闭连接。
 
 ```typescript
-// CORRECT - First frame is connect
+// 正确 - 第一个帧是 connect
 socket.on("message", (data) => {
   const frame = JSON.parse(data);
   if (frame.type === "connect") {
     handleConnect(frame);
   } else {
-    socket.close(4000, "First frame must be connect");
+    socket.close(4000, "第一个帧必须是 connect");
   }
 });
 ```
 
-## Handshake Protocol
+## 握手协议
 
-### Connect Request
+### Connect 请求
 
 ```typescript
 interface ConnectRequest {
   type: "connect";
   params: {
     auth: {
-      token?: string;      // Token auth
-      password?: string;    // Password auth
+      token?: string;      // Token 认证
+      password?: string;    // 密码认证
     };
     device: {
       id: string;
       name: string;
       platform: string;
-      family?: string;      // e.g., "iPhone", "Mac"
+      family?: string;      // 例如 "iPhone", "Mac"
     };
     client: {
       version: string;
-      name: string;         // e.g., "openclaw-cli", "openclaw-ui"
+      name: string;         // 例如 "openclaw-cli", "openclaw-ui"
     };
     role?: "operator" | "node";
     capabilities?: string[];
@@ -91,11 +91,11 @@ interface ConnectRequest {
 }
 ```
 
-### Connect Response
+### Connect 响应
 
 ```typescript
 interface HelloOk {
-  type: "res";          // Implicit for connect response
+  type: "res";          // Connect 响应的隐式类型
   ok: true;
   payload: {
     serverVersion: string;
@@ -110,36 +110,36 @@ interface HelloOk {
 }
 ```
 
-### Handshake Flow
+### 握手流程
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant Gateway
 
-    Client->>Gateway: WebSocket upgrade request
+    Client->>Gateway: WebSocket 升级请求
     Gateway-->>Client: 101 Switching Protocols
 
     Client->>Gateway: {type: "connect", params: {...}}
-    Gateway->>Gateway: Validate auth
+    Gateway->>Gateway: 验证认证
 
-    alt Auth Success
+    alt 认证成功
         Gateway-->>Client: {ok: true, payload: hello-ok}
         Gateway-->>Client: {type: "event", event: "presence", ...}
         Gateway-->>Client: {type: "event", event: "tick", ...}
-        Note over Client,Gateway: Connected
-    else Auth Failed
+        Note over Client,Gateway: 已连接
+    else 认证失败
         Gateway-->>Client: {ok: false, error: AUTH_FAILED}
-        Gateway->>Client: Close connection
+        Gateway->>Client: 关闭连接
     end
 ```
 
-## Authentication Modes
+## 认证模式
 
-### Token Authentication
+### Token 认证
 
 ```typescript
-// Connect with token
+// 使用 token 连接
 {
   type: "connect",
   params: {
@@ -159,10 +159,10 @@ sequenceDiagram
 }
 ```
 
-### Password Authentication
+### 密码认证
 
 ```typescript
-// Connect with password
+// 使用密码连接
 {
   type: "connect",
   params: {
@@ -174,12 +174,12 @@ sequenceDiagram
 }
 ```
 
-### Tailscale Authentication
+### Tailscale 认证
 
-When `gateway.auth.allowTailscale: true`, Tailscale identity is trusted from request headers:
+当 `gateway.auth.allowTailscale: true` 时，从请求头信任 Tailscale 身份：
 
 ```typescript
-// No auth params needed - use Tailscale identity
+// 不需要认证参数 - 使用 Tailscale 身份
 {
   type: "connect",
   params: {
@@ -187,12 +187,12 @@ When `gateway.auth.allowTailscale: true`, Tailscale identity is trusted from req
       id: "device-uuid",
       // ...
     }
-    // No auth field
+    // 没有 auth 字段
   }
 }
 ```
 
-## Heartbeat Mechanism
+## 心跳机制
 
 ### Ping/Pong
 
@@ -201,18 +201,18 @@ sequenceDiagram
     participant Client
     participant Gateway
 
-    loop Every 30 seconds
+    loop 每 30 秒
         Gateway->>Client: {type: "ping", timestamp: 1234567890}
         Client-->>Gateway: {type: "pong", timestamp: 1234567890}
     end
 ```
 
-### Timeout Handling
+### 超时处理
 
 ```typescript
 const TIMEOUTS = {
-  pongWait: 10000,      // Wait 10s for pong
-  reconnectDelay: 1000, // Initial reconnect delay
+  pongWait: 10000,      // 等待 pong 10 秒
+  reconnectDelay: 1000, // 初始重连延迟
   maxReconnectDelay: 30000,
 };
 
@@ -223,31 +223,31 @@ function handlePong(timeout: number) {
 
 function checkHeartbeat() {
   if (Date.now() - lastPongReceived > TIMEOUTS.pongWait) {
-    console.warn("Heartbeat timeout, reconnecting...");
+    console.warn("心跳超时，正在重连...");
     reconnect();
   }
 }
 ```
 
-## Message Framing
+## 消息帧
 
-### Frame Format
+### 帧格式
 
-All messages are JSON text frames:
+所有消息都是 JSON 文本帧：
 
 ```typescript
-// Request frame
+// 请求帧
 {
   "type": "req",
   "id": "req-abc123",
   "method": "agent",
   "params": {
     "sessionKey": "main",
-    "input": "Hello!"
+    "input": "你好！"
   }
 }
 
-// Response frame
+// 响应帧
 {
   "type": "res",
   "id": "req-abc123",
@@ -255,7 +255,7 @@ All messages are JSON text frames:
   "payload": { ... }
 }
 
-// Event frame
+// 事件帧
 {
   "type": "event",
   "event": "tick",
@@ -263,18 +263,18 @@ All messages are JSON text frames:
 }
 ```
 
-### Large Message Handling
+### 大消息处理
 
-For messages exceeding WebSocket frame limits:
+对于超过 WebSocket 帧限制的消息：
 
 ```typescript
 interface ChunkedMessage {
   chunk: {
-    total: number;      // Total chunks
-    index: number;     // Current chunk (0-based)
-    id: string;         // Message ID for reassembly
+    total: number;      // 总块数
+    index: number;      // 当前块（从 0 开始）
+    id: string;         // 用于重组的消息 ID
   };
-  data: string;         // UTF-8 string chunk
+  data: string;         // UTF-8 字符串块
 }
 
 function sendLarge(message: string) {
@@ -294,41 +294,41 @@ function sendLarge(message: string) {
 }
 ```
 
-## Reconnection Handling
+## 重连处理
 
-### Reconnection Strategy
+### 重连策略
 
 ```mermaid
 flowchart TB
-    A[Connection Lost] --> B{Why?}
-    B -->|Timeout| C[Reconnect]
-    B -->|Error| D[Reconnect]
-    B -->|Close| E[Check Intent]
+    A[连接丢失] --> B{原因?}
+    B -->|超时| C[重连]
+    B -->|错误| D[重连]
+    B -->|关闭| E[检查意图]
 
-    C --> F{Retry Count}
+    C --> F{重试次数}
     D --> F
-    F -->|< 5| G[Wait with backoff]
+    F -->|< 5| G[带退避等待]
     G --> C
-    F -->|>= 5| H[Notify user]
+    F -->|>= 5| H[通知用户]
 
-    E -->|Intentional| I[Do not reconnect]
-    E -->|Accidental| C
+    E -->|有意| I[不重连]
+    E -->|意外| C
 ```
 
-### Exponential Backoff
+### 指数退避
 
 ```typescript
 function getReconnectDelay(attempt: number): number {
   const baseDelay = 1000;
   const maxDelay = 30000;
   const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
-  return delay + Math.random() * 1000; // Add jitter
+  return delay + Math.random() * 1000; // 添加抖动
 }
 ```
 
-## TLS Configuration
+## TLS 配置
 
-### TLS Options
+### TLS 选项
 
 ```typescript
 interface TLSConfig {
@@ -343,13 +343,13 @@ const tlsConfig: TLSConfig = {
   enabled: true,
   certPath: "/path/to/cert.pem",
   keyPath: "/path/to/key.pem",
-  verifyClient: true,  // Require client certificates
+  verifyClient: true,  // 要求客户端证书
 };
 ```
 
-## Client Examples
+## 客户端示例
 
-### JavaScript Client
+### JavaScript 客户端
 
 ```typescript
 import WebSocket from "ws";
@@ -362,7 +362,7 @@ class OpenClawClient {
   async connect(url: string, token: string) {
     this.ws = new WebSocket(url);
 
-    // Send connect as first frame
+    // 发送 connect 作为第一个帧
     await this.send({
       type: "connect",
       params: {
@@ -406,8 +406,8 @@ class OpenClawClient {
 }
 ```
 
-## Related
+## 相关
 
-- [Protocol Overview](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - Protocol design
-- [Message Flow](/architecture-book/part-4-gateway-protocol/03-message-flow) - Message processing
-- [Events and RPC](/architecture-book/part-4-gateway-protocol/04-events-and-rpc) - Communication patterns
+- [协议概述](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - 协议设计
+- [消息流](/architecture-book/part-4-gateway-protocol/03-message-flow) - 消息处理
+- [事件和 RPC](/architecture-book/part-4-gateway-protocol/04-events-and-rpc) - 通信模式

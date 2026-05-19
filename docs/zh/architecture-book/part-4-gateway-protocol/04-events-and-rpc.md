@@ -1,42 +1,42 @@
 ---
-summary: "Request/response patterns, server-push events, and RPC mechanics"
-title: "Events and RPC"
+summary: "请求/响应模式、服务器推送事件和 RPC 机制"
+title: "事件和 RPC"
 read_when:
-  - Understanding communication patterns
-  - Building real-time features
+  - 理解通信模式
+  - 构建实时功能
 ---
 
-# Events and RPC
+# 事件和 RPC
 
-## Overview
+## 概述
 
-OpenClaw uses a hybrid communication pattern combining RPC requests/responses with server-push events for real-time updates.
+OpenClaw 使用混合通信模式，结合 RPC 请求/响应与服务器推送事件以实现实时更新。
 
-## Communication Patterns
+## 通信模式
 
 ```mermaid
 flowchart LR
-    subgraph RPC["RPC Pattern"]
-        R1[Request]
-        R2[Response]
+    subgraph RPC["RPC 模式"]
+        R1[请求]
+        R2[响应]
         R1 --> R2
     end
 
-    subgraph Events["Event Pattern"]
-        E1[Server Event]
-        E2[Server Event]
-        E3[Server Event]
+    subgraph Events["事件模式"]
+        E1[服务器事件]
+        E2[服务器事件]
+        E3[服务器事件]
     end
 
-    subgraph BiDir["Bidirectional"]
-        B1[Client Event]
-        B2[Server Event]
+    subgraph BiDir["双向"]
+        B1[客户端事件]
+        B2[服务器事件]
     end
 ```
 
-## Request/Response Pattern
+## 请求/响应模式
 
-### Standard RPC Flow
+### 标准 RPC 流程
 
 ```mermaid
 sequenceDiagram
@@ -44,29 +44,29 @@ sequenceDiagram
     participant Gateway
 
     Client->>Gateway: req:health
-    Note over Gateway: Processing...
+    Note over Gateway: 处理中...
     Gateway-->>Client: res:health OK
 
     Client->>Gateway: req:agent
-    Note over Gateway: Processing... (may take time)
+    Note over Gateway: 处理中...（可能需要时间）
     Gateway-->>Client: res:agent ACK
-    Gateway-->>Client: event:agent (streaming)
+    Gateway-->>Client: event:agent (流式)
     Gateway-->>Client: res:agent COMPLETE
 ```
 
-### Request Structure
+### 请求结构
 
 ```typescript
 interface RPCRequest {
   type: "req";
-  id: string;             // Unique request ID
-  method: string;         // Method name
-  params: unknown;        // Parameters
-  idemKey?: string;       // Idempotency key
-  timeout?: number;       // Timeout in ms
+  id: string;             // 唯一请求 ID
+  method: string;         // 方法名
+  params: unknown;        // 参数
+  idemKey?: string;       // 幂等键
+  timeout?: number;       // 超时时间（毫秒）
 }
 
-// Example: Agent run request
+// 示例：Agent 运行请求
 {
   type: "req",
   id: "req-001",
@@ -74,7 +74,7 @@ interface RPCRequest {
   params: {
     sessionKey: "telegram:dm:123456",
     agentId: "main",
-    input: "Hello, how are you?",
+    input: "你好，你好吗？",
     modelRef: "openai:gpt-4o",
     idemKey: "msg-123"
   },
@@ -82,14 +82,14 @@ interface RPCRequest {
 }
 ```
 
-### Response Structure
+### 响应结构
 
 ```typescript
 interface RPCResponse {
   type: "res";
-  id: string;             // Matches request ID
+  id: string;             // 匹配请求 ID
   ok: boolean;
-  payload?: unknown;      // Success payload
+  payload?: unknown;      // 成功负载
   error?: {
     code: string;
     message: string;
@@ -97,7 +97,7 @@ interface RPCResponse {
   };
 }
 
-// Success response
+// 成功响应
 {
   type: "res",
   id: "req-001",
@@ -108,22 +108,22 @@ interface RPCResponse {
   }
 }
 
-// Error response
+// 错误响应
 {
   type: "res",
   id: "req-001",
   ok: false,
   error: {
     code: "SESSION_NOT_FOUND",
-    message: "Session 'xyz' does not exist",
+    message: "会话 'xyz' 不存在",
     details: { sessionKey: "xyz" }
   }
 }
 ```
 
-## Streaming Responses
+## 流式响应
 
-### Agent Streaming
+### Agent 流式传输
 
 ```mermaid
 sequenceDiagram
@@ -131,36 +131,36 @@ sequenceDiagram
     participant Gateway
 
     Client->>Gateway: req:agent
-    Gateway-->>Client: res:agent (accepted)
+    Gateway-->>Client: res:agent (已接受)
 
-    loop Streaming
-        Gateway-->>Client: event:agent (delta: "The")
-        Gateway-->>Client: event:agent (delta: " weather")
-        Gateway-->>Client: event:agent (delta: " is")
+    loop 流式
+        Gateway-->>Client: event:agent (delta: "天")
+        Gateway-->>Client: event:agent (delta: "气")
+        Gateway-->>Client: event:agent (delta: "是")
     end
 
     Gateway-->>Client: event:agent (tool_use: search)
     Gateway-->>Client: event:tool_result (tool: search, result: ...)
-    Gateway-->>Client: event:agent (delta: " sunny")
+    Gateway-->>Client: event:agent (delta: "晴朗的")
 
-    Gateway-->>Client: res:agent (complete)
+    Gateway-->>Client: res:agent (完成)
 ```
 
-### Streaming Events
+### 流式事件
 
 ```typescript
-// Assistant delta event
+// Assistant delta 事件
 {
   type: "event",
   event: "agent",
   payload: {
     runId: "run-456",
     type: "assistant.delta",
-    delta: "The weather is"
+    delta: "天气是"
   }
 }
 
-// Tool use event
+// 工具使用事件
 {
   type: "event",
   event: "agent",
@@ -168,11 +168,11 @@ sequenceDiagram
     runId: "run-456",
     type: "tool_use",
     tool: "web_search",
-    input: { query: "weather today" }
+    input: { query: "今天天气" }
   }
 }
 
-// Tool result event
+// 工具结果事件
 {
   type: "event",
   event: "agent",
@@ -184,34 +184,34 @@ sequenceDiagram
   }
 }
 
-// Complete event
+// 完成事件
 {
   type: "event",
   event: "agent",
   payload: {
     runId: "run-456",
     type: "complete",
-    summary: "The weather is sunny today..."
+    summary: "今天天气晴朗..."
   }
 }
 ```
 
-## Server-Push Events
+## 服务器推送事件
 
-### Event Categories
+### 事件类别
 
-| Category | Events | Description |
+| 类别 | 事件 | 描述 |
 |----------|--------|-------------|
-| Agent | `agent` | Agent progress/result |
-| Chat | `chat`, `chat.reaction` | Incoming messages |
-| Presence | `presence` | Channel/user presence |
-| Health | `tick`, `health` | System status |
-| System | `shutdown`, `restart` | System events |
+| Agent | `agent` | Agent 进度/结果 |
+| 聊天 | `chat`, `chat.reaction` | 传入消息 |
+| 状态 | `presence` | Channel/用户状态 |
+| 健康 | `tick`, `health` | 系统状态 |
+| 系统 | `shutdown`, `restart` | 系统事件 |
 
-### Tick Event
+### Tick 事件
 
 ```typescript
-// Emitted every 5 seconds
+// 每 5 秒发出
 {
   type: "event",
   event: "tick",
@@ -232,10 +232,10 @@ sequenceDiagram
 }
 ```
 
-### Presence Event
+### Presence 事件
 
 ```typescript
-// Emitted on connection/disconnection
+// 在连接/断开连接时发出
 {
   type: "event",
   event: "presence",
@@ -260,10 +260,10 @@ sequenceDiagram
 }
 ```
 
-### Chat Event (Inbound)
+### Chat 事件（入站）
 
 ```typescript
-// When a message comes in from a channel
+// 当从 Channel 收到消息时
 {
   type: "event",
   event: "chat",
@@ -272,8 +272,8 @@ sequenceDiagram
     target: "123456",
     message: {
       id: "msg-789",
-      from: { id: "456", name: "User" },
-      content: "Hello!",
+      from: { id: "456", name: "用户" },
+      content: "你好！",
       timestamp: "2024-01-15T10:30:00.000Z"
     },
     sessionKey: "telegram:dm:456"
@@ -281,41 +281,41 @@ sequenceDiagram
 }
 ```
 
-## RPC Methods
+## RPC 方法
 
-### Core Methods Reference
+### 核心方法参考
 
 ```typescript
 const RPC_METHODS = {
-  // Connection
-  connect: "Initial handshake",
-  disconnect: "Graceful disconnect",
+  // 连接
+  connect: "初始握手",
+  disconnect: "优雅断开",
 
-  // Agent operations
-  agent: "Run agent with input",
-  agent_abort: "Abort running agent",
-  agent_status: "Get agent run status",
+  // Agent 操作
+  agent: "运行 Agent 并输入",
+  agent_abort: "中止运行的 Agent",
+  agent_status: "获取 Agent 运行状态",
 
-  // Messaging
-  send: "Send message to channel",
-  send_reply: "Reply to a message",
+  // 消息
+  send: "发送消息到 Channel",
+  send_reply: "回复消息",
 
-  // Session
-  session_create: "Create session",
-  session_get: "Get session info",
-  session_reset: "Reset session context",
+  // 会话
+  session_create: "创建会话",
+  session_get: "获取会话信息",
+  session_reset: "重置会话上下文",
 
-  // System
-  health: "Get health status",
-  status: "Get system status",
-  config_get: "Get configuration",
+  // 系统
+  health: "获取健康状态",
+  status: "获取系统状态",
+  config_get: "获取配置",
 };
 ```
 
-### Agent Method
+### Agent 方法
 
 ```typescript
-// Request
+// 请求
 {
   type: "req",
   id: "req-abc",
@@ -323,13 +323,13 @@ const RPC_METHODS = {
   params: {
     sessionKey: "telegram:dm:123456",
     agentId: "main",
-    input: "What meetings do I have today?",
+    input: "我今天有什么会议？",
     modelRef: "anthropic:claude-opus-4",
     idemKey: "meetings-123"
   }
 }
 
-// Response (immediate acknowledgment)
+// 响应（立即确认）
 {
   type: "res",
   id: "req-abc",
@@ -341,10 +341,10 @@ const RPC_METHODS = {
 }
 ```
 
-### Send Method
+### Send 方法
 
 ```typescript
-// Request
+// 请求
 {
   type: "req",
   id: "req-def",
@@ -353,16 +353,16 @@ const RPC_METHODS = {
     channel: "telegram",
     target: "123456",
     message: {
-      content: "Your meeting is at 2 PM",
+      content: "你的会议在下午 2 点",
       buttons: [
-        [{ label: "Accept", data: "accept-123" }, { label: "Decline", data: "decline-123" }]
+        [{ label: "接受", data: "accept-123" }, { label: "拒绝", data: "decline-123" }]
       ]
     },
     idemKey: "send-456"
   }
 }
 
-// Response
+// 响应
 {
   type: "res",
   id: "req-def",
@@ -374,9 +374,9 @@ const RPC_METHODS = {
 }
 ```
 
-## Client Implementation
+## 客户端实现
 
-### Request Queue
+### 请求队列
 
 ```typescript
 class RequestQueue {
@@ -409,7 +409,7 @@ class RequestQueue {
 }
 ```
 
-### Event Subscription
+### 事件订阅
 
 ```typescript
 class EventSubscriber {
@@ -432,19 +432,19 @@ class EventSubscriber {
       try {
         handler(frame.payload, frame);
       } catch (error) {
-        console.error(`Handler error for ${frame.event}:`, error);
+        console.error(`处理器错误 ${frame.event}:`, error);
       }
     });
 
-    // Also handle wildcard handlers
+    // 也处理通配符处理器
     const wildcards = this.handlers.get("*");
     wildcards?.forEach(handler => handler(frame.payload, frame));
   }
 }
 ```
 
-## Related
+## 相关
 
-- [Protocol Overview](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - Protocol design
-- [WebSocket Transport](/architecture-book/part-4-gateway-protocol/02-ws-transport) - Transport layer
-- [Message Flow](/architecture-book/part-4-gateway-protocol/03-message-flow) - Message processing
+- [协议概述](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - 协议设计
+- [WebSocket 传输](/architecture-book/part-4-gateway-protocol/02-ws-transport) - 传输层
+- [消息流](/architecture-book/part-4-gateway-protocol/03-message-flow) - 消息处理
