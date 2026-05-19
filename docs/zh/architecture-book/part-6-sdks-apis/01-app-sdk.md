@@ -1,38 +1,38 @@
 ---
-summary: "Client SDK (@openclaw/sdk) for connecting to OpenClaw gateway"
+summary: "客户端 SDK (@openclaw/sdk) 用于连接 OpenClaw 网关"
 title: "App SDK"
 read_when:
-  - Building client applications
-  - Using the OpenClaw SDK
+  - 构建客户端应用程序
+  - 使用 OpenClaw SDK
 ---
 
 # App SDK
 
-## Overview
+## 概述
 
-The App SDK (`@openclaw/sdk`) provides a TypeScript client for connecting to the OpenClaw gateway.
+App SDK (`@openclaw/sdk`) 提供了一个 TypeScript 客户端，用于连接 OpenClaw 网关。
 
 ```mermaid
 flowchart TB
-    App[Your Application]
+    App[你的应用程序]
     SDK[OpenClaw SDK]
     WS[WebSocket]
-    Gateway[OpenClaw Gateway]
+    Gateway[OpenClaw 网关]
 
     App --> SDK
     SDK --> WS
     WS --> Gateway
 ```
 
-## Installation
+## 安装
 
 ```bash
 npm install @openclaw/sdk
-# or
+# 或
 pnpm add @openclaw/sdk
 ```
 
-## Quick Start
+## 快速开始
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
@@ -45,7 +45,7 @@ const client = new OpenClaw({
 await client.connect();
 
 const run = await client.agents.get("main").run({
-  input: "Hello, how are you?",
+  input: "你好，你怎么样？",
   sessionKey: "main",
 });
 
@@ -56,34 +56,34 @@ for await (const event of run.events()) {
 }
 ```
 
-## Client Configuration
+## 客户端配置
 
-### Configuration Options
+### 配置选项
 
 ```typescript
 interface OpenClawConfig {
-  // Connection
+  // 连接
   url: string;
   token?: string;
   password?: string;
 
-  // Device
+  // 设备
   deviceId?: string;
   deviceName?: string;
   platform?: string;
 
-  // Client info
+  // 客户端信息
   clientName?: string;
   clientVersion?: string;
 
-  // Timeouts
+  // 超时
   connectTimeout?: number;
   requestTimeout?: number;
 
-  // Retry
+  // 重试
   maxRetries?: number;
 
-  // Debug
+  // 调试
   debug?: boolean;
 }
 
@@ -96,94 +96,94 @@ const client = new OpenClaw({
 });
 ```
 
-## Connection Management
+## 连接管理
 
-### Connecting
+### 连接
 
 ```typescript
 async function connect(): Promise<void> {
   await client.connect();
 
-  // Or with manual handling
+  // 或手动处理
   client.on("connected", () => {
-    console.log("Connected to gateway");
+    console.log("已连接到网关");
   });
 
   client.on("disconnected", (reason) => {
-    console.log("Disconnected:", reason);
+    console.log("已断开:", reason);
   });
 
   client.on("error", (error) => {
-    console.error("Connection error:", error);
+    console.error("连接错误:", error);
   });
 }
 ```
 
-### Connection Events
+### 连接事件
 
 ```typescript
 client.on("connected", () => {
-  console.log("Connected to gateway");
+  console.log("已连接到网关");
 });
 
 client.on("disconnected", (reason) => {
-  console.log("Disconnected:", reason);
+  console.log("已断开:", reason);
 });
 
 client.on("error", (error) => {
-  console.error("Error:", error);
+  console.error("错误:", error);
 });
 
 client.on("reconnecting", (attempt) => {
-  console.log("Reconnecting, attempt:", attempt);
+  console.log("正在重连，尝试次数:", attempt);
 });
 ```
 
-## Agent Operations
+## Agent 操作
 
-### Running Agents
+### 运行 Agent
 
 ```typescript
-// Simple run
+// 简单运行
 const run = await client.agents.get("main").run({
-  input: "What is the weather?",
+  input: "天气怎么样？",
   sessionKey: "main",
 });
 
-// With options
+// 带选项
 const run = await client.agents.get("main").run({
-  input: "Analyze this code",
+  input: "分析这段代码",
   modelRef: "anthropic:claude-opus-4",
   temperature: 0.7,
   sessionKey: "telegram:dm:123456",
 });
 
-// Iterate events
+// 遍历事件
 for await (const event of run.events()) {
   switch (event.type) {
     case "start":
-      console.log("Run started:", event.runId);
+      console.log("运行开始:", event.runId);
       break;
     case "assistant.delta":
       process.stdout.write(event.delta);
       break;
     case "tool_use":
-      console.log("Tool call:", event.tool);
+      console.log("工具调用:", event.tool);
       break;
     case "tool_result":
-      console.log("Tool result:", event.result);
+      console.log("工具结果:", event.result);
       break;
     case "complete":
-      console.log("Done! Summary:", event.summary);
+      console.log("完成！摘要:", event.summary);
       break;
     case "error":
-      console.error("Error:", event.error);
+      console.error("错误:", event.error);
       break;
   }
 }
 ```
 
-### Run Events
+### 运行事件
 
 ```typescript
 type RunEvent =
@@ -196,27 +196,27 @@ type RunEvent =
   | { type: "error"; error: string };
 ```
 
-### Agent Management
+### Agent 管理
 
 ```typescript
-// List agents
+// 列出 Agent
 const agents = await client.agents.list();
 // [{ id: "main", status: "active", sessions: 5 }, ...]
 
-// Get agent info
+// 获取 Agent 信息
 const agent = await client.agents.get("main");
 // { id: "main", status: "active", sessions: 5, running: 2 }
 
-// Abort running agent
+// 中止运行中的 Agent
 await client.agents.get("main").abort(runId);
 ```
 
-## Session Operations
+## 会话操作
 
-### Session Management
+### 会话管理
 
 ```typescript
-// Get session info
+// 获取会话信息
 const session = await client.sessions.get("main");
 // {
 //   key: "main",
@@ -226,88 +226,88 @@ const session = await client.sessions.get("main");
 //   lastMessageAt: Date
 // }
 
-// Get session history
+// 获取会话历史
 const history = await client.sessions.getHistory("main", { limit: 50 });
 // [{ role: "user", content: "...", timestamp: Date }, ...]
 
-// Reset session
+// 重置会话
 await client.sessions.reset("main");
 
-// Delete session
+// 删除会话
 await client.sessions.delete("main");
 ```
 
-## Messaging
+## 消息发送
 
-### Sending Messages
+### 发送消息
 
 ```typescript
-// Send to channel
+// 发送到通道
 await client.messages.send({
   channel: "telegram",
   target: "123456789",
-  content: "Hello from OpenClaw SDK!",
+  content: "你好，来自 OpenClaw SDK！",
 });
 
-// Send with buttons
+// 带按钮发送
 await client.messages.send({
   channel: "discord",
   target: "channel-id",
-  content: "Choose an option:",
+  content: "选择一个选项：",
   buttons: [
     [
-      { label: "Option A", data: "option_a" },
-      { label: "Option B", data: "option_b" }
+      { label: "选项 A", data: "option_a" },
+      { label: "选项 B", data: "option_b" }
     ]
   ]
 });
 
-// Reply to message
+// 回复消息
 await client.messages.sendReply({
   channel: "telegram",
   target: "123456789",
-  content: "Replying to your message",
+  content: "回复你的消息",
   replyTo: "original-message-id"
 });
 ```
 
-## Event Subscriptions
+## 事件订阅
 
-### Subscribing to Events
+### 订阅事件
 
 ```typescript
-// Subscribe to all events
+// 订阅所有事件
 client.on("event", (event) => {
-  console.log("Gateway event:", event);
+  console.log("网关事件:", event);
 });
 
-// Subscribe to specific events
+// 订阅特定事件
 client.on("chat", (message) => {
-  console.log("New chat message:", message);
+  console.log("新聊天消息:", message);
 });
 
 client.on("presence", (presence) => {
-  console.log("Presence update:", presence);
+  console.log("状态更新:", presence);
 });
 
 client.on("tick", (tick) => {
-  console.log("Gateway tick:", tick.health);
+  console.log("网关心跳:", tick.health);
 });
 
-// Unsubscribe
+// 取消订阅
 const handler = (message) => console.log(message);
 client.on("chat", handler);
 client.off("chat", handler);
 ```
 
-### Chat Events
+### 聊天事件
 
 ```typescript
 client.on("chat", (event) => {
   const { channel, target, message } = event;
-  console.log(`New message on ${channel}:`, message.content);
+  console.log(`${channel} 上的新消息:`, message.content);
 
-  // message has:
+  // message 包含:
   // - id: string
   // - from: { id, name, username }
   // - content: string
@@ -316,12 +316,12 @@ client.on("chat", (event) => {
 });
 ```
 
-## Health and Status
+## 健康和状态
 
-### Getting Status
+### 获取状态
 
 ```typescript
-// Health check
+// 健康检查
 const health = await client.health.check();
 // {
 //   status: "healthy",
@@ -330,7 +330,7 @@ const health = await client.health.check();
 //   channels: [...]
 // }
 
-// System status
+// 系统状态
 const status = await client.status.get();
 // {
 //   version: "1.0.0",
@@ -339,7 +339,7 @@ const status = await client.status.get();
 //   channels: [...]
 // }
 
-// Presence
+// 在线状态
 const presence = await client.presence.get();
 // {
 //   channels: [{ id, status, users }],
@@ -347,30 +347,30 @@ const presence = await client.presence.get();
 // }
 ```
 
-## Error Handling
+## 错误处理
 
-### Error Types
+### 错误类型
 
 ```typescript
 try {
   const run = await client.agents.get("main").run({
-    input: "Hello",
+    input: "你好",
     sessionKey: "main",
   });
 } catch (error) {
   if (error instanceof OpenClawError) {
     switch (error.code) {
       case "AUTH_FAILED":
-        console.error("Authentication failed");
+        console.error("认证失败");
         break;
       case "SESSION_NOT_FOUND":
-        console.error("Session not found");
+        console.error("会话未找到");
         break;
       case "RATE_LIMITED":
-        console.error("Rate limited, retry after:", error.retryAfter);
+        console.error("请求过于频繁，重试时间:", error.retryAfter);
         break;
       default:
-        console.error("Error:", error.message);
+        console.error("错误:", error.message);
     }
   }
 }
@@ -393,13 +393,13 @@ class OpenClawError extends Error {
 }
 ```
 
-## Streaming
+## 流式响应
 
-### Streaming Responses
+### 流式处理
 
 ```typescript
-// Using async iteration
-const run = client.agents.get("main").run({ input: "Write a poem" });
+// 使用异步迭代
+const run = client.agents.get("main").run({ input: "写一首诗" });
 
 for await (const event of run.events()) {
   if (event.type === "assistant.delta") {
@@ -407,17 +407,17 @@ for await (const event of run.events()) {
   }
 }
 
-// Using callback
+// 使用回调
 run.on("delta", (delta) => {
   process.stdout.write(delta);
 });
 
 run.on("complete", (summary) => {
-  console.log("\n\nSummary:", summary);
+  console.log("\n\n摘要:", summary);
 });
 ```
 
-## Complete Example
+## 完整示例
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
@@ -429,22 +429,22 @@ async function main() {
     deviceName: "my-app",
   });
 
-  // Connect
+  // 连接
   await client.connect();
-  console.log("Connected!");
+  console.log("已连接！");
 
-  // Subscribe to incoming messages
+  // 订阅传入消息
   client.on("chat", async (event) => {
     if (event.message.content.startsWith("/ask ")) {
       const question = event.message.content.slice(5);
 
-      // Run agent
+      // 运行 Agent
       const run = await client.agents.get("main").run({
         input: question,
         sessionKey: `${event.channel}:dm:${event.message.from.id}`,
       });
 
-      // Stream response
+      // 流式响应
       let response = "";
       for await (const e of run.events()) {
         if (e.type === "assistant.delta") {
@@ -452,26 +452,26 @@ async function main() {
         }
       }
 
-      // Send reply
+      // 发送回复
       await client.messages.send({
         channel: event.channel,
         target: event.target,
-        content: response || "I don't have an answer for that.",
+        content: response || "我没有答案。",
       });
     }
   });
 
-  // Handle errors
+  // 处理错误
   client.on("error", (error) => {
-    console.error("Error:", error);
+    console.error("错误:", error);
   });
 }
 
 main().catch(console.error);
 ```
 
-## Related
+## 相关
 
-- [Plugin SDK](/architecture-book/part-6-sdks-apis/02-plugin-sdk) - Plugin development SDK
-- [Memory Host SDK](/architecture-book/part-6-sdks-apis/03-memory-host-sdk) - Memory integration
-- [API Reference](/architecture-book/part-6-sdks-apis/04-api-reference) - Complete API reference
+- [插件 SDK](./02-plugin-sdk.md) - 插件开发 SDK
+- [Memory Host SDK](./03-memory-host-sdk.md) - 内存集成
+- [API 参考](./04-api-reference.md) - 完整 API 参考

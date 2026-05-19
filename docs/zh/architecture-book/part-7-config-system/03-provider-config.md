@@ -1,17 +1,17 @@
 ---
-summary: "Model provider configuration, API settings, and model definitions"
-title: "Provider Config"
+summary: "模型 Provider 配置、API 设置和模型定义"
+title: "Provider 配置"
 read_when:
-  - Configuring AI providers
-  - Setting up model definitions
-  - Managing provider credentials
+  - 配置 AI Provider
+  - 设置模型定义
+  - 管理 Provider 凭据
 ---
 
-# Provider Config
+# Provider 配置
 
-## Overview
+## 概述
 
-OpenClaw's provider configuration system manages AI model providers and their associated model definitions. Each provider can contain multiple models with specific capabilities, pricing, and compatibility settings.
+OpenClaw 的 Provider 配置系统管理 AI 模型 Provider 及其关联的模型定义。每个 Provider 可以包含多个具有特定能力、定价和兼容性设置的模型。
 
 ```mermaid
 flowchart TB
@@ -41,9 +41,9 @@ flowchart TB
     Models --> Model
 ```
 
-## Configuration Structure
+## 配置结构
 
-### Main Models Config
+### 主 Models 配置
 
 ```typescript
 // src/config/types.models.ts
@@ -57,7 +57,7 @@ interface ModelsConfig {
 }
 ```
 
-### Provider Configuration
+### Provider 配置
 
 ```typescript
 interface ModelProviderConfig {
@@ -96,9 +96,9 @@ interface ModelProviderConfig {
 }
 ```
 
-### Local Service Configuration
+### 本地服务配置
 
-For providers that require a local service (e.g., Ollama):
+对于需要本地服务的 Provider（如 Ollama）：
 
 ```typescript
 interface ModelProviderLocalServiceConfig {
@@ -119,9 +119,9 @@ interface ModelProviderLocalServiceConfig {
 }
 ```
 
-## Model Definitions
+## 模型定义
 
-### Basic Model Structure
+### 基础模型结构
 
 ```typescript
 interface ModelDefinitionConfig {
@@ -165,9 +165,9 @@ interface ModelDefinitionConfig {
 }
 ```
 
-### Tiered Pricing
+### 分层定价
 
-For models with variable pricing based on usage volume:
+对于基于使用量有可变定价的模型：
 
 ```typescript
 interface TieredPricing {
@@ -180,9 +180,9 @@ interface TieredPricing {
 }
 ```
 
-## API Types
+## API 类型
 
-OpenClaw supports multiple API types:
+OpenClaw 支持多种 API 类型：
 
 ```typescript
 const MODEL_APIS = [
@@ -200,9 +200,9 @@ const MODEL_APIS = [
 type ModelApi = (typeof MODEL_APIS)[number];
 ```
 
-### API Compatibility
+### API 兼容性
 
-Compatibility settings control provider-specific behaviors:
+兼容性设置控制 Provider 特定行为：
 
 ```typescript
 interface ModelCompatConfig {
@@ -225,22 +225,22 @@ interface ModelCompatConfig {
 }
 ```
 
-## Authentication Modes
+## 认证模式
 
 ```typescript
 type ModelProviderAuthMode = "api-key" | "aws-sdk" | "oauth" | "token";
 ```
 
-| Mode | Description | Use Case |
+| 模式 | 描述 | 使用场景 |
 |------|-------------|----------|
-| `api-key` | Standard API key in header | OpenAI, Anthropic |
-| `aws-sdk` | AWS SDK credential chain | Bedrock |
-| `oauth` | OAuth authentication | Google Gemini |
-| `token` | Token-based auth | Local/Custom providers |
+| `api-key` | 请求头中的标准 API 密钥 | OpenAI, Anthropic |
+| `aws-sdk` | AWS SDK 凭据链 | Bedrock |
+| `oauth` | OAuth 认证 | Google Gemini |
+| `token` | 基于 Token 的认证 | 本地/自定义 Provider |
 
-## Provider Normalization
+## Provider 规范化
 
-Providers can define normalization functions:
+Provider 可以定义规范化函数：
 
 ```typescript
 // src/config/provider-policy.ts
@@ -257,7 +257,7 @@ interface ProviderPolicySurface {
 }
 ```
 
-### Normalization Flow
+### 规范化流程
 
 ```mermaid
 flowchart TB
@@ -270,9 +270,9 @@ flowchart TB
     F --> G[Runtime Config]
 ```
 
-## Secret Management
+## 密钥管理
 
-Provider credentials support secret references:
+Provider 凭据支持密钥引用：
 
 ```typescript
 interface SecretInput {
@@ -285,7 +285,7 @@ interface SecretInput {
 }
 ```
 
-### Secret Resolution
+### 密钥解析
 
 ```typescript
 // Credentials stored in ~/.openclaw/credentials/
@@ -301,7 +301,7 @@ interface SecretInput {
 }
 ```
 
-## Example Configuration
+## 示例配置
 
 ### OpenAI Provider
 
@@ -349,7 +349,7 @@ interface SecretInput {
 }
 ```
 
-### Ollama with Local Service
+### 带本地服务的 Ollama
 
 ```json
 {
@@ -383,8 +383,8 @@ interface SecretInput {
 }
 ```
 
-## Related
+## 相关内容
 
-- [Config Schema](/architecture-book/part-7-config-system/01-config-schema) - Schema architecture
-- [Agent Config](/architecture-book/part-7-config-system/05-agent-config) - Agent configuration
-- [Secrets Management](/architecture-book/part-5-security/02-secrets-management) - Secret handling
+- [配置 Schema](./01-config-schema.md) - Schema 架构
+- [Agent 配置](./05-agent-config.md) - Agent 配置
+- [密钥管理](../part-5-security/02-secrets-management.md) - 密钥处理

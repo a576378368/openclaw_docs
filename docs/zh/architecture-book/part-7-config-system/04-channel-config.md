@@ -1,17 +1,17 @@
 ---
-summary: "Channel configuration for messaging platforms, permissions, and routing"
-title: "Channel Config"
+summary: "消息平台 Channel 配置、权限和路由"
+title: "Channel 配置"
 read_when:
-  - Configuring messaging platforms
-  - Setting up channel permissions
-  - Understanding channel capabilities
+  - 配置消息平台
+  - 设置 Channel 权限
+  - 了解 Channel 能力
 ---
 
-# Channel Config
+# Channel 配置
 
-## Overview
+## 概述
 
-OpenClaw's channel configuration system manages messaging platform integrations. Each channel has its own configuration namespace with platform-specific settings, access controls, and routing options.
+OpenClaw 的 Channel 配置系统管理消息平台集成。每个 Channel 都有自己的配置命名空间，包含平台特定设置、访问控制和路由选项。
 
 ```mermaid
 flowchart TB
@@ -39,9 +39,9 @@ flowchart TB
     Platform --> Permissions
 ```
 
-## Configuration Structure
+## 配置结构
 
-### Main Channels Config
+### 主 Channels 配置
 
 ```typescript
 // src/config/types.channels.ts
@@ -65,7 +65,7 @@ interface ChannelsConfig {
 }
 ```
 
-### Channel Defaults
+### Channel 默认值
 
 ```typescript
 interface ChannelDefaultsConfig {
@@ -80,9 +80,9 @@ interface ChannelDefaultsConfig {
 }
 ```
 
-## Common Channel Settings
+## 通用 Channel 设置
 
-### Access Control
+### 访问控制
 
 ```typescript
 interface ExtensionChannelConfig {
@@ -103,7 +103,7 @@ interface ExtensionChannelConfig {
 }
 ```
 
-### Health Monitoring
+### 健康监控
 
 ```typescript
 interface ChannelHealthMonitorConfig {
@@ -118,7 +118,7 @@ interface ChannelHealthMonitorConfig {
 }
 ```
 
-### Thread Bindings
+### 线程绑定
 
 ```typescript
 interface SessionThreadBindingsConfig {
@@ -135,7 +135,7 @@ interface SessionThreadBindingsConfig {
 }
 ```
 
-## Channel-Specific Configurations
+## 平台特定配置
 
 ### Discord
 
@@ -163,7 +163,7 @@ interface DiscordConfig extends ExtensionChannelConfig {
 }
 ```
 
-### Discord Guild Configuration
+### Discord Guild 配置
 
 ```typescript
 interface DiscordGuildEntry {
@@ -246,11 +246,11 @@ interface SlackConfig extends ExtensionChannelConfig {
 }
 ```
 
-## Model Routing
+## 模型路由
 
-### Channel Model Overrides
+### Channel 模型覆盖
 
-Override the default model for specific channels:
+为特定 Channel 覆盖默认模型：
 
 ```typescript
 // Channel model configuration
@@ -275,9 +275,9 @@ interface ChannelModelByChannelConfig {
 }
 ```
 
-## Media Configuration
+## 媒体配置
 
-### Common Media Settings
+### 通用媒体设置
 
 ```typescript
 interface MediaConfig {
@@ -292,7 +292,7 @@ interface MediaConfig {
 }
 ```
 
-### Per-Channel Media Limits
+### 按 Channel 的媒体限制
 
 ```typescript
 // Set media limits per channel
@@ -308,9 +308,9 @@ interface MediaConfig {
 }
 ```
 
-## Health and Monitoring
+## 健康和监控
 
-### Channel Health Visibility
+### Channel 心跳可见性
 
 ```typescript
 interface ChannelHeartbeatVisibilityConfig {
@@ -321,9 +321,9 @@ interface ChannelHeartbeatVisibilityConfig {
 }
 ```
 
-### Bot Loop Protection
+### Bot 循环保护
 
-Prevent infinite loops in channels:
+防止 Channel 中的无限循环：
 
 ```typescript
 interface ChannelBotLoopProtectionConfig {
@@ -336,7 +336,7 @@ interface ChannelBotLoopProtectionConfig {
 }
 ```
 
-## Integration Architecture
+## 集成架构
 
 ```mermaid
 flowchart TB
@@ -367,9 +367,9 @@ flowchart TB
     Slack --> Health
 ```
 
-## Example Configuration
+## 示例配置
 
-### Full Discord Setup
+### 完整 Discord 配置
 
 ```json
 {
@@ -416,7 +416,7 @@ flowchart TB
 }
 ```
 
-### Full Telegram Setup
+### 完整 Telegram 配置
 
 ```json
 {
@@ -447,8 +447,8 @@ flowchart TB
 }
 ```
 
-## Related
+## 相关内容
 
-- [Config Schema](/architecture-book/part-7-config-system/01-config-schema) - Schema architecture
-- [Channel Capabilities](/architecture-book/part-3-channels/01-capabilities) - Capability system
-- [Health Monitoring](/architecture-book/part-2-core-modules/03-health) - Health system
+- [配置 Schema](./01-config-schema.md) - Schema 架构
+- [Channel 能力](../part-3-channels/01-capabilities.md) - 能力系统
+- [健康监控](../part-2-core-modules/03-health.md) - 健康系统

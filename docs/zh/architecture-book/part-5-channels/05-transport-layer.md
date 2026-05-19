@@ -1,30 +1,30 @@
 ---
-summary: "Connection pooling, rate limiting, and retry logic"
-title: "Transport Layer"
+summary: "连接池、速率限制和重试逻辑"
+title: "传输层"
 read_when:
-  - Understanding network transport
-  - Implementing reliable delivery
+  - 理解网络传输
+  - 实现可靠传递
 ---
 
-# Transport Layer
+# 传输层
 
-## Overview
+## 概述
 
-The transport layer handles low-level network communication, including connection pooling, rate limiting, and retry logic.
+传输层处理低级网络通信，包括连接池、速率限制和重试逻辑。
 
-## Transport Architecture
+## 传输架构
 
 ```mermaid
 flowchart TB
     subgraph Client
-        Sender[Message Sender]
-        Queue[Send Queue]
+        Sender[消息发送器]
+        Queue[发送队列]
     end
 
-    subgraph Transport["Transport Layer"]
-        Pool[Connection Pool]
-        Limiter[Rate Limiter]
-        Retry[Retry Handler]
+    subgraph Transport["传输层"]
+        Pool[连接池]
+        Limiter[速率限制器]
+        Retry[重试处理器]
     end
 
     subgraph Network
@@ -40,9 +40,9 @@ flowchart TB
     TLS --> WebSocket
 ```
 
-## Connection Pool
+## 连接池
 
-### Pool Interface
+### 连接池接口
 
 ```typescript
 interface ConnectionPool {
@@ -50,7 +50,7 @@ interface ConnectionPool {
   release(connection: Connection): void;
   close(): Promise<void>;
 
-  // Stats
+  // 统计
   getStats(): PoolStats;
 }
 
@@ -62,7 +62,7 @@ interface PoolStats {
 }
 ```
 
-### Pool Implementation
+### 连接池实现
 
 ```typescript
 class ConnectionPoolImpl implements ConnectionPool {
@@ -74,14 +74,14 @@ class ConnectionPoolImpl implements ConnectionPool {
   constructor(private factory: ConnectionFactory) {}
 
   async acquire(): Promise<Connection> {
-    // Try to get idle connection
+    // 尝试获取空闲连接
     const idle = this.connections.find(c => c.idle);
     if (idle) {
       idle.idle = false;
       return idle;
     }
 
-    // Create new if under limit
+    // 如果在限制内，创建新连接
     if (this.connections.length < this.maxConnections) {
       const conn = await this.factory.create();
       conn.idle = false;
@@ -89,7 +89,7 @@ class ConnectionPoolImpl implements ConnectionPool {
       return conn;
     }
 
-    // Wait for available connection
+    // 等待可用连接
     return new Promise(resolve => {
       this.waiting.push(resolve);
     });
@@ -98,32 +98,32 @@ class ConnectionPoolImpl implements ConnectionPool {
   release(connection: Connection): void {
     connection.idle = true;
 
-    // Serve waiting request
+    // 为等待的请求提供服务
     const waiting = this.waiting.shift();
     if (waiting) {
       connection.idle = false;
       waiting(connection);
     }
 
-    // Close excess connections
+    // 关闭多余的连接
     this.closeExcess();
   }
 }
 ```
 
-## Rate Limiting
+## 速率限制
 
-### Rate Limiter Interface
+### 速率限制器接口
 
 ```typescript
 interface RateLimiter {
-  // Check if request is allowed
+  // 检查请求是否允许
   check(key: string): Promise<RateLimitResult>;
 
-  // Record request
+  // 记录请求
   record(key: string, tokens?: number): void;
 
-  // Reset
+  // 重置
   reset(key: string): void;
 }
 
@@ -135,7 +135,7 @@ interface RateLimitResult {
 }
 ```
 
-### Token Bucket Algorithm
+### 令牌桶算法
 
 ```typescript
 class TokenBucketRateLimiter implements RateLimiter {
@@ -150,7 +150,7 @@ class TokenBucketRateLimiter implements RateLimiter {
     const bucket = this.getBucket(key);
     const now = Date.now();
 
-    // Refill tokens
+    // 补充令牌
     const elapsed = (now - bucket.lastRefill) / 1000;
     bucket.tokens = Math.min(
       this.burstSize,
@@ -189,13 +189,13 @@ class TokenBucketRateLimiter implements RateLimiter {
 }
 ```
 
-### Per-Channel Rate Limits
+### 每个通道的速率限制
 
 ```typescript
 const channelRateLimits: Record<string, RateLimitConfig> = {
   telegram: {
     messagesPerSecond: 30,
-    messagesPerMinute: 20,    // Reduced for group chats
+    messagesPerMinute: 20,    // 群聊时减少
     burstSize: 10,
   },
   discord: {
@@ -211,9 +211,9 @@ const channelRateLimits: Record<string, RateLimitConfig> = {
 };
 ```
 
-## Retry Logic
+## 重试逻辑
 
-### Retry Configuration
+### 重试配置
 
 ```typescript
 interface RetryConfig {
@@ -244,7 +244,7 @@ function isRetryableError(error: Error): boolean {
 }
 ```
 
-### Retry Implementation
+### 重试实现
 
 ```typescript
 async function withRetry<T>(
@@ -260,12 +260,12 @@ async function withRetry<T>(
     } catch (error) {
       lastError = error as Error;
 
-      // Check if retryable
+      // 检查是否可重试
       if (!config.retryableErrors?.(lastError) || attempt === config.maxRetries) {
         throw lastError;
       }
 
-      // Wait before retry
+      // 重试前等待
       const waitTime = config.jitter
         ? delay * (0.5 + Math.random())
         : delay;
@@ -280,28 +280,28 @@ async function withRetry<T>(
 }
 ```
 
-### Retry Decision Tree
+### 重试决策树
 
 ```mermaid
 flowchart TD
-    A[Error] --> B{Retryable?}
-    B -->|No| C[Fail]
-    B -->|Yes| D{Retries left?}
-    D -->|No| C
-    D -->|Yes| E{Should backoff?}
-    E -->|No| F[Immediate retry]
-    E -->|Yes| G[Wait with backoff]
+    A[错误] --> B{可重试?}
+    B -->|否| C[失败]
+    B -->|是| D{还有重试次数?}
+    D -->|否| C
+    D -->|是| E{应该退避?}
+    E -->|否| F[立即重试]
+    E -->|是| G[退避等待]
     F --> A
     G --> A
 ```
 
-## Message Queue
+## 消息队列
 
-### Queue Interface
+### 队列接口
 
 ```typescript
 interface MessageQueue {
-  enqueue(message: QueuedMessage): Promise<string>;  // Returns queue ID
+  enqueue(message: QueuedMessage): Promise<string>;  // 返回队列 ID
   dequeue(): Promise<QueuedMessage | null>;
   requeue(id: string, delay?: number): Promise<void>;
   remove(id: string): Promise<void>;
@@ -318,7 +318,7 @@ interface QueuedMessage {
 }
 ```
 
-### Priority Queue
+### 优先级队列
 
 ```typescript
 class PriorityMessageQueue implements MessageQueue {
@@ -336,7 +336,7 @@ class PriorityMessageQueue implements MessageQueue {
   }
 
   async dequeue(): Promise<QueuedMessage | null> {
-    // Check in priority order
+    // 按优先级顺序检查
     for (const priority of ["urgent", "high", "normal", "low"]) {
       const queue = this.queues[priority];
       if (queue.length > 0) {
@@ -348,9 +348,9 @@ class PriorityMessageQueue implements MessageQueue {
 }
 ```
 
-## Circuit Breaker
+## 熔断器
 
-### Circuit Breaker Pattern
+### 熔断器模式
 
 ```typescript
 interface CircuitBreaker {
@@ -368,7 +368,7 @@ class CircuitBreakerImpl implements CircuitBreaker {
 
   constructor(
     private threshold: number = 5,
-    private timeout: number = 60000  // 1 minute
+    private timeout: number = 60000  // 1 分钟
   ) {}
 
   get state(): CircuitState {
@@ -404,20 +404,20 @@ class CircuitBreakerImpl implements CircuitBreaker {
 }
 ```
 
-### Circuit Breaker States
+### 熔断器状态
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Closed: No failures
-    Closed --> Open: failures >= threshold
-    Open --> HalfOpen: timeout elapsed
-    HalfOpen --> Closed: success
-    HalfOpen --> Open: failure
+    [*] --> Closed: 无故障
+    Closed --> Open: 故障数 >= 阈值
+    Open --> HalfOpen: 超时已过
+    HalfOpen --> Closed: 成功
+    HalfOpen --> Open: 失败
 ```
 
-## Health Monitoring
+## 健康监控
 
-### Connection Health
+### 连接健康
 
 ```typescript
 interface ConnectionHealth {
@@ -447,7 +447,7 @@ class HealthMonitor {
       errors: current.errors + 1,
     });
 
-    // Open circuit if too many errors
+    // 如果错误太多，打开熔断器
     if (current.errors >= 10) {
       this.openCircuit(channelId);
     }
@@ -464,8 +464,8 @@ class HealthMonitor {
 }
 ```
 
-## Related
+## 相关
 
-- [Channel Architecture](/architecture-book/part-5-channels/01-channel-architecture) - Channel design
-- [Message Processing](/architecture-book/part-5-channels/04-message-processing) - Processing pipeline
-- [Channel Plugins](/architecture-book/part-3-plugin-system/06-channel-plugins) - Plugin implementation
+- [通道架构](./01-channel-architecture.md) - 通道设计
+- [消息处理](./04-message-processing.md) - 处理管道
+- [通道插件](../part-3-plugin-system/06-channel-plugins.md) - 插件实现

@@ -1,16 +1,16 @@
 ---
-summary: "Config schema architecture, layers, and validation"
-title: "Config Schema"
+summary: "配置 Schema 架构、层级和验证"
+title: "配置 Schema"
 read_when:
-  - Understanding config architecture
-  - Working on config validation
+  - 理解配置架构
+  - 处理配置验证
 ---
 
-# Config Schema
+# 配置 Schema
 
-## Overview
+## 概述
 
-OpenClaw uses a layered config schema system that separates base schema generation, field documentation, and runtime validation. The system produces JSON Schema output for UI consumption while using Zod for TypeScript-level validation.
+OpenClaw 使用分层配置 Schema 系统，将基础 Schema 生成、字段文档和运行时验证分离。该系统为 UI 消费生成 JSON Schema，同时使用 Zod 进行 TypeScript 级别的验证。
 
 ```mermaid
 flowchart TB
@@ -34,18 +34,18 @@ flowchart TB
     Docs --> Output
 ```
 
-## Schema Architecture
+## Schema 架构
 
-### Layer Separation
+### 层级分离
 
-| Layer | Purpose | Files |
+| 层级 | 用途 | 文件 |
 |-------|---------|-------|
-| Base | Zod schemas defining types | `zod-schema.ts` |
-| Docs | Labels and help text | `schema.labels.ts`, `schema.help.ts` |
-| Hints | UI metadata | `schema.hints.ts` |
-| Output | Combined JSON Schema | `schema.ts` |
+| 基础 | 定义类型的 Zod Schema | `zod-schema.ts` |
+| 文档 | 标签和帮助文本 | `schema.labels.ts`, `schema.help.ts` |
+| 提示 | UI 元数据 | `schema.hints.ts` |
+| 输出 | 组合 JSON Schema | `schema.ts` |
 
-### Config Structure
+### 配置结构
 
 ```typescript
 // Main config entry
@@ -69,7 +69,7 @@ interface OpenClawConfig {
 }
 ```
 
-### Schema Generation
+### Schema 生成
 
 ```typescript
 // Base schema response shape
@@ -87,11 +87,11 @@ interface ConfigSchemaResponse {
 }
 ```
 
-## Field Documentation
+## 字段文档
 
-### Labels
+### 标签
 
-Field labels provide human-readable titles for config paths:
+字段标签为配置路径提供人类可读的标题：
 
 ```typescript
 // schema.labels.ts
@@ -107,9 +107,9 @@ export const FIELD_LABELS: Record<string, string> = {
 };
 ```
 
-### Help Text
+### 帮助文本
 
-Field descriptions explain purpose and usage:
+字段描述解释用途和用法：
 
 ```typescript
 // schema.help.ts
@@ -124,11 +124,11 @@ export const FIELD_HELP: Record<string, string> = {
 };
 ```
 
-## Config Paths
+## 配置路径
 
-### Dot-path Notation
+### 点号路径表示法
 
-Config paths use dot-notation for nested fields:
+配置路径使用点号表示法处理嵌套字段：
 
 ```
 gateway.port
@@ -137,9 +137,9 @@ agents.list[].skills
 tools.media.image.enabled
 ```
 
-### Array Notation
+### 数组表示法
 
-Arrays use `[]` for the array level and `[*]` or numbered indices for specific items:
+数组使用 `[]` 表示数组层级，使用 `[*]` 或编号索引表示特定项目：
 
 ```
 agents.list[].skills         # All agent skills
@@ -147,9 +147,9 @@ agents.list[*].models.*      # All models for all agents
 channels.telegram.botToken   # Specific channel config
 ```
 
-## Schema Lookup
+## Schema 查找
 
-### Lookup API
+### 查找 API
 
 ```typescript
 // Look up schema for a specific path
@@ -173,9 +173,9 @@ interface ConfigSchemaLookupChild {
 }
 ```
 
-### Lookup Restrictions
+### 查找限制
 
-The schema lookup system enforces safety limits:
+Schema 查找系统强制执行安全限制：
 
 ```typescript
 // Forbidden path segments (prototype pollution prevention)
@@ -192,9 +192,9 @@ const MAX_LOOKUP_PATH_SEGMENTS = 32;
 const LOOKUP_SCHEMA_NESTED_FORM_DEPTH = 4;
 ```
 
-## UI Hints
+## UI 提示
 
-### Hint Types
+### 提示类型
 
 ```typescript
 interface ConfigUiHint {
@@ -207,9 +207,9 @@ interface ConfigUiHint {
 }
 ```
 
-### Hint Application
+### 提示应用
 
-Hints are applied based on schema paths with wildcard support:
+提示根据 Schema 路径应用，支持通配符：
 
 ```typescript
 // Apply hints to schema
@@ -221,9 +221,9 @@ applySensitiveUrlHints(schema, hints);
 "tools.media.image.*"           // Matches all image tool fields
 ```
 
-## Config Validation
+## 配置验证
 
-### Zod Schema Validation
+### Zod Schema 验证
 
 ```typescript
 import { OpenClawSchema } from "./zod-schema.js";
@@ -236,20 +236,20 @@ if (!result.success) {
 }
 ```
 
-### Validation Layers
+### 验证层级
 
-| Layer | Trigger | Error Handling |
+| 层级 | 触发时机 | 错误处理 |
 |-------|---------|----------------|
-| CLI args | Startup | Exit with message |
-| Config file | Load | Doctor warning |
-| Runtime | Gateway start | Block startup |
-| Migration | Config write | Auto-fix if safe |
+| CLI 参数 | 启动时 | 退出并显示消息 |
+| 配置文件 | 加载时 | Doctor 警告 |
+| 运行时 | Gateway 启动时 | 阻止启动 |
+| 迁移 | 配置写入时 | 安全时自动修复 |
 
-## Plugin Config Extension
+## 插件配置扩展
 
-### Plugin Schema Contribution
+### 插件 Schema 贡献
 
-Plugins can extend the config schema:
+插件可以扩展配置 Schema：
 
 ```typescript
 interface PluginUiMetadata {
@@ -264,9 +264,9 @@ interface PluginUiMetadata {
 }
 ```
 
-### Extension Limits
+### 扩展限制
 
-Plugin schemas have size limits to prevent response bloat:
+插件 Schema 有大小限制以防止响应膨胀：
 
 ```typescript
 const EXTENSION_SCHEMA_MAX_BYTES = 256 * 1024;     // 256KB per plugin
@@ -274,9 +274,9 @@ const EXTENSION_SCHEMA_TOTAL_MAX_BYTES = 2 * 1024 * 1024;  // 2MB total
 const EXTENSION_SCHEMA_MAX_ITEMS = 256;            // Max 256 plugins
 ```
 
-### Omitted Schemas
+### 省略的 Schema
 
-When plugin schemas exceed limits, they're replaced:
+当插件 Schema 超出限制时，会被替换：
 
 ```typescript
 // Omitted schema placeholder
@@ -287,8 +287,8 @@ When plugin schemas exceed limits, they're replaced:
 }
 ```
 
-## Related
+## 相关内容
 
-- [Config Reference](/architecture-book/part-6-sdks-apis/04-api-reference) - Full config reference
-- [Gateway Config](/architecture-book/part-2-core-modules/01-gateway) - Gateway settings
-- [Agent Config](/architecture-book/part-2-core-modules/02-agents) - Agent configuration
+- [配置参考](./04-api-reference.md) - 完整配置参考
+- [Gateway 配置](../part-2-core-modules/01-gateway.md) - Gateway 设置
+- [Agent 配置](../part-2-core-modules/02-agents.md) - Agent 配置

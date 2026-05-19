@@ -1,17 +1,17 @@
 ---
-summary: "Agent configuration, model selection, runtime policies, and capabilities"
-title: "Agent Config"
+summary: "Agent 配置、模型选择、运行时策略和能力"
+title: "Agent 配置"
 read_when:
-  - Configuring AI agents
-  - Setting up agent runtimes
-  - Managing agent capabilities
+  - 配置 AI Agent
+  - 设置 Agent 运行时
+  - 管理 Agent 能力
 ---
 
-# Agent Config
+# Agent 配置
 
-## Overview
+## 概述
 
-OpenClaw's agent configuration system defines AI agents with their runtime policies, model selections, tools, and behavioral settings. Each agent can be customized with specific capabilities and defaults.
+OpenClaw 的 Agent 配置系统定义具有运行时策略、模型选择、工具和行为设置的 AI Agent。每个 Agent 都可以使用特定的能力和默认值进行自定义。
 
 ```mermaid
 flowchart TB
@@ -40,9 +40,9 @@ flowchart TB
     Runtime --> RuntimeTypes
 ```
 
-## Configuration Structure
+## 配置结构
 
-### Main Agents Config
+### 主 Agents 配置
 
 ```typescript
 // src/config/types.agents.ts
@@ -54,7 +54,7 @@ interface AgentsConfig {
 }
 ```
 
-### Agent Configuration
+### Agent 配置
 
 ```typescript
 interface AgentConfig {
@@ -135,9 +135,9 @@ interface AgentConfig {
 }
 ```
 
-## Agent Runtimes
+## Agent 运行时
 
-### Runtime Types
+### 运行时类型
 
 ```typescript
 // Embedded (PI) Runtime
@@ -157,7 +157,7 @@ type AcpRuntime = {
 type AgentRuntimeConfig = EmbeddedRuntime | AcpRuntime;
 ```
 
-### Runtime Policy
+### 运行时策略
 
 ```typescript
 interface AgentRuntimePolicyConfig {
@@ -176,9 +176,9 @@ interface AgentRuntimePolicyConfig {
 }
 ```
 
-## Model Configuration
+## 模型配置
 
-### Model Selection
+### 模型选择
 
 ```typescript
 interface AgentModelConfig {
@@ -203,7 +203,7 @@ interface AgentModelConfig {
 }
 ```
 
-### Per-Model Overrides
+### 按模型覆盖
 
 ```typescript
 interface AgentModelEntryConfig {
@@ -222,7 +222,7 @@ interface AgentModelEntryConfig {
 }
 ```
 
-## Thinking Levels
+## 思考级别
 
 ```typescript
 type ThinkingLevel =
@@ -236,9 +236,9 @@ type ThinkingLevel =
   | "max";       // Maximum reasoning
 ```
 
-## Tools Configuration
+## 工具配置
 
-### Tool Allowlist
+### 工具白名单
 
 ```typescript
 interface AgentToolsConfig {
@@ -253,7 +253,7 @@ interface AgentToolsConfig {
 }
 ```
 
-### Group Tool Policies
+### 组工具策略
 
 ```typescript
 interface GroupToolPolicyConfig {
@@ -266,9 +266,9 @@ interface GroupToolPolicyConfig {
 type ToolPolicy = "allow" | "deny" | "ask";
 ```
 
-## Memory Configuration
+## 内存配置
 
-### Memory Search Settings
+### 内存搜索设置
 
 ```typescript
 interface MemorySearchConfig {
@@ -283,9 +283,9 @@ interface MemorySearchConfig {
 }
 ```
 
-## Context Limits
+## 上下文限制
 
-### Token Budget Control
+### Token 预算控制
 
 ```typescript
 interface AgentContextLimitsConfig {
@@ -302,9 +302,9 @@ interface AgentContextLimitsConfig {
 }
 ```
 
-## Subagent Configuration
+## 子 Agent 配置
 
-### Delegation Settings
+### 委托设置
 
 ```typescript
 interface SubagentConfig {
@@ -325,7 +325,7 @@ type SubagentDelegationMode =
   | "balanced";  // Balanced approach
 ```
 
-## Identity Configuration
+## 身份配置
 
 ```typescript
 interface IdentityConfig {
@@ -338,9 +338,9 @@ interface IdentityConfig {
 }
 ```
 
-## Agent Bindings
+## Agent 绑定
 
-### Route Bindings
+### 路由绑定
 
 ```typescript
 // Route agent to specific channel/account
@@ -364,9 +364,9 @@ interface AgentBindingMatch {
 }
 ```
 
-## Example Configuration
+## 示例配置
 
-### Basic Agent
+### 基本 Agent
 
 ```json
 {
@@ -425,7 +425,7 @@ interface AgentBindingMatch {
 }
 ```
 
-### ACP Agent with Subagents
+### 带子 Agent 的 ACP Agent
 
 ```json
 {
@@ -465,9 +465,9 @@ interface AgentBindingMatch {
 }
 ```
 
-## Related
+## 相关内容
 
-- [Config Schema](/architecture-book/part-7-config-system/01-config-schema) - Schema architecture
-- [Provider Config](/architecture-book/part-7-config-system/03-provider-config) - Model provider settings
-- [Agent System](/architecture-book/part-2-core-modules/02-agents) - Agent runtime details
-- [Tools System](/architecture-book/part-2-core-modules/04-tools) - Tools configuration
+- [配置 Schema](./01-config-schema.md) - Schema 架构
+- [Provider 配置](./03-provider-config.md) - 模型 Provider 设置
+- [Agent 系统](../part-2-core-modules/02-agents.md) - Agent 运行时详情
+- [工具系统](../part-2-core-modules/04-tools.md) - 工具配置

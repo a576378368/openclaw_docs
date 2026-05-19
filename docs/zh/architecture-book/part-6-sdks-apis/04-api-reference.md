@@ -1,40 +1,40 @@
 ---
-summary: "Complete API reference for RPC methods and event types"
-title: "API Reference"
+summary: "RPC 方法和事件类型的完整 API 参考"
+title: "API 参考"
 read_when:
-  - Looking up API details
-  - Building integrations
+  - 查找 API 详情
+  - 构建集成
 ---
 
-# API Reference
+# API 参考
 
-## Overview
+## 概述
 
-Complete reference for OpenClaw Gateway RPC methods, events, and types.
+OpenClaw Gateway RPC 方法、事件和类型的完整参考。
 
-## RPC Methods
+## RPC 方法
 
-### Core Methods
+### 核心方法
 
-| Method | Description | Idempotent |
+| 方法 | 描述 | 幂等性 |
 |--------|-------------|------------|
-| `connect` | Initial handshake | N/A |
-| `disconnect` | Graceful disconnect | N/A |
-| `agent` | Run agent | Yes |
-| `agent_abort` | Abort agent run | Yes |
-| `agent_status` | Get run status | Yes |
-| `send` | Send message | Yes |
-| `send_reply` | Reply to message | Yes |
-| `session_create` | Create session | Yes |
-| `session_get` | Get session info | Yes |
-| `session_reset` | Reset session | Yes |
-| `session_delete` | Delete session | Yes |
-| `health` | Health check | Yes |
-| `status` | System status | Yes |
+| `connect` | 初始握手 | N/A |
+| `disconnect` | 优雅断开 | N/A |
+| `agent` | 运行 Agent | 是 |
+| `agent_abort` | 中止 Agent 运行 | 是 |
+| `agent_status` | 获取运行状态 | 是 |
+| `send` | 发送消息 | 是 |
+| `send_reply` | 回复消息 | 是 |
+| `session_create` | 创建会话 | 是 |
+| `session_get` | 获取会话信息 | 是 |
+| `session_reset` | 重置会话 | 是 |
+| `session_delete` | 删除会话 | 是 |
+| `health` | 健康检查 | 是 |
+| `status` | 系统状态 | 是 |
 
-## Connect Method
+## Connect 方法
 
-### Connect Request
+### Connect 请求
 
 ```typescript
 interface ConnectRequest {
@@ -60,7 +60,7 @@ interface ConnectRequest {
 }
 ```
 
-### Connect Response
+### Connect 响应
 
 ```typescript
 interface ConnectResponse {
@@ -80,9 +80,9 @@ interface ConnectResponse {
 }
 ```
 
-## Agent Method
+## Agent 方法
 
-### Agent Request
+### Agent 请求
 
 ```typescript
 interface AgentRequest {
@@ -101,7 +101,7 @@ interface AgentRequest {
 }
 ```
 
-### Agent Response
+### Agent 响应
 
 ```typescript
 interface AgentResponse {
@@ -115,7 +115,7 @@ interface AgentResponse {
 }
 ```
 
-### Agent Events
+### Agent 事件
 
 ```typescript
 // Start event
@@ -163,9 +163,9 @@ interface AgentResponse {
 }
 ```
 
-## Send Method
+## Send 方法
 
-### Send Request
+### Send 请求
 
 ```typescript
 interface SendRequest {
@@ -186,7 +186,7 @@ interface SendRequest {
 }
 ```
 
-### Send Response
+### Send 响应
 
 ```typescript
 interface SendResponse {
@@ -200,9 +200,9 @@ interface SendResponse {
 }
 ```
 
-## Session Methods
+## Session 方法
 
-### Session Create
+### Session 创建
 
 ```typescript
 interface SessionCreateRequest {
@@ -217,7 +217,7 @@ interface SessionCreateRequest {
 }
 ```
 
-### Session Get
+### Session 获取
 
 ```typescript
 interface SessionGetRequest {
@@ -244,7 +244,7 @@ interface SessionGetResponse {
 }
 ```
 
-### Session Reset
+### Session 重置
 
 ```typescript
 interface SessionResetRequest {
@@ -257,9 +257,9 @@ interface SessionResetRequest {
 }
 ```
 
-## Health Methods
+## 健康检查方法
 
-### Health Check
+### 健康检查
 
 ```typescript
 interface HealthRequest {
@@ -299,7 +299,7 @@ interface PluginHealth {
 }
 ```
 
-## Status Method
+## Status 方法
 
 ```typescript
 interface StatusRequest {
@@ -339,9 +339,9 @@ interface StatusResponse {
 }
 ```
 
-## Event Types
+## 事件类型
 
-### Tick Event
+### Tick 事件
 
 ```typescript
 {
@@ -362,7 +362,7 @@ interface StatusResponse {
 }
 ```
 
-### Presence Event
+### Presence 事件
 
 ```typescript
 {
@@ -384,7 +384,7 @@ interface StatusResponse {
 }
 ```
 
-### Chat Event
+### Chat 事件
 
 ```typescript
 {
@@ -409,9 +409,9 @@ interface StatusResponse {
 }
 ```
 
-## Error Codes
+## 错误码
 
-### Error Response
+### 错误响应
 
 ```typescript
 interface ErrorResponse {
@@ -426,26 +426,26 @@ interface ErrorResponse {
 }
 ```
 
-### Error Code Reference
+### 错误码参考
 
-| Code | HTTP Equiv | Description |
+| 代码 | HTTP 等价 | 描述 |
 |------|------------|-------------|
-| `AUTH_FAILED` | 401 | Invalid credentials |
-| `AUTH_EXPIRED` | 401 | Token expired |
-| `AUTH_REQUIRED` | 401 | Auth not provided |
-| `DEVICE_NOT_PAIRED` | 403 | Device not paired |
-| `DEVICE_REJECTED` | 403 | Pairing rejected |
-| `VALIDATION_ERROR` | 400 | Invalid request |
-| `SESSION_NOT_FOUND` | 404 | Session doesn't exist |
-| `SESSION_EXISTS` | 409 | Session already exists |
-| `AGENT_ERROR` | 500 | Agent execution failed |
-| `CHANNEL_ERROR` | 500 | Channel operation failed |
-| `RATE_LIMITED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Gateway error |
+| `AUTH_FAILED` | 401 | 凭据无效 |
+| `AUTH_EXPIRED` | 401 | Token 已过期 |
+| `AUTH_REQUIRED` | 401 | 未提供认证 |
+| `DEVICE_NOT_PAIRED` | 403 | 设备未配对 |
+| `DEVICE_REJECTED` | 403 | 配对被拒绝 |
+| `VALIDATION_ERROR` | 400 | 请求无效 |
+| `SESSION_NOT_FOUND` | 404 | 会话不存在 |
+| `SESSION_EXISTS` | 409 | 会话已存在 |
+| `AGENT_ERROR` | 500 | Agent 执行失败 |
+| `CHANNEL_ERROR` | 500 | Channel 操作失败 |
+| `RATE_LIMITED` | 429 | 请求过多 |
+| `INTERNAL_ERROR` | 500 | Gateway 错误 |
 
-## Types
+## 类型
 
-### Message Types
+### 消息类型
 
 ```typescript
 interface Message {
@@ -476,7 +476,7 @@ interface InlineButton {
 }
 ```
 
-### Channel Types
+### Channel 类型
 
 ```typescript
 interface ChannelTarget {
@@ -495,8 +495,8 @@ interface Sender {
 }
 ```
 
-## Related
+## 相关内容
 
-- [App SDK](/architecture-book/part-6-sdks-apis/01-app-sdk) - Client SDK
-- [Plugin SDK](/architecture-book/part-6-sdks-apis/02-plugin-sdk) - Plugin SDK
-- [Protocol Overview](/architecture-book/part-4-gateway-protocol/01-protocol-overview) - Protocol design
+- [App SDK](./01-app-sdk.md) - 客户端 SDK
+- [插件 SDK](./02-plugin-sdk.md) - 插件 SDK
+- [协议概述](../part-4-gateway-protocol/01-protocol-overview.md) - 协议设计

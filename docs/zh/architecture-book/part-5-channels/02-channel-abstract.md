@@ -1,20 +1,20 @@
 ---
-summary: "Channel interface definitions, account management, and connection states"
-title: "Channel Abstract"
+summary: "通道接口定义、账户管理和连接状态"
+title: "通道抽象"
 read_when:
-  - Implementing channel interfaces
-  - Understanding channel contract
+  - 实现通道接口
+  - 理解通道契约
 ---
 
-# Channel Abstract
+# 通道抽象
 
-## Overview
+## 概述
 
-The channel abstract layer defines the interface contract that all channel implementations must follow.
+通道抽象层定义了所有通道实现必须遵循的接口契约。
 
-## Channel Interface
+## 通道接口
 
-### Core Interface
+### 核心接口
 
 ```typescript
 interface Channel {
@@ -23,21 +23,21 @@ interface Channel {
   readonly platform: string;
   readonly capabilities: ChannelCapabilities;
 
-  // Lifecycle
+  // 生命周期
   connect(config: ChannelConfig): Promise<void>;
   disconnect(): Promise<void>;
   isConnected(): boolean;
 
-  // Messaging
+  // 消息
   send(target: ChannelTarget, message: OutboundMessage): Promise<void>;
   editMessage(target: ChannelTarget, messageId: string, content: string): Promise<void>;
   deleteMessage(target: ChannelTarget, messageId: string): Promise<void>;
 
-  // Media
+  // 媒体
   uploadMedia(data: Buffer, type: MediaType): Promise<MediaId>;
   resolveMediaUrl(mediaId: MediaId): Promise<string>;
 
-  // Events
+  // 事件
   onMessage(handler: MessageHandler): void;
   onEdit(handler: EditHandler): void;
   onDelete(handler: DeleteHandler): void;
@@ -46,19 +46,19 @@ interface Channel {
 }
 ```
 
-### Channel Target
+### 通道目标
 
 ```typescript
 interface ChannelTarget {
-  channel: string;     // Channel ID (e.g., "telegram")
-  peer: string;       // Peer ID (e.g., "123456789")
+  channel: string;     // 通道 ID（例如 "telegram"）
+  peer: string;       // 对端 ID（例如 "123456789"）
   peerType: PeerType; // "user", "group", "channel"
 }
 
 type PeerType = "user" | "group" | "channel" | "bot";
 ```
 
-### Outbound Message
+### 出站消息
 
 ```typescript
 interface OutboundMessage {
@@ -73,15 +73,15 @@ interface OutboundMessage {
 
 interface InlineButton {
   label: string;
-  data?: string;        // Callback data
-  url?: string;         // URL button
+  data?: string;        // 回调数据
+  url?: string;         // URL 按钮
   style?: "primary" | "secondary";
 }
 ```
 
-## Message Handler
+## 消息处理器
 
-### Handler Interface
+### 处理器接口
 
 ```typescript
 type MessageHandler = (
@@ -111,17 +111,17 @@ interface Sender {
 }
 ```
 
-### Handler Example
+### 处理器示例
 
 ```typescript
-// Register message handler
+// 注册消息处理器
 channel.onMessage(async (message) => {
-  console.log(`Received from ${message.sender.name}: ${message.content}`);
+  console.log(`收到来自 ${message.sender.name} 的消息: ${message.content}`);
 
-  // Process message
+  // 处理消息
   const response = await agent.process(message.content);
 
-  // Send response
+  // 发送响应
   await channel.send(
     { channel: message.channel, peer: message.peer, peerType: message.peerType },
     { content: response }
@@ -129,9 +129,9 @@ channel.onMessage(async (message) => {
 });
 ```
 
-## Account Management
+## 账户管理
 
-### Account Interface
+### 账户接口
 
 ```typescript
 interface ChannelAccount {
@@ -144,21 +144,21 @@ interface ChannelAccount {
 }
 
 interface AccountManager {
-  // Account info
+  // 账户信息
   getAccount(channelId: string): Promise<ChannelAccount | null>;
 
-  // Bot info
+  // Bot 信息
   getBotInfo(channelId: string): Promise<BotInfo | null>;
 
-  // Peer info
+  // 对端信息
   getPeerInfo(channelId: string, peer: string): Promise<PeerInfo | null>;
 
-  // Permissions
+  // 权限
   hasPermission(channelId: string, peer: string, permission: string): Promise<boolean>;
 }
 ```
 
-### Peer Information
+### 对端信息
 
 ```typescript
 interface PeerInfo {
@@ -167,42 +167,42 @@ interface PeerInfo {
   name: string;
   username?: string;
 
-  // Group-specific
+  // 群组特定
   memberCount?: number;
   isAdmin?: boolean;
   permissions?: string[];
 
-  // Channel-specific
+  // 频道特定
   subscriberCount?: number;
   isMember?: boolean;
 }
 ```
 
-## Connection States
+## 连接状态
 
-### State Machine
+### 状态机
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Disconnected
+    [*] --> 已断开
 
-    Disconnected --> Connecting: connect()
-    Connecting --> Connected: success
-    Connecting --> Error: failure
+    已断开 --> 连接中: connect()
+    连接中 --> 已连接: 成功
+    连接中 --> 错误: 失败
 
-    Connected --> Reconnecting: auto-reconnect
-    Connected --> Disconnecting: manual
+    已连接 --> 重连中: 自动重连
+    已连接 --> 断开中: 手动
 
-    Reconnecting --> Connected: restored
-    Reconnecting --> Error: max retries
+    重连中 --> 已连接: 已恢复
+    重连中 --> 错误: 达到最大重试次数
 
-    Error --> Connecting: retry
-    Error --> Disconnected: give up
+    错误 --> 连接中: 重试
+    错误 --> 已断开: 放弃
 
-    Disconnecting --> Disconnected: cleanup
+    断开中 --> 已断开: 清理
 ```
 
-### State Handling
+### 状态处理
 
 ```typescript
 interface ChannelState {
@@ -228,32 +228,32 @@ interface ConnectionError {
 }
 ```
 
-### State Listeners
+### 状态监听器
 
 ```typescript
 channel.on("connecting", () => {
-  console.log("Connecting to channel...");
+  console.log("正在连接通道...");
 });
 
 channel.on("connected", () => {
-  console.log("Connected to channel");
+  console.log("已连接到通道");
 });
 
 channel.on("disconnected", (reason) => {
-  console.log("Disconnected:", reason);
+  console.log("已断开:", reason);
 });
 
 channel.on("error", (error) => {
-  console.error("Channel error:", error);
+  console.error("通道错误:", error);
   if (error.retryable) {
-    console.log(`Will retry in ${error.retryAfter}ms`);
+    console.log(`将在 ${error.retryAfter}ms 后重试`);
   }
 });
 ```
 
-## Message Types
+## 消息类型
 
-### Media Attachment
+### 媒体附件
 
 ```typescript
 interface MediaAttachment {
@@ -263,17 +263,17 @@ interface MediaAttachment {
   mimeType: string;
   size?: number;
 
-  // Image
+  // 图片
   width?: number;
   height?: number;
 
-  // Audio/Video
+  // 音频/视频
   duration?: number;
 
-  // File
+  // 文件
   filename?: string;
 
-  // Thumbnails
+  // 缩略图
   thumbnailUrl?: string;
   thumbnailWidth?: number;
   thumbnailHeight?: number;
@@ -282,44 +282,44 @@ interface MediaAttachment {
 type MediaType = "image" | "video" | "audio" | "document" | "sticker";
 ```
 
-### Message Metadata
+### 消息元数据
 
 ```typescript
 interface MessageMetadata {
-  // Source
+  // 来源
   channelId: string;
-  originalId?: string;      // Original message ID (for edits/reactions)
+  originalId?: string;      // 原始消息 ID（用于编辑/反应）
 
-  // Threading
+  // 线程
   threadId?: string;
   isThreadRoot?: boolean;
 
-  // Reactions
+  // 反应
   reactions?: Reaction[];
 
-  // Edits
+  // 编辑
   editedAt?: Date;
   editedBy?: string;
 
-  // Forwarding
+  // 转发
   forwardedFrom?: {
     channel: string;
     messageId: string;
   };
 
-  // Commands
+  // 命令
   command?: string;
   commandArgs?: string[];
 
-  // Callbacks
+  // 回调
   callbackId?: string;
   callbackData?: string;
 }
 ```
 
-## Channel Events
+## 通道事件
 
-### Event Types
+### 事件类型
 
 ```typescript
 interface ChannelEvents {
@@ -330,7 +330,7 @@ interface ChannelEvents {
   onCommand(handler: CommandHandler): void;
   onCallback(handler: CallbackHandler): void;
 
-  // Connection events
+  // 连接事件
   onConnect(handler: () => void): void;
   onDisconnect(handler: (reason: string) => void): void;
   onError(handler: (error: Error) => void): void;
@@ -343,7 +343,7 @@ type CommandHandler = (command: Command) => void;
 type CallbackHandler = (callback: Callback) => void;
 ```
 
-### Event Payloads
+### 事件载荷
 
 ```typescript
 interface MessageEdit {
@@ -380,8 +380,8 @@ interface Callback {
 }
 ```
 
-## Related
+## 相关
 
-- [Channel Architecture](/architecture-book/part-5-channels/01-channel-architecture) - Channel design
-- [Inbound Events](/architecture-book/part-5-channels/03-inbound-events) - Event handling
-- [Message Processing](/architecture-book/part-5-channels/04-message-processing) - Processing pipeline
+- [通道架构](./01-channel-architecture.md) - 通道设计
+- [入站事件](./03-inbound-events.md) - 事件处理
+- [消息处理](./04-message-processing.md) - 处理管道

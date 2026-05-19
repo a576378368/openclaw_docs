@@ -1,52 +1,52 @@
 ---
-summary: "Event normalization, sender identity, and conversation binding"
-title: "Inbound Events"
+summary: "事件规范化、发送者身份和会话绑定"
+title: "入站事件"
 read_when:
-  - Processing incoming messages
-  - Understanding event normalization
+  - 处理传入消息
+  - 理解事件规范化
 ---
 
-# Inbound Events
+# 入站事件
 
-## Overview
+## 概述
 
-Inbound events from messaging platforms are normalized into a standard format before being processed by the gateway.
+来自消息平台的入站事件在由网关处理之前会被规范化为标准格式。
 
-## Event Normalization Pipeline
+## 事件规范化管道
 
 ```mermaid
 flowchart TB
-    A[Platform Event] --> B[Parse]
-    B --> C[Normalize Sender]
-    C --> D[Normalize Content]
-    D --> E[Extract Metadata]
-    E --> F[Validate]
-    F --> G[InboundMessage]
+    A[平台事件] --> B[解析]
+    B --> C[规范化发送者]
+    C --> D[规范化内容]
+    D --> E[提取元数据]
+    E --> F[验证]
+    F --> G[入站消息]
 ```
 
-## Event Types
+## 事件类型
 
-### Supported Event Types
+### 支持的事件类型
 
-| Event | Description | Handler |
+| 事件 | 描述 | 处理器 |
 |-------|-------------|---------|
-| message | New message | `onMessage` |
-| edited_message | Message edited | `onEdit` |
-| deleted_message | Message deleted | `onDelete` |
-| callback_query | Button click | `onCallback` |
-| reaction | Reaction added/removed | `onReaction` |
-| command | Bot command | `onCommand` |
+| message | 新消息 | `onMessage` |
+| edited_message | 消息已编辑 | `onEdit` |
+| deleted_message | 消息已删除 | `onDelete` |
+| callback_query | 按钮点击 | `onCallback` |
+| reaction | 反应添加/移除 | `onReaction` |
+| command | Bot 命令 | `onCommand` |
 
-## Sender Normalization
+## 发送者规范化
 
-### Sender Resolution
+### 发送者解析
 
 ```typescript
 interface SenderResolver {
   resolve(rawSender: unknown, platform: string): Sender;
 }
 
-// Telegram sender
+// Telegram 发送者
 function resolveTelegramSender(raw: TelegramUser): Sender {
   return {
     id: raw.id.toString(),
@@ -56,7 +56,7 @@ function resolveTelegramSender(raw: TelegramUser): Sender {
   };
 }
 
-// Discord sender
+// Discord 发送者
 function resolveDiscordSender(raw: DiscordUser): Sender {
   return {
     id: raw.id,
@@ -67,7 +67,7 @@ function resolveDiscordSender(raw: DiscordUser): Sender {
 }
 ```
 
-### Anonymous vs Identified
+### 匿名 vs 已识别
 
 ```typescript
 interface Sender {
@@ -78,7 +78,7 @@ interface Sender {
   isBot: boolean;
 }
 
-// Anonymous sender (group without user identity)
+// 匿名发送者（无法识别用户身份的群组）
 const anonymousSender: Sender = {
   id: "anonymous",
   name: "Anonymous",
@@ -86,9 +86,9 @@ const anonymousSender: Sender = {
 };
 ```
 
-## Conversation Binding
+## 会话绑定
 
-### Conversation Resolution
+### 会话解析
 
 ```typescript
 interface ConversationBinding {
@@ -108,7 +108,7 @@ function resolveConversation(
     case "discord":
       return resolveDiscordConversation(event);
     default:
-      throw new Error(`Unknown platform: ${platform}`);
+      throw new Error(`未知平台: ${platform}`);
   }
 }
 
@@ -140,7 +140,7 @@ function resolveTelegramConversation(event: TelegramEvent): ConversationBinding 
 }
 ```
 
-### Thread Resolution
+### 线程解析
 
 ```typescript
 interface ThreadInfo {
@@ -151,17 +151,17 @@ interface ThreadInfo {
 }
 
 function resolveThread(event: PlatformEvent): string | undefined {
-  // Telegram threads
+  // Telegram 线程
   if (event.message_thread_id) {
     return event.message_thread_id.toString();
   }
 
-  // Discord threads
+  // Discord 线程
   if (event.thread) {
     return event.thread.id;
   }
 
-  // Slack threads
+  // Slack 线程
   if (event.thread_ts) {
     return event.thread_ts;
   }
@@ -170,24 +170,24 @@ function resolveThread(event: PlatformEvent): string | undefined {
 }
 ```
 
-## Content Normalization
+## 内容规范化
 
-### Text Normalization
+### 文本规范化
 
 ```typescript
 function normalizeText(content: string, platform: string): string {
   let text = content.trim();
 
-  // Remove platform-specific formatting tags
+  // 移除平台特定的格式化标签
   text = removeFormatting(text, platform);
 
-  // Normalize whitespace
+  // 规范化空白字符
   text = text.replace(/\s+/g, " ");
 
-  // Handle mentions
+  // 处理提及
   text = normalizeMentions(text, platform);
 
-  // Handle commands
+  // 处理命令
   text = normalizeCommands(text);
 
   return text;
@@ -209,7 +209,7 @@ function removeFormatting(text: string, platform: string): string {
 }
 ```
 
-### Mention Normalization
+### 提及规范化
 
 ```typescript
 function normalizeMentions(text: string, platform: string): string {
@@ -240,9 +240,9 @@ function normalizeMentions(text: string, platform: string): string {
 }
 ```
 
-## Command Extraction
+## 命令提取
 
-### Command Detection
+### 命令检测
 
 ```typescript
 interface Command {
@@ -256,7 +256,7 @@ function extractCommand(
   platform: string,
   botUsername?: string
 ): Command | null {
-  // Check for command prefix
+  // 检查命令前缀
   const prefixes = getCommandPrefixes(platform);
   const prefix = prefixes.find(p => content.startsWith(p));
 
@@ -266,11 +266,11 @@ function extractCommand(
   const parts = remainder.split(/\s+/);
   let name = parts[0].toLowerCase();
 
-  // Handle @botname suffix (Telegram)
+  // 处理 @botname 后缀 (Telegram)
   if (platform === "telegram" && botUsername) {
     const [, suffix] = name.split("@");
     if (suffix && suffix !== botUsername.toLowerCase()) {
-      return null; // Command for different bot
+      return null; // 其他 bot 的命令
     }
     name = name.split("@")[0];
   }
@@ -298,9 +298,9 @@ function getCommandPrefixes(platform: string): string[] {
 }
 ```
 
-## Media Handling
+## 媒体处理
 
-### Media Extraction
+### 媒体提取
 
 ```typescript
 function extractMedia(event: PlatformEvent): MediaAttachment | undefined {
@@ -341,9 +341,9 @@ function extractMedia(event: PlatformEvent): MediaAttachment | undefined {
 }
 ```
 
-## Metadata Extraction
+## 元数据提取
 
-### Platform-Specific Metadata
+### 平台特定元数据
 
 ```typescript
 interface MetadataExtractor {
@@ -371,9 +371,9 @@ const discordMetadataExtractor: MetadataExtractor = (event) => ({
 });
 ```
 
-## Validation
+## 验证
 
-### Message Validation
+### 消息验证
 
 ```typescript
 interface ValidationResult {
@@ -384,27 +384,27 @@ interface ValidationResult {
 function validateInboundMessage(message: InboundMessage): ValidationResult {
   const errors: ValidationError[] = [];
 
-  // Check required fields
+  // 检查必填字段
   if (!message.id) {
-    errors.push({ field: "id", message: "Message ID is required" });
+    errors.push({ field: "id", message: "消息 ID 是必填的" });
   }
 
   if (!message.channel) {
-    errors.push({ field: "channel", message: "Channel is required" });
+    errors.push({ field: "channel", message: "通道是必填的" });
   }
 
   if (!message.peer) {
-    errors.push({ field: "peer", message: "Peer is required" });
+    errors.push({ field: "peer", message: "对端是必填的" });
   }
 
-  // Check content or media
+  // 检查内容或媒体
   if (!message.content && !message.media) {
-    errors.push({ field: "content", message: "Message must have content or media" });
+    errors.push({ field: "content", message: "消息必须有内容或媒体" });
   }
 
-  // Validate sender
+  // 验证发送者
   if (!message.sender?.id) {
-    errors.push({ field: "sender.id", message: "Sender ID is required" });
+    errors.push({ field: "sender.id", message: "发送者 ID 是必填的" });
   }
 
   return {
@@ -414,8 +414,8 @@ function validateInboundMessage(message: InboundMessage): ValidationResult {
 }
 ```
 
-## Related
+## 相关
 
-- [Channel Architecture](/architecture-book/part-5-channels/01-channel-architecture) - Channel design
-- [Channel Abstract](/architecture-book/part-5-channels/02-channel-abstract) - Interface definitions
-- [Message Processing](/architecture-book/part-5-channels/04-message-processing) - Processing pipeline
+- [通道架构](./01-channel-architecture.md) - 通道设计
+- [通道抽象](./02-channel-abstract.md) - 接口定义
+- [消息处理](./04-message-processing.md) - 处理管道

@@ -1,16 +1,16 @@
 ---
-summary: "Memory Host SDK for knowledge base and search integration"
-title: "Memory Host SDK"
+summary: "用于知识库和搜索集成的内存 Host SDK"
+title: "内存 Host SDK"
 read_when:
-  - Building memory plugins
-  - Integrating knowledge bases
+  - 构建内存插件
+  - 集成知识库
 ---
 
-# Memory Host SDK
+# 内存 Host SDK
 
-## Overview
+## 概述
 
-The Memory Host SDK provides interfaces for building memory plugins that integrate with OpenClaw's memory system.
+内存 Host SDK 提供了用于构建与 OpenClaw 内存系统集成的内存插件的接口。
 
 ```mermaid
 flowchart TB
@@ -24,47 +24,47 @@ flowchart TB
     Engine --> KB
 ```
 
-## SDK Structure
+## SDK 结构
 
-### Package Exports
+### 包导出
 
 ```typescript
 import { createMemoryHost } from "@openclaw/memory-host-sdk";
 import type { MemoryHost, MemoryEntry, SearchOptions } from "@openclaw/memory-host-sdk";
 ```
 
-## Memory Host
+## 内存 Host
 
-### Host Interface
+### Host 接口
 
 ```typescript
 interface MemoryHost {
-  // Lifecycle
+  // 生命周期
   initialize(config: MemoryConfig): Promise<void>;
   shutdown(): Promise<void>;
 
-  // Storage
+  // 存储
   store(entry: MemoryEntry): Promise<void>;
   get(key: string): Promise<MemoryEntry | null>;
   update(key: string, entry: Partial<MemoryEntry>): Promise<void>;
   delete(key: string): Promise<void>;
 
-  // Search
+  // 搜索
   search(query: string, options?: SearchOptions): Promise<MemoryResult[]>;
   suggest(partial: string): Promise<string[]>;
 
-  // Context
+  // 上下文
   buildContext(sessionId: string, prompt: string): Promise<MemoryContext>;
 
-  // Maintenance
+  // 维护
   compact(sessionId: string): Promise<void>;
   vacuum(): Promise<void>;
 }
 ```
 
-## Memory Entry
+## 内存条目
 
-### Entry Structure
+### 条目结构
 
 ```typescript
 interface MemoryEntry {
@@ -99,17 +99,17 @@ interface MemoryMetadata {
 }
 ```
 
-## Memory Configuration
+## 内存配置
 
-### Config Schema
+### 配置 Schema
 
 ```typescript
 interface MemoryConfig {
-  // Storage
+  // 存储
   backend: "memory" | "file" | "vector" | "hybrid";
   path?: string;
 
-  // Vector store
+  // 向量存储
   vectorDb?: {
     type: "lancedb" | "qdrant" | "pinecone";
     url?: string;
@@ -117,14 +117,14 @@ interface MemoryConfig {
     collection?: string;
   };
 
-  // Embedding
+  // 嵌入
   embedding?: {
     provider: "openai" | "anthropic" | "local";
     model?: string;
     dimension?: number;
   };
 
-  // Behavior
+  // 行为
   maxMemory?: number;
   compactThreshold?: number;
   retentionDays?: number;
@@ -148,9 +148,9 @@ const config: MemoryConfig = {
 };
 ```
 
-## Search Integration
+## 搜索集成
 
-### Search Options
+### 搜索选项
 
 ```typescript
 interface SearchOptions {
@@ -173,7 +173,7 @@ interface MemoryResult {
 }
 ```
 
-### Search Implementation
+### 搜索实现
 
 ```typescript
 class VectorSearchEngine implements SearchEngine {
@@ -211,9 +211,9 @@ class VectorSearchEngine implements SearchEngine {
 }
 ```
 
-## Context Building
+## 上下文构建
 
-### Context Assembly
+### 上下文组装
 
 ```typescript
 interface MemoryContext {
@@ -243,7 +243,7 @@ async buildContext(
 }
 ```
 
-### Prompt Integration
+### 提示词集成
 
 ```typescript
 function injectMemoryIntoPrompt(
@@ -282,9 +282,9 @@ ${sections.join("\n\n")}
 }
 ```
 
-## Fact Extraction
+## 事实提取
 
-### Fact Inference
+### 事实推断
 
 ```typescript
 interface FactExtractor {
@@ -331,9 +331,9 @@ Format each fact as: { "type": "fact", "content": "...", "confidence": 0.0-1.0 }
 }
 ```
 
-## Compaction
+## 压缩
 
-### Compaction Strategy
+### 压缩策略
 
 ```typescript
 interface CompactionStrategy {
@@ -367,9 +367,9 @@ class SummaryCompaction implements CompactionStrategy {
 }
 ```
 
-## DREAMS System
+## DREAMS 系统
 
-### Reflection Generation
+### 反思生成
 
 ```typescript
 interface DreamsGenerator {
@@ -407,7 +407,7 @@ Format as a markdown list.
 }
 ```
 
-## Complete Example
+## 完整示例
 
 ```typescript
 import { createMemoryHost } from "@openclaw/memory-host-sdk";
@@ -454,8 +454,8 @@ await host.compact("session-123");
 await host.shutdown();
 ```
 
-## Related
+## 相关内容
 
-- [Memory System](/architecture-book/part-8-session-memory/02-memory-system) - Memory architecture
-- [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - Context assembly
-- [Compaction](/architecture-book/part-8-session-memory/04-compaction) - Memory compaction
+- [内存系统](../part-8-session-memory/02-memory-system.md) - 内存架构
+- [上下文引擎](../part-8-session-memory/03-context-engine.md) - 上下文组装
+- [压缩](../part-8-session-memory/04-compaction.md) - 内存压缩

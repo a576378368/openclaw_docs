@@ -1,32 +1,32 @@
 ---
-summary: "Message parsing, command extraction, and media handling"
-title: "Message Processing"
+summary: "消息解析、命令提取和媒体处理"
+title: "消息处理"
 read_when:
-  - Processing messages
-  - Extracting commands and entities
+  - 处理消息
+  - 提取命令和实体
 ---
 
-# Message Processing
+# 消息处理
 
-## Overview
+## 概述
 
-Message processing transforms raw inbound messages into structured data ready for agent consumption.
+消息处理将原始入站消息转换为可供 Agent 消费的结构化数据。
 
-## Processing Pipeline
+## 处理管道
 
 ```mermaid
 flowchart TB
-    A[Raw Event] --> B[Parse]
-    B --> C[Normalize]
-    C --> D[Extract Entities]
-    D --> E[Classify Intent]
-    E --> F[Route]
-    F --> G[Process]
+    A[原始事件] --> B[解析]
+    B --> C[规范化]
+    C --> D[提取实体]
+    D --> E[分类意图]
+    E --> F[路由]
+    F --> G[处理]
 ```
 
-## Message Parsing
+## 消息解析
 
-### Multi-Format Parsing
+### 多格式解析
 
 ```typescript
 interface MessageParser {
@@ -43,13 +43,13 @@ class MessageParserImpl implements MessageParser {
       case "multipart":
         return this.parseMultipart(raw);
       default:
-        throw new Error(`Unknown format: ${format}`);
+        throw new Error(`未知格式: ${format}`);
     }
   }
 }
 ```
 
-### Text Parsing
+### 文本解析
 
 ```typescript
 interface TextParser {
@@ -77,9 +77,9 @@ function parseText(text: string): ParsedText {
 }
 ```
 
-## Entity Extraction
+## 实体提取
 
-### Entity Types
+### 实体类型
 
 ```typescript
 interface Entity {
@@ -103,7 +103,7 @@ type EntityType =
   | "strikethrough";
 ```
 
-### Entity Extractors
+### 实体提取器
 
 ```typescript
 const ENTITY_PATTERNS: Record<EntityType, RegExp> = {
@@ -139,9 +139,9 @@ function extractEntities(text: string): Entity[] {
 }
 ```
 
-## Command Extraction
+## 命令提取
 
-### Command Parser
+### 命令解析器
 
 ```typescript
 interface CommandParser {
@@ -207,7 +207,7 @@ class CommandParserImpl implements CommandParser {
 }
 ```
 
-### Command Routing
+### 命令路由
 
 ```typescript
 const commandRegistry = new Map<string, CommandHandler>();
@@ -226,22 +226,22 @@ async function routeCommand(command: ParsedCommand): Promise<void> {
   await handler(command);
 }
 
-// Example
+// 示例
 registerCommand("help", async (cmd) => {
   const helpText = `
-Available commands:
-/help - Show this help
-/start - Start the bot
-/status - Check status
+可用命令:
+/help - 显示帮助
+/start - 启动机器人
+/status - 检查状态
   `.trim();
 
   await sendMessage(cmd.context, helpText);
 });
 ```
 
-## Media Processing
+## 媒体处理
 
-### Media Parser
+### 媒体解析器
 
 ```typescript
 interface MediaProcessor {
@@ -265,19 +265,19 @@ interface MediaMetadata {
 
 class MediaProcessorImpl implements MediaProcessor {
   async processMedia(media: MediaAttachment): Promise<ProcessedMedia> {
-    // Resolve URL if needed
+    // 解析 URL（如果需要）
     let url = media.url;
     if (!url && media.id) {
       url = await this.resolveMediaUrl(media.id);
     }
 
-    // Generate thumbnail if needed
+    // 生成缩略图（如果需要）
     let thumbnail: string | undefined;
     if (media.type === "image" || media.type === "video") {
       thumbnail = await this.generateThumbnail(media);
     }
 
-    // Extract metadata
+    // 提取元数据
     const metadata = await this.extractMetadata(media);
 
     return {
@@ -290,7 +290,7 @@ class MediaProcessorImpl implements MediaProcessor {
 }
 ```
 
-### Image Processing
+### 图片处理
 
 ```typescript
 interface ImageProcessor {
@@ -327,9 +327,9 @@ class ImageProcessorImpl implements ImageProcessor {
 }
 ```
 
-## Intent Classification
+## 意图分类
 
-### Intent Parser
+### 意图解析器
 
 ```typescript
 interface Intent {
@@ -350,7 +350,7 @@ type IntentType =
 
 class IntentClassifier {
   async classify(text: string): Promise<Intent> {
-    // Pattern-based classification
+    // 基于模式的分类
     if (this.isGreeting(text)) {
       return { type: "greeting", confidence: 0.9, entities: [], parameters: {} };
     }
@@ -379,9 +379,9 @@ class IntentClassifier {
 }
 ```
 
-## Response Shaping
+## 响应格式化
 
-### Response Formatter
+### 响应格式化器
 
 ```typescript
 interface ResponseFormatter {
@@ -418,28 +418,28 @@ class ResponseFormatterImpl implements ResponseFormatter {
 }
 ```
 
-## Processing Examples
+## 处理示例
 
-### Complete Pipeline
+### 完整管道
 
 ```typescript
 async function processInboundMessage(event: PlatformEvent): Promise<void> {
-  // 1. Parse raw event
+  // 1. 解析原始事件
   const parsed = parser.parse(event.raw, event.format);
 
-  // 2. Normalize text
+  // 2. 规范化文本
   const text = normalizeText(parsed.text, event.platform);
 
-  // 3. Extract entities
+  // 3. 提取实体
   const entities = extractEntities(text);
 
-  // 4. Extract command
+  // 4. 提取命令
   const command = commandParser.parse(text, config);
 
-  // 5. Classify intent
+  // 5. 分类意图
   const intent = await intentClassifier.classify(text);
 
-  // 6. Build inbound message
+  // 6. 构建入站消息
   const message: InboundMessage = {
     id: parsed.id,
     channel: event.platform,
@@ -457,13 +457,13 @@ async function processInboundMessage(event: PlatformEvent): Promise<void> {
     },
   };
 
-  // 7. Route to agent
+  // 7. 路由到 Agent
   await agent.process(message);
 }
 ```
 
-## Related
+## 相关
 
-- [Channel Architecture](/architecture-book/part-5-channels/01-channel-architecture) - Channel design
-- [Inbound Events](/architecture-book/part-5-channels/03-inbound-events) - Event handling
-- [Transport Layer](/architecture-book/part-5-channels/05-transport-layer) - Network transport
+- [通道架构](./01-channel-architecture.md) - 通道设计
+- [入站事件](./03-inbound-events.md) - 事件处理
+- [传输层](./05-transport-layer.md) - 网络传输

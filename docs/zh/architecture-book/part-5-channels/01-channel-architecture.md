@@ -1,32 +1,32 @@
 ---
-summary: "Channel abstraction, registry, and capability system"
-title: "Channel Architecture"
+summary: "通道抽象层、注册表和能力系统"
+title: "通道架构"
 read_when:
-  - Understanding channel design
-  - Working with messaging platforms
+  - 理解通道设计
+  - 使用消息平台
 ---
 
-# Channel Architecture
+# 通道架构
 
-## Overview
+## 概述
 
-OpenClaw uses a channel abstraction layer to unify messaging platforms behind a consistent interface.
+OpenClaw 使用通道抽象层来统一消息平台，提供一致的接口。
 
 ```mermaid
 flowchart TB
-    subgraph Channels["Channel System"]
-        Registry[Channel Registry]
-        Loader[Channel Loader]
-        Manager[Channel Manager]
+    subgraph Channels["通道系统"]
+        Registry[通道注册表]
+        Loader[通道加载器]
+        Manager[通道管理器]
     end
 
-    subgraph Abstractions["Abstractions"]
-        Interface[Channel Interface]
-        Target[Channel Target]
-        Message[Message Types]
+    subgraph Abstractions["抽象层"]
+        Interface[通道接口]
+        Target[通道目标]
+        Message[消息类型]
     end
 
-    subgraph Implementations["Platform Implementations"]
+    subgraph Implementations["平台实现"]
         Telegram[Telegram]
         Discord[Discord]
         WhatsApp[WhatsApp]
@@ -41,27 +41,27 @@ flowchart TB
     Registry --> Abstractions
 ```
 
-## Channel Abstraction Purpose
+## 通道抽象的目的
 
-### Why Abstraction?
+### 为什么需要抽象？
 
-| Benefit | Description |
+| 优势 | 描述 |
 |---------|-------------|
-| Unification | Single API for all platforms |
-| Extensibility | Add platforms via plugins |
-| Consistency | Same behavior across channels |
-| Testability | Mock channels in tests |
+| 统一性 | 单一 API 访问所有平台 |
+| 可扩展性 | 通过插件添加平台 |
+| 一致性 | 跨通道行为一致 |
+| 可测试性 | 在测试中模拟通道 |
 
-### Abstraction Layers
+### 抽象层次
 
 ```mermaid
 flowchart LR
     subgraph Application
-        A[Agent Code]
+        A[Agent 代码]
     end
 
     subgraph Abstraction
-        B[Channel Interface]
+        B[通道接口]
     end
 
     subgraph Implementations
@@ -76,23 +76,23 @@ flowchart LR
     B --> E
 ```
 
-## Channel Registry
+## 通道注册表
 
-### Registry Interface
+### 注册表接口
 
 ```typescript
 interface ChannelRegistry {
-  // Registration
+  // 注册
   register(channel: ChannelPlugin): void;
   unregister(id: string): void;
 
-  // Lookup
+  // 查询
   get(id: string): ChannelPlugin | undefined;
   getByPlatform(platform: string): ChannelPlugin | undefined;
   list(): ChannelPlugin[];
   listEnabled(): ChannelPlugin[];
 
-  // Status
+  // 状态
   isConnected(id: string): boolean;
   getStatus(id: string): ChannelStatus;
 }
@@ -106,10 +106,10 @@ interface ChannelStatus {
 }
 ```
 
-### Registry Operations
+### 注册表操作
 
 ```typescript
-// Register a channel plugin
+// 注册通道插件
 registry.register({
   id: "telegram",
   name: "Telegram",
@@ -117,42 +117,42 @@ registry.register({
   entry: "./dist/index.js",
 });
 
-// Get channel
+// 获取通道
 const telegram = registry.get("telegram");
 
-// List all channels
+// 列出所有通道
 const channels = registry.list();
 
-// Check status
+// 检查状态
 if (registry.isConnected("telegram")) {
-  console.log("Telegram is connected");
+  console.log("Telegram 已连接");
 }
 ```
 
-## Channel Manager
+## 通道管理器
 
-### Manager Responsibilities
+### 管理器职责
 
 ```typescript
 class ChannelManager {
   private channels = new Map<string, ChannelInstance>();
   private registry: ChannelRegistry;
 
-  // Lifecycle
+  // 生命周期
   async connect(channelId: string, config: ChannelConfig): Promise<void>;
   async disconnect(channelId: string): Promise<void>;
   async reconnect(channelId: string): Promise<void>;
 
-  // Messaging
+  // 消息
   async send(channelId: string, target: Target, message: OutboundMessage): Promise<void>;
 
-  // Health
+  // 健康检查
   async healthCheck(channelId: string): Promise<ChannelHealth>;
   async reconnectAll(): Promise<void>;
 }
 ```
 
-### Connection Management
+### 连接管理
 
 ```mermaid
 sequenceDiagram
@@ -161,54 +161,54 @@ sequenceDiagram
     participant Platform
 
     Manager->>Channel: connect(config)
-    Channel->>Platform: establish connection
-    Platform-->>Channel: connected
-    Channel-->>Manager: connection ready
-    Manager->>Channel: register handlers
-    Channel->>Manager: emit ready
+    Channel->>Platform: 建立连接
+    Platform-->>Channel: 已连接
+    Channel-->>Manager: 连接就绪
+    Manager->>Channel: 注册处理器
+    Channel->>Manager: 发出就绪事件
 ```
 
-## Capability System
+## 能力系统
 
-### Capability Interface
+### 能力接口
 
 ```typescript
 interface ChannelCapabilities {
-  // Text
+  // 文本
   supportsText: boolean;
   supportsMarkdown: boolean;
   supportsHtml: boolean;
 
-  // Media
+  // 媒体
   supportsImages: boolean;
   supportsVideos: boolean;
   supportsAudio: boolean;
   supportsFiles: boolean;
 
-  // Interactive
+  // 交互
   supportsButtons: boolean;
   supportsInlineButtons: boolean;
   supportsReactions: boolean;
   supportsThreads: boolean;
 
-  // Advanced
+  // 高级
   supportsReplies: boolean;
   supportsForwarding: boolean;
   supportsEphemeral: boolean;
 }
 ```
 
-### Capability Examples
+### 能力示例
 
-| Channel | Images | Buttons | Threads | Reactions |
+| 通道 | 图片 | 按钮 | 线程 | 反应 |
 |---------|--------|---------|---------|-----------|
-| Telegram | Yes | Yes (inline) | Yes | Yes |
-| Discord | Yes | Yes (components) | Yes | Yes |
-| WhatsApp | Yes | No | No | Yes |
-| Slack | Yes | Yes (blocks) | Yes | Yes |
-| Matrix | Yes | No | Yes | Yes |
+| Telegram | 是 | 是（内联） | 是 | 是 |
+| Discord | 是 | 是（组件） | 是 | 是 |
+| WhatsApp | 是 | 否 | 否 | 是 |
+| Slack | 是 | 是（块） | 是 | 是 |
+| Matrix | 是 | 否 | 是 | 是 |
 
-### Capability Checking
+### 能力检查
 
 ```typescript
 async function sendWithFallback(
@@ -216,14 +216,14 @@ async function sendWithFallback(
   target: Target,
   message: OutboundMessage
 ): Promise<void> {
-  // Check if channel supports buttons
+  // 检查通道是否支持按钮
   if (message.buttons && !channel.capabilities.supportsInlineButtons) {
-    // Fallback: convert to text
+    // 回退：转换为文本
     message.content = formatButtonsAsText(message.buttons);
     message.buttons = undefined;
   }
 
-  // Check if content needs truncation
+  // 检查内容是否需要截断
   if (message.content.length > channel.capabilities.maxMessageLength) {
     message.content = truncate(message.content, channel.capabilities.maxMessageLength);
   }
@@ -232,9 +232,9 @@ async function sendWithFallback(
 }
 ```
 
-## Channel Configuration
+## 通道配置
 
-### Config Schema
+### 配置模式
 
 ```typescript
 interface ChannelConfig {
@@ -259,7 +259,7 @@ interface WebhookConfig {
 }
 ```
 
-### Channel-Specific Config
+### 通道特定配置
 
 ```typescript
 const telegramConfig: ChannelConfig = {
@@ -269,11 +269,11 @@ const telegramConfig: ChannelConfig = {
     interval: 1000,
   },
   commands: [
-    { command: "start", description: "Start the bot" },
-    { command: "help", description: "Get help" },
+    { command: "start", description: "启动机器人" },
+    { command: "help", description: "获取帮助" },
   ],
   filters: {
-    allowlist: ["123456789"],  // Allowed user IDs
+    allowlist: ["123456789"],  // 允许的用户 ID
   },
 };
 
@@ -289,25 +289,25 @@ const discordConfig: ChannelConfig = {
 };
 ```
 
-## Channel Lifecycle
+## 通道生命周期
 
-### Lifecycle States
+### 生命周期状态
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Disconnected
-    Disconnected --> Connecting: connect()
-    Connecting --> Connected: success
-    Connecting --> Error: failure
-    Connected --> Disconnecting: disconnect()
-    Connected --> Reconnecting: auto-reconnect
-    Error --> Connecting: retry
-    Reconnecting --> Connected: success
-    Reconnecting --> Error: max retries
-    Disconnecting --> Disconnected: cleanup
+    [*] --> 已断开
+    已断开 --> 连接中: connect()
+    连接中 --> 已连接: 成功
+    连接中 --> 错误: 失败
+    已连接 --> 断开中: disconnect()
+    已连接 --> 重连中: 自动重连
+    错误 --> 连接中: 重试
+    重连中 --> 已连接: 成功
+    重连中 --> 错误: 达到最大重试次数
+    断开中 --> 已断开: 清理
 ```
 
-### Error Recovery
+### 错误恢复
 
 ```typescript
 class ChannelConnection {
@@ -339,8 +339,8 @@ class ChannelConnection {
 }
 ```
 
-## Related
+## 相关
 
-- [Channel Abstract](/architecture-book/part-5-channels/02-channel-abstract) - Interface definitions
-- [Inbound Events](/architecture-book/part-5-channels/03-inbound-events) - Event handling
-- [Message Processing](/architecture-book/part-5-channels/04-message-processing) - Processing pipeline
+- [通道抽象](./02-channel-abstract.md) - 接口定义
+- [入站事件](./03-inbound-events.md) - 事件处理
+- [消息处理](./04-message-processing.md) - 处理管道

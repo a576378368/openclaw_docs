@@ -1,18 +1,18 @@
 ---
-summary: "Plugin SDK for building OpenClaw plugins"
-title: "Plugin SDK"
+summary: "用于构建 OpenClaw 插件的插件 SDK"
+title: "插件 SDK"
 read_when:
-  - Building plugins
-  - Using plugin development APIs
+  - 构建插件
+  - 使用插件开发 API
 ---
 
-# Plugin SDK
+# 插件 SDK
 
-## Overview
+## 概述
 
-The Plugin SDK provides APIs for building OpenClaw plugins including providers, channels, and tools.
+插件 SDK 提供用于构建 OpenClaw 插件（包括 provider、channel 和工具）的 API。
 
-## SDK Structure
+## SDK 结构
 
 ```mermaid
 flowchart TB
@@ -24,9 +24,9 @@ flowchart TB
     SDK --> Core
 ```
 
-## Package Exports
+## 包导出
 
-### Subpath Exports
+### 子路径导出
 
 ```typescript
 // Core
@@ -49,7 +49,7 @@ import { memoryEntry } from "@openclaw/plugin-sdk/runtime/memory";
 
 ## Provider SDK
 
-### Provider Entry
+### Provider 入口
 
 ```typescript
 import { providerEntry } from "@openclaw/plugin-sdk/runtime/provider";
@@ -80,7 +80,7 @@ export const entry = providerEntry({
 });
 ```
 
-### Completion Streaming
+### Completion 流式处理
 
 ```typescript
 async createCompletion(config, params) {
@@ -109,7 +109,7 @@ async createCompletion(config, params) {
 
 ## Channel SDK
 
-### Channel Entry
+### Channel 入口
 
 ```typescript
 import { channelEntry } from "@openclaw/plugin-sdk/runtime/channel";
@@ -135,7 +135,7 @@ export const entry = channelEntry({
 });
 ```
 
-### Channel Configuration
+### Channel 配置
 
 ```typescript
 import { defineChannelConfig } from "@openclaw/plugin-sdk/config";
@@ -159,7 +159,7 @@ export const config = defineChannelConfig({
 
 ## Tool SDK
 
-### Tool Entry
+### Tool 入口
 
 ```typescript
 import { toolEntry } from "@openclaw/plugin-sdk/runtime/tool";
@@ -224,9 +224,9 @@ const toolSchema = {
 };
 ```
 
-## Runtime APIs
+## 运行时 API
 
-### Plugin Context
+### 插件上下文
 
 ```typescript
 interface PluginContext {
@@ -257,7 +257,7 @@ export const entry = providerEntry({
 });
 ```
 
-### Secrets Manager
+### 密钥管理器
 
 ```typescript
 interface SecretsManager {
@@ -271,7 +271,7 @@ const apiKey = await context.secrets.get("API_KEY");
 const webhookSecret = await context.secrets.getOptional("WEBHOOK_SECRET");
 ```
 
-### Logger
+### 日志记录器
 
 ```typescript
 interface Logger {
@@ -323,9 +323,9 @@ hooks.on("after:tool", async (result) => {
 });
 ```
 
-## Configuration
+## 配置
 
-### Config Definition
+### 配置定义
 
 ```typescript
 import { defineConfig } from "@openclaw/plugin-sdk/config";
@@ -377,7 +377,7 @@ export const config = defineConfig({
 });
 ```
 
-### Config Runtime
+### 配置运行时
 
 ```typescript
 import { configRuntime } from "@openclaw/plugin-sdk/config";
@@ -398,9 +398,9 @@ if (!result.success) {
 }
 ```
 
-## Testing
+## 测试
 
-### Test Helpers
+### 测试辅助函数
 
 ```typescript
 import {
@@ -438,7 +438,7 @@ describe("My Plugin", () => {
 });
 ```
 
-### Mock Context
+### 模拟上下文
 
 ```typescript
 const ctx = mockContext({
@@ -462,7 +462,7 @@ const ctx = mockContext({
 });
 ```
 
-## Complete Example
+## 完整示例
 
 ```typescript
 import { providerEntry } from "@openclaw/plugin-sdk/runtime/provider";
@@ -511,8 +511,8 @@ export const entry = providerEntry({
 });
 ```
 
-## Related
+## 相关内容
 
-- [App SDK](/architecture-book/part-6-sdks-apis/01-app-sdk) - Client SDK
-- [Plugin Architecture](/architecture-book/part-3-plugin-system/01-plugin-architecture) - Plugin design
-- [Writing Plugins](/architecture-book/part-3-plugin-system/05-writing-plugins) - Plugin development
+- [App SDK](./01-app-sdk.md) - 客户端 SDK
+- [插件架构](../part-3-plugin-system/01-plugin-architecture.md) - 插件设计
+- [编写插件](../part-3-plugin-system/05-writing-plugins.md) - 插件开发

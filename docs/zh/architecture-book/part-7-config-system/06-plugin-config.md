@@ -1,17 +1,17 @@
 ---
-summary: "Plugin configuration, hooks, permissions, and runtime boundaries"
-title: "Plugin Config"
+summary: "插件配置、hooks、权限和运行时边界"
+title: "插件配置"
 read_when:
-  - Configuring plugins
-  - Setting up plugin hooks
-  - Managing plugin permissions
+  - 配置插件
+  - 设置插件 hooks
+  - 管理插件权限
 ---
 
-# Plugin Config
+# 插件配置
 
-## Overview
+## 概述
 
-OpenClaw's plugin configuration system manages extensions with hooks, permissions, and runtime boundaries. Plugins can extend core functionality while operating within defined security constraints.
+OpenClaw 的插件配置系统管理带有 hooks、权限和运行时边界的扩展。插件可以在定义的安全约束内扩展核心功能。
 
 ```mermaid
 flowchart TB
@@ -40,9 +40,9 @@ flowchart TB
     PluginEntry --> Permissions
 ```
 
-## Configuration Structure
+## 配置结构
 
-### Main Plugins Config
+### 主 Plugins 配置
 
 ```typescript
 // src/config/types.plugins.ts
@@ -66,14 +66,14 @@ interface PluginsConfig {
 }
 ```
 
-### Plugin Discovery Modes
+### 插件发现模式
 
-| Mode | Description |
+| 模式 | 描述 |
 |------|-------------|
-| `allowlist` | Bundled provider plugins gated by `allow` and `entries.<id>.enabled` |
-| `compat` | Legacy mode; bundled provider plugins can be force-loaded |
+| `allowlist` | 捆绑的 Provider 插件由 `allow` 和 `entries.<id>.enabled` 控制 |
+| `compat` | 旧模式；捆绑的 Provider 插件可以强制加载 |
 
-### Plugin Entry Configuration
+### 插件入口配置
 
 ```typescript
 interface PluginEntryConfig {
@@ -90,9 +90,9 @@ interface PluginEntryConfig {
 }
 ```
 
-## Hook Configuration
+## Hook 配置
 
-### Hook Permissions
+### Hook 权限
 
 ```typescript
 interface PluginHooksConfig {
@@ -107,21 +107,21 @@ interface PluginHooksConfig {
 }
 ```
 
-### Hook Types and Timeouts
+### Hook 类型和超时
 
-| Hook | Purpose | Default Timeout |
+| Hook | 用途 | 默认超时 |
 |------|---------|-----------------|
-| `before_prompt_build` | Modify prompt before building | 5000ms |
-| `before_agent_start` | Pre-agent initialization | 10000ms |
-| `before_agent_run` | Pre-run processing | 10000ms |
-| `before_model_resolve` | Pre-model call processing | 5000ms |
-| `before_agent_reply` | Pre-reply processing | 5000ms |
-| `llm_input` | Log/modify LLM input | 5000ms |
-| `llm_output` | Log/modify LLM output | 5000ms |
-| `before_agent_finalize` | Pre-finalization processing | 5000ms |
-| `agent_end` | Post-agent completion | 5000ms |
+| `before_prompt_build` | 在构建前修改提示词 | 5000ms |
+| `before_agent_start` | Agent 前置初始化 | 10000ms |
+| `before_agent_run` | 运行前置处理 | 10000ms |
+| `before_model_resolve` | 模型调用前置处理 | 5000ms |
+| `before_agent_reply` | 回复前置处理 | 5000ms |
+| `llm_input` | 记录/修改 LLM 输入 | 5000ms |
+| `llm_output` | 记录/修改 LLM 输出 | 5000ms |
+| `before_agent_finalize` | 终结前置处理 | 5000ms |
+| `agent_end` | Agent 完成后处理 | 5000ms |
 
-### Hook Configuration Example
+### Hook 配置示例
 
 ```json
 {
@@ -143,9 +143,9 @@ interface PluginHooksConfig {
 }
 ```
 
-## Model Override Permissions
+## 模型覆盖权限
 
-### Subagent Model Override
+### 子 Agent 模型覆盖
 
 ```typescript
 interface SubagentPermissionsConfig {
@@ -156,7 +156,7 @@ interface SubagentPermissionsConfig {
 }
 ```
 
-### LLM Permissions
+### LLM 权限
 
 ```typescript
 interface LlmPermissionsConfig {
@@ -169,17 +169,17 @@ interface LlmPermissionsConfig {
 }
 ```
 
-### Permission Matrix
+### 权限矩阵
 
-| Permission | Subagent Hooks | LLM Hooks | Default |
+| 权限 | 子 Agent Hooks | LLM Hooks | 默认值 |
 |------------|---------------|-----------|---------|
-| `allowModelOverride` | Yes | Yes | false |
-| `allowedModels` | Yes | Yes | [] (none) |
-| `allowAgentIdOverride` | No | Yes | false |
+| `allowModelOverride` | 是 | 是 | false |
+| `allowedModels` | 是 | 是 | [] (无) |
+| `allowAgentIdOverride` | 否 | 是 | false |
 
-## Plugin Slots
+## 插件槽位
 
-### Slot Assignment
+### 槽位分配
 
 ```typescript
 interface PluginSlotsConfig {
@@ -190,7 +190,7 @@ interface PluginSlotsConfig {
 }
 ```
 
-### Slot Resolution
+### 槽位解析
 
 ```typescript
 // Example slot configuration
@@ -209,9 +209,9 @@ if (plugin.id === config.plugins.slots.memory) {
 }
 ```
 
-## Plugin Load Configuration
+## 插件加载配置
 
-### Additional Paths
+### 附加路径
 
 ```typescript
 interface PluginsLoadConfig {
@@ -233,9 +233,9 @@ interface PluginsLoadConfig {
 }
 ```
 
-## Plugin Install Records
+## 插件安装记录
 
-### Marketplace Installation
+### 市场安装
 
 ```typescript
 // Transient record during install flows
@@ -249,13 +249,13 @@ interface PluginInstallRecord {
 }
 ```
 
-Note: Install records are transient and not persisted to `openclaw.json`.
+注意：安装记录是临时的，不会持久化到 `openclaw.json`。
 
-## Plugin Schema Extension
+## 插件 Schema 扩展
 
-### UI Metadata
+### UI 元数据
 
-Plugins can contribute UI metadata and schema:
+插件可以贡献 UI 元数据和 Schema：
 
 ```typescript
 interface PluginUiMetadata {
@@ -279,7 +279,7 @@ interface PluginUiMetadata {
 }
 ```
 
-### Schema Extension Limits
+### Schema 扩展限制
 
 ```typescript
 const EXTENSION_SCHEMA_MAX_BYTES = 256 * 1024;      // 256KB per plugin
@@ -287,9 +287,9 @@ const EXTENSION_SCHEMA_TOTAL_MAX_BYTES = 2 * 1024 * 1024;  // 2MB total
 const EXTENSION_SCHEMA_MAX_ITEMS = 256;            // Max 256 plugins
 ```
 
-### Omitted Schemas
+### 省略的 Schema
 
-When plugin schemas exceed limits:
+当插件 Schema 超出限制时：
 
 ```typescript
 {
@@ -299,7 +299,7 @@ When plugin schemas exceed limits:
 }
 ```
 
-## Plugin Configuration Pattern
+## 插件配置模式
 
 ```mermaid
 flowchart TB
@@ -317,9 +317,9 @@ flowchart TB
     E --> L[Continue to Next]
 ```
 
-## Example Configuration
+## 示例配置
 
-### Basic Plugin Setup
+### 基本插件设置
 
 ```json
 {
@@ -367,7 +367,7 @@ flowchart TB
 }
 ```
 
-### Custom Plugin Path
+### 自定义插件路径
 
 ```json
 {
@@ -392,7 +392,7 @@ flowchart TB
 }
 ```
 
-### Memory Plugin Slot
+### 内存插件槽位
 
 ```json
 {
@@ -413,9 +413,9 @@ flowchart TB
 }
 ```
 
-## Related
+## 相关内容
 
-- [Config Schema](/architecture-book/part-7-config-system/01-config-schema) - Schema architecture
-- [Plugin System](/architecture-book/part-6-sdks-apis/02-plugin-sdk) - Plugin development
-- [Security Model](/architecture-book/part-5-security/01-auth-permissions) - Permission model
-- [Hooks System](/architecture-book/part-2-core-modules/05-hooks) - Hook implementation
+- [配置 Schema](./01-config-schema.md) - Schema 架构
+- [插件系统](../part-6-sdks-apis/02-plugin-sdk.md) - 插件开发
+- [安全模型](../part-5-security/01-auth-permissions.md) - 权限模型
+- [Hooks 系统](../part-2-core-modules/05-hooks.md) - Hook 实现
