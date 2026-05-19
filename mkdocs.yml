@@ -168,9 +168,6 @@ nav:
       - 部署: zh/architecture-book/part-9-dev-guide/05-deployment.md
 
 markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_anchors: local
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.superfences:
@@ -178,18 +175,12 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
   - admonition
   - attr_list
-  - md_in_html
   - tables
   - toc:
       permalink: true
       toc_depth: 3
-  - def_list
-  - footnotes
   - meta
 
 extra_css:
