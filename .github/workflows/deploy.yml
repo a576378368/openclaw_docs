@@ -28,13 +28,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install mkdocs mkdocs-material
+          pip install mkdocs mkdocs-material pymdown-extensions
 
       - name: Build documentation
         run: mkdocs build --strict
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,3040 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OpenClaw 系统架构文档">
+      
+      
+      
+      
+        <link rel="prev" href="../../part-2-core-modules/08-tasks/">
+      
+      
+        <link rel="next" href="../02-plugin-sdk/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Plugin Architecture - OpenClaw Architecture Book</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plugin-architecture" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="OpenClaw Architecture Book" class="md-header__button md-logo" aria-label="OpenClaw Architecture Book" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw Architecture Book
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plugin Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="OpenClaw Architecture Book" class="md-nav__button md-logo" aria-label="OpenClaw Architecture Book" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw Architecture Book
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    主页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基础
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    基础
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/01-introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    简介
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/02-system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统概览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/03-core-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心概念
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-1-foundations/04-directory-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    目录结构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    核心模块
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    核心模块
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/01-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    网关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/02-agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/03-sessions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    会话
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/04-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/05-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    工具
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/06-mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/07-flows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-2-core-modules/08-tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    任务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    插件系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件架构
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Principles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Principles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-stays-plugin-agnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Stays Plugin-Agnostic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contract-first-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract-First Design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manifest-first-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manifest-First Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lazy-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lazy Loading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#type-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provider-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provider Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channel-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Manifest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin Manifest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manifest-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manifest Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manifest-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manifest Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Lifecycle
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin Lifecycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Registry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin Registry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registry-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registry Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registry-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registry Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plugin-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Discovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugin Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discovery-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bundled-vs-external-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bundled vs External Plugins
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bundled vs External Plugins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bundled-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bundled Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin Isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-plugin-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件 SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-plugin-contracts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件合约
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-plugin-runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件运行时
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-writing-plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    编写插件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-channel-plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道插件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    网关协议
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    网关协议
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/01-protocol-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    协议概览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/02-ws-transport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WebSocket 传输
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/03-message-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息流
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/04-events-and-rpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    事件和 RPC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-4-gateway-protocol/05-auth-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    认证和安全
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    通道
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/01-channel-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/02-channel-abstract/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道抽象
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/03-inbound-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    入站事件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/04-message-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-5-channels/05-transport-layer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    传输层
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK 和 API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK 和 API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/01-app-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/02-plugin-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件 SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/03-memory-host-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Host SDK
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-6-sdks-apis/04-api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API 参考
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    配置系统
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    配置系统
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/01-config-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    配置架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/03-provider-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Provider 配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/04-channel-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通道配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/05-agent-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent 配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-7-config-system/06-plugin-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    插件配置
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    会话内存
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    会话内存
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/00-session-memory-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    会话内存概览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/03-context-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    上下文引擎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/04-compaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    压缩
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-8-session-memory/05-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多 Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发指南
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    开发指南
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/01-dev-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发工作流
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/02-build-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    构建系统
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/03-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/04-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    调试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../part-9-dev-guide/05-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    部署
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="plugin-architecture">Plugin Architecture</h1>
+<h2 id="overview">Overview</h2>
+<p>OpenClaw uses a plugin-based architecture that allows the core system to remain agnostic while enabling extensive customization through plugins.</p>
+<pre><code class="language-mermaid">flowchart TB
+    subgraph Core
+        Registry[Plugin Registry]
+        Loader[Plugin Loader]
+        Runtime[Plugin Runtime]
+    end
+
+    subgraph PluginTypes
+        Provider[Provider Plugin]
+        Channel[Channel Plugin]
+        Tool[Tool Plugin]
+        Memory[Memory Plugin]
+        Runtime[Runtimes Plugin]
+    end
+
+    subgraph External
+        Files[Plugin Files]
+        NPM[Package Registry]
+    end
+
+    Registry --&gt; Loader
+    Loader --&gt; Runtime
+    Runtime --&gt; Provider
+    Runtime --&gt; Channel
+    Runtime --&gt; Tool
+    Runtime --&gt; Memory
+    Runtime --&gt; Runtimes
+    Files --&gt; Loader
+    NPM --&gt; Loader
+</code></pre>
+<h2 id="design-principles">Design Principles</h2>
+<h3 id="core-stays-plugin-agnostic">Core Stays Plugin-Agnostic</h3>
+<p>The core system has no built-in knowledge of:
+- Specific providers (OpenAI, Anthropic, etc.)
+- Specific channels (Telegram, Discord, etc.)
+- Specific tools
+- Specific AI models</p>
+<p>All capabilities come through well-defined plugin interfaces.</p>
+<h3 id="contract-first-design">Contract-First Design</h3>
+<p>Plugins communicate through strict contracts:</p>
+<pre><code class="language-typescript">interface PluginContract {
+  readonly id: string;
+  readonly name: string;
+  readonly version: string;
+  readonly type: PluginType;
+
+  // Lifecycle
+  activate(context: PluginContext): Promise&lt;void&gt;;
+  deactivate(): Promise&lt;void&gt;;
+}
+</code></pre>
+<h3 id="manifest-first-behavior">Manifest-First Behavior</h3>
+<p>Plugin configuration is derived from manifest metadata before runtime:</p>
+<pre><code class="language-typescript">// 1. Control plane: validate manifest
+const validatedConfig = await registry.validate(manifest);
+
+// 2. Runtime plane: execute with validated config
+await provider.createCompletion(validatedConfig);
+</code></pre>
+<h3 id="lazy-loading">Lazy Loading</h3>
+<p>Plugins are loaded on-demand:</p>
+<pre><code class="language-typescript">const loader = new PluginLoader({
+  lazy: true,
+  activationPolicy: &quot;on-demand&quot;,
+});
+
+// Plugin activated only when first used
+await loader.activate(&quot;provider/openai&quot;);
+</code></pre>
+<h2 id="plugin-types">Plugin Types</h2>
+<h3 id="type-hierarchy">Type Hierarchy</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Entry Point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>provider</td>
+<td>AI model providers</td>
+<td><code>providerEntry()</code></td>
+</tr>
+<tr>
+<td>channel</td>
+<td>Messaging platforms</td>
+<td><code>channelEntry()</code></td>
+</tr>
+<tr>
+<td>tool</td>
+<td>External capabilities</td>
+<td><code>toolEntry()</code></td>
+</tr>
+<tr>
+<td>memory</td>
+<td>Knowledge storage</td>
+<td><code>memoryEntry()</code></td>
+</tr>
+<tr>
+<td>runtime</td>
+<td>Agent execution</td>
+<td><code>runtimeEntry()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="provider-plugins">Provider Plugins</h3>
+<p>Connect to AI model providers:</p>
+<pre><code class="language-typescript">// extensions/openai/src/index.ts
+export const entry = providerEntry({
+  id: &quot;openai&quot;,
+  name: &quot;OpenAI&quot;,
+
+  // Provider methods
+  async listModels() {
+    // Return available models
+    return [
+      { ref: &quot;openai:gpt-4o&quot;, name: &quot;GPT-4o&quot;, ... },
+      { ref: &quot;openai:gpt-4o-mini&quot;, name: &quot;GPT-4o Mini&quot;, ... },
+    ];
+  },
+
+  async createCompletion(params) {
+    // Create completion
+    return openai.chat.completions.create(params);
+  },
+});
+</code></pre>
+<h3 id="channel-plugins">Channel Plugins</h3>
+<p>Connect to messaging platforms:</p>
+<pre><code class="language-typescript">// extensions/telegram/src/index.ts
+export const entry = channelEntry({
+  id: &quot;telegram&quot;,
+  name: &quot;Telegram&quot;,
+
+  async connect(config) {
+    // Connect to Telegram
+    return new TelegramBot(config.token);
+  },
+
+  async send(target, message) {
+    // Send message
+    await bot.sendMessage(target.peer, message.content);
+  },
+
+  onMessage(handler) {
+    // Handle incoming messages
+    bot.on(&quot;message&quot;, handler);
+  },
+});
+</code></pre>
+<h3 id="tool-plugins">Tool Plugins</h3>
+<p>Provide external capabilities:</p>
+<pre><code class="language-typescript">// extensions/tavily/src/index.ts
+export const entry = toolEntry({
+  id: &quot;tavily&quot;,
+  name: &quot;Tavily Search&quot;,
+  tools: [
+    {
+      name: &quot;web_search&quot;,
+      description: &quot;Search the web&quot;,
+      schema: { query: &quot;string&quot; },
+    },
+  ],
+
+  async execute(tool, params, context) {
+    const result = await tavily.search(params.query);
+    return { success: true, content: { type: &quot;text&quot;, text: result } };
+  },
+});
+</code></pre>
+<h2 id="plugin-manifest">Plugin Manifest</h2>
+<h3 id="manifest-structure">Manifest Structure</h3>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;provider/openai&quot;,
+  &quot;name&quot;: &quot;OpenAI Provider&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;type&quot;: &quot;provider&quot;,
+  &quot;description&quot;: &quot;OpenAI GPT models provider&quot;,
+  &quot;entry&quot;: &quot;./dist/index.js&quot;,
+  &quot;runtime&quot;: {
+    &quot;node&quot;: &quot;&gt;=18.0.0&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;openai&quot;: &quot;^4.0.0&quot;
+  },
+  &quot;providers&quot;: [
+    {
+      &quot;id&quot;: &quot;openai&quot;,
+      &quot;models&quot;: [&quot;gpt-4o&quot;, &quot;gpt-4o-mini&quot;, &quot;gpt-4-turbo&quot;],
+      &quot;capabilities&quot;: [&quot;streaming&quot;, &quot;function_calling&quot;, &quot;vision&quot;]
+    }
+  ],
+  &quot;config&quot;: {
+    &quot;schema&quot;: { /* Zod schema */ }
+  }
+}
+</code></pre>
+<h3 id="manifest-validation">Manifest Validation</h3>
+<pre><code class="language-typescript">const manifestSchema = z.object({
+  id: z.string().regex(/^[a-z]+\/[a-z-]+$/),
+  name: z.string(),
+  version: z.string().regex(/^\d+\.\d+\.\d+/),
+  type: z.enum([&quot;provider&quot;, &quot;channel&quot;, &quot;tool&quot;, &quot;memory&quot;, &quot;runtime&quot;]),
+  entry: z.string(),
+  runtime: z.object({
+    node: z.string().optional(),
+  }).optional(),
+  dependencies: z.record(z.string()).optional(),
+});
+
+function validateManifest(manifest: unknown) {
+  return manifestSchema.parse(manifest);
+}
+</code></pre>
+<h2 id="plugin-lifecycle">Plugin Lifecycle</h2>
+<h3 id="lifecycle-states">Lifecycle States</h3>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; Discovered
+    Discovered --&gt; Resolved: Load manifest
+    Resolved --&gt; Registered: Add to registry
+    Registered --&gt; Activated: First use
+    Activated --&gt; Deactivated: Shutdown
+    Deactivated --&gt; Activated: Resume
+    Deactivated --&gt; Unloaded: Cleanup
+</code></pre>
+<h3 id="lifecycle-methods">Lifecycle Methods</h3>
+<pre><code class="language-typescript">interface PluginLifecycle {
+  // Called when plugin is first activated
+  activate(context: PluginContext): Promise&lt;void&gt;;
+
+  // Called when plugin is deactivated
+  deactivate(): Promise&lt;void&gt;;
+
+  // Health check
+  healthCheck(): Promise&lt;HealthStatus&gt;;
+}
+</code></pre>
+<h2 id="plugin-registry">Plugin Registry</h2>
+<h3 id="registry-interface">Registry Interface</h3>
+<pre><code class="language-typescript">interface PluginRegistry {
+  // Discovery
+  discover(patterns: string[]): Promise&lt;DiscoveredPlugin[]&gt;;
+  resolve(id: string): Promise&lt;ResolvedPlugin&gt;;
+
+  // Registration
+  register(plugin: Plugin): void;
+  unregister(id: string): void;
+  get(id: string): Plugin | undefined;
+  list(type?: PluginType): Plugin[];
+
+  // Activation
+  activate(id: string, options?: ActivationOptions): Promise&lt;void&gt;;
+  deactivate(id: string): Promise&lt;void&gt;;
+
+  // Status
+  getStatus(id: string): PluginStatus;
+}
+</code></pre>
+<h3 id="registry-operations">Registry Operations</h3>
+<pre><code class="language-typescript">// Discover plugins
+const plugins = await registry.discover([
+  &quot;extensions/providers/*&quot;,
+  &quot;extensions/channels/*&quot;,
+]);
+
+// Register a plugin
+registry.register({
+  manifest: validatedManifest,
+  module: loadedModule,
+});
+
+// Activate on demand
+await registry.activate(&quot;provider/openai&quot;);
+
+// Check status
+const status = registry.getStatus(&quot;provider/openai&quot;);
+// { status: &quot;active&quot;, activatedAt: Date, ... }
+</code></pre>
+<h2 id="plugin-context">Plugin Context</h2>
+<h3 id="context-object">Context Object</h3>
+<pre><code class="language-typescript">interface PluginContext {
+  // Configuration
+  config: Readonly&lt;PluginConfig&gt;;
+  secrets: SecretsManager;
+
+  // Services
+  logger: Logger;
+  httpClient: HttpClient;
+  storage: Storage;
+
+  // OpenClaw APIs
+  session: SessionAPI;
+  memory: MemoryAPI;
+  tools: ToolsAPI;
+
+  // Lifecycle hooks
+  hooks: HooksAPI;
+}
+</code></pre>
+<h3 id="using-context">Using Context</h3>
+<pre><code class="language-typescript">export async function activate(context: PluginContext) {
+  const { config, logger, secrets } = context;
+
+  // Access configuration
+  const apiKey = await secrets.get(&quot;OPENAI_API_KEY&quot;);
+
+  // Use services
+  logger.info(&quot;Initializing OpenAI provider&quot;);
+
+  // Register with APIs
+  context.tools.register(myTools);
+
+  // Register hooks
+  context.hooks.on(&quot;before:message&quot;, myHandler);
+}
+</code></pre>
+<h2 id="plugin-discovery">Plugin Discovery</h2>
+<h3 id="discovery-sources">Discovery Sources</h3>
+<pre><code class="language-typescript">interface DiscoverySource {
+  type: &quot;directory&quot; | &quot;npm&quot; | &quot;url&quot;;
+  path: string;
+  patterns?: string[];
+}
+
+// Built-in discovery
+const sources: DiscoverySource[] = [
+  { type: &quot;directory&quot;, path: &quot;./extensions&quot; },
+  { type: &quot;directory&quot;, path: &quot;~/.openclaw/plugins&quot; },
+];
+
+// Custom discovery
+await registry.addSource({
+  type: &quot;npm&quot;,
+  package: &quot;@openclaw/plugin-*&quot;,
+});
+</code></pre>
+<h3 id="discovery-process">Discovery Process</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Registry
+    participant Source
+    participant Loader
+    participant Validator
+
+    Registry-&gt;&gt;Source: scan()
+    Source--&gt;&gt;Registry: manifest files
+    Registry-&gt;&gt;Loader: load manifest
+    Loader--&gt;&gt;Registry: raw manifest
+    Registry-&gt;&gt;Validator: validate
+    Validator--&gt;&gt;Registry: validated manifest
+    Registry-&gt;&gt;Registry: add to registry
+</code></pre>
+<h2 id="bundled-vs-external-plugins">Bundled vs External Plugins</h2>
+<h3 id="bundled-plugins">Bundled Plugins</h3>
+<p>Built into the OpenClaw distribution:</p>
+<pre><code>extensions/              # Bundled in core
+├── providers/
+│   ├── openai/
+│   ├── anthropic/
+│   └── ...
+├── channels/
+│   ├── telegram/
+│   ├── discord/
+│   └── ...
+└── tools/
+    ├── browser/
+    └── ...
+</code></pre>
+<h3 id="external-plugins">External Plugins</h3>
+<p>Installed separately:</p>
+<pre><code class="language-bash">npm install @openclaw/plugin-custom-provider
+</code></pre>
+<pre><code class="language-typescript">// Configuration
+const config = {
+  plugins: {
+    external: [
+      {
+        name: &quot;@custom/plugin&quot;,
+        source: &quot;npm&quot;,
+      },
+    ],
+  },
+};
+</code></pre>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="plugin-isolation">Plugin Isolation</h3>
+<p>Plugins run with minimal privileges:</p>
+<table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>Default</th>
+<th>Configurable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File system</td>
+<td>Read current dir</td>
+<td>Per-plugin</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>None</td>
+<td>Per-plugin</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>None</td>
+<td>Explicit grant</td>
+</tr>
+<tr>
+<td>Tools</td>
+<td>None</td>
+<td>Explicit grant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sandboxing">Sandboxing</h3>
+<pre><code class="language-typescript">const sandboxConfig = {
+  permissions: {
+    fs: { allow: [&quot;./workspace/*&quot;], deny: [&quot;~/.openclaw/*&quot;] },
+    net: { allow: [&quot;api.example.com&quot;], deny: [] },
+    exec: { allow: [], deny: [&quot;rm&quot;, &quot;dd&quot;, &quot;mkfs&quot;] },
+  },
+  timeout: 30000,
+  memoryLimit: &quot;256MB&quot;,
+};
+</code></pre>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="/architecture-book/part-3-plugin-system/02-plugin-sdk">Plugin SDK</a> - SDK documentation</li>
+<li><a href="/architecture-book/part-3-plugin-system/03-plugin-contracts">Plugin Contracts</a> - Contract definitions</li>
+<li><a href="/architecture-book/part-3-plugin-system/04-plugin-runtime">Plugin Runtime</a> - Runtime implementation</li>
+<li><a href="/architecture-book/part-3-plugin-system/05-writing-plugins">Writing Plugins</a> - Plugin development</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
