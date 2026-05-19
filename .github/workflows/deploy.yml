@@ -27,8 +27,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          pip install mkdocs mkdocs-material pymdown-extensions
+        run: pip install mkdocs-material "pymdown-extensions>=9.0,<10.0"
 
       - name: Build documentation
         run: mkdocs build --strict
