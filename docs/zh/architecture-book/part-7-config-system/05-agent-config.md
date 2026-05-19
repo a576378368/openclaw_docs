@@ -467,7 +467,7 @@ interface AgentBindingMatch {
 
 ## 相关内容
 
-- [配置 Schema](./01-config-schema.md) - Schema 架构
-- [Provider 配置](./03-provider-config.md) - 模型 Provider 设置
-- [Agent 系统](../part-2-core-modules/02-agents.md) - Agent 运行时详情
-- [工具系统](../part-2-core-modules/04-tools.md) - 工具配置
+- [配置 Schema](./01-config-schema) - Schema 架构
+- [Provider 配置](./03-provider-config) - 模型 Provider 设置
+- [Agent 系统](../part-2-core-modules/02-agents) - Agent 运行时详情
+- [工具系统](../part-2-core-modules/04-tools) - 工具配置

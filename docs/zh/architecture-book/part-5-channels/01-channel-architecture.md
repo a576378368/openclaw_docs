@@ -341,6 +341,6 @@ class ChannelConnection {
 
 ## 相关
 
-- [通道抽象](./02-channel-abstract.md) - 接口定义
-- [入站事件](./03-inbound-events.md) - 事件处理
-- [消息处理](./04-message-processing.md) - 处理管道
+- [通道抽象](./02-channel-abstract) - 接口定义
+- [入站事件](./03-inbound-events) - 事件处理
+- [消息处理](./04-message-processing) - 处理管道

@@ -513,6 +513,6 @@ export const entry = providerEntry({
 
 ## 相关内容
 
-- [App SDK](./01-app-sdk.md) - 客户端 SDK
-- [插件架构](../part-3-plugin-system/01-plugin-architecture.md) - 插件设计
-- [编写插件](../part-3-plugin-system/05-writing-plugins.md) - 插件开发
+- [App SDK](./01-app-sdk) - 客户端 SDK
+- [插件架构](../part-3-plugin-system/01-plugin-architecture) - 插件设计
+- [编写插件](../part-3-plugin-system/05-writing-plugins) - 插件开发

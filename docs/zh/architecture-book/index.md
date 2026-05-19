@@ -33,31 +33,31 @@ read_when:
 
 本书分为九个部分：
 
-### [第一部分：基础](./part-1-foundations/01-introduction.md)
+### [第一部分：基础](./part-1-foundations/01-introduction)
 学习 OpenClaw 的基本概念和设计理念，包括系统概述、核心概念和目录结构。
 
-### [第二部分：核心模块](./part-2-core-modules/01-gateway.md)
+### [第二部分：核心模块](./part-2-core-modules/01-gateway)
 深入了解 OpenClaw 的核心组件，包括 Gateway、Agent、会话管理和内存系统。
 
-### [第三部分：插件系统](./part-3-plugin-system/01-plugin-architecture.md)
+### [第三部分：插件系统](./part-3-plugin-system/01-plugin-architecture)
 学习如何扩展 OpenClaw 功能，包括插件架构、SDK 和开发指南。
 
-### [第四部分：网关协议](./part-4-gateway-protocol/01-protocol-overview.md)
+### [第四部分：网关协议](./part-4-gateway-protocol/01-protocol-overview)
 了解 OpenClaw 的通信协议，包括 WebSocket 传输和消息流程。
 
-### [第五部分：通道系统](./part-5-channels/01-channel-architecture.md)
+### [第五部分：通道系统](./part-5-channels/01-channel-architecture)
 学习通道的抽象层和事件处理机制。
 
-### [第六部分：SDK 和 API](./part-6-sdks-apis/01-app-sdk.md)
+### [第六部分：SDK 和 API](./part-6-sdks-apis/01-app-sdk)
 完整的 SDK 和 API 参考文档。
 
-### [第七部分：配置系统](./part-7-config-system/01-config-schema.md)
+### [第七部分：配置系统](./part-7-config-system/01-config-schema)
 配置系统的完整参考。
 
-### [第八部分：会话和内存](./part-8-session-memory/00-session-memory-overview.md)
+### [第八部分：会话和内存](./part-8-session-memory/00-session-memory-overview)
 会话管理和内存系统的深入解析。
 
-### [第九部分：开发者指南](./part-9-dev-guide/01-dev-workflow.md)
+### [第九部分：开发者指南](./part-9-dev-guide/01-dev-workflow)
 开发、测试和部署的最佳实践。
 
 ## 本书面向的读者

@@ -379,6 +379,6 @@ interface RunMetrics {
 ## Related
 
 - [Session Management](/architecture-book/part-8-session-memory/01-session-management) - Session architecture
-- [Memory System](/architecture-book/part-8-session-memory/02-memory-system) - Memory architecture
+- [Memory System](/architecture-book/part-8-session-memory/00-session-memory-overview) - Memory architecture
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - Context assembly
 - [MCP Support](/architecture-book/part-2-core-modules/06-mcp) - MCP integration

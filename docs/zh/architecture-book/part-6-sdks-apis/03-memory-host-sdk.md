@@ -456,6 +456,6 @@ await host.shutdown();
 
 ## 相关内容
 
-- [内存系统](../part-8-session-memory/02-memory-system.md) - 内存架构
-- [上下文引擎](../part-8-session-memory/03-context-engine.md) - 上下文组装
-- [压缩](../part-8-session-memory/04-compaction.md) - 内存压缩
+- [内存系统](../part-8-session-memory/00-session-memory-overview) - 内存架构
+- [上下文引擎](../part-8-session-memory/03-context-engine) - 上下文组装
+- [压缩](../part-8-session-memory/04-compaction) - 内存压缩

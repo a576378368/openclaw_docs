@@ -460,6 +460,6 @@ await retryAsync(
 ## 相关
 
 - [上下文引擎](/architecture-book/part-8-session-memory/03-context-engine) - 上下文组装
-- [内存系统](/architecture-book/part-8-session-memory/02-memory-system) - 内存架构
+- [内存系统](/architecture-book/part-8-session-memory/00-session-memory-overview) - 内存架构
 - [Agent 系统](/architecture-book/part-2-core-modules/02-agents) - Agent Runtime
 - [会话管理](/architecture-book/part-2-core-modules/03-sessions) - 会话生命周期

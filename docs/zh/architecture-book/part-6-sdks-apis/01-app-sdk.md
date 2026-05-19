@@ -472,6 +472,6 @@ main().catch(console.error);
 
 ## 相关
 
-- [插件 SDK](./02-plugin-sdk.md) - 插件开发 SDK
-- [Memory Host SDK](./03-memory-host-sdk.md) - 内存集成
-- [API 参考](./04-api-reference.md) - 完整 API 参考
+- [插件 SDK](./02-plugin-sdk) - 插件开发 SDK
+- [Memory Host SDK](./03-memory-host-sdk) - 内存集成
+- [API 参考](./04-api-reference) - 完整 API 参考

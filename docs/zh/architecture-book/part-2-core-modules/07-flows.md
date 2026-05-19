@@ -444,6 +444,6 @@ const flow: Flow = {
 
 ## 相关
 
-- [任务](/architecture-book/part-2-core-modules/08-tasks) - 任务管理
-- [Agent 系统](/architecture-book/part-2-core-modules/02-agents) - Agent 集成
-- [工具](/architecture-book/part-2-core-modules/05-tools) - 工具系统
+- [任务](08-tasks) - 任务管理
+- [Agent](02-agents) - Agent 集成
+- [工具](05-tools) - 工具系统

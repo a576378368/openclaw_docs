@@ -416,6 +416,6 @@ flowchart TB
 ## Related
 
 - [Config Schema](/architecture-book/part-7-config-system/01-config-schema) - Schema architecture
-- [Plugin System](/architecture-book/part-6-sdks-apis/02-plugin-sdk) - Plugin development
-- [Security Model](/architecture-book/part-5-security/01-auth-permissions) - Permission model
-- [Hooks System](/architecture-book/part-2-core-modules/05-hooks) - Hook implementation
+- [Plugin SDK](/architecture-book/part-6-sdks-apis/02-plugin-sdk) - Plugin development
+- [Provider Config](/architecture-book/part-7-config-system/03-provider-config) - Provider configuration
+- [Channel Config](/architecture-book/part-7-config-system/04-channel-config) - Channel configuration

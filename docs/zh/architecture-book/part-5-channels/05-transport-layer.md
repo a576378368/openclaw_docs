@@ -466,6 +466,6 @@ class HealthMonitor {
 
 ## 相关
 
-- [通道架构](./01-channel-architecture.md) - 通道设计
-- [消息处理](./04-message-processing.md) - 处理管道
-- [通道插件](../part-3-plugin-system/06-channel-plugins.md) - 插件实现
+- [通道架构](./01-channel-architecture) - 通道设计
+- [消息处理](./04-message-processing) - 处理管道
+- [通道插件](../part-3-plugin-system/06-channel-plugins) - 插件实现

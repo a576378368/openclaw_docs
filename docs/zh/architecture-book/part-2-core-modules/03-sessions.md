@@ -404,7 +404,7 @@ const config = {
 
 ## 相关
 
-- [Memory 系统](/architecture-book/part-8-session-memory/02-memory-system) - Memory 架构
+- [Memory 系统](/architecture-book/part-8-session-memory/00-session-memory-overview) - Memory 架构
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - 上下文组装
 - [Multi-Agent](/architecture-book/part-8-session-memory/05-multi-agent) - 多 Agent 路由
 - [配置](/architecture-book/part-7-config-system/01-config-overview) - 配置系统

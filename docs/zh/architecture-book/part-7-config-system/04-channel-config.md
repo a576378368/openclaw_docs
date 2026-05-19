@@ -449,6 +449,6 @@ flowchart TB
 
 ## 相关内容
 
-- [配置 Schema](./01-config-schema.md) - Schema 架构
-- [Channel 能力](../part-3-channels/01-capabilities.md) - 能力系统
-- [健康监控](../part-2-core-modules/03-health.md) - 健康系统
+- [配置 Schema](./01-config-schema) - Schema 架构
+- [Channel 能力](../part-3-channels/01-capabilities) - 能力系统
+- [健康监控](../part-2-core-modules/03-health) - 健康系统

@@ -405,7 +405,7 @@ const config = {
 
 ## Related
 
-- [Memory System](/architecture-book/part-8-session-memory/02-memory-system) - Memory architecture
+- [Memory System](/architecture-book/part-8-session-memory/00-session-memory-overview) - Memory architecture
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - Context assembly
 - [Multi-Agent](/architecture-book/part-8-session-memory/05-multi-agent) - Multi-agent routing
 - [Configuration](/architecture-book/part-7-config-system/01-config-overview) - Config system

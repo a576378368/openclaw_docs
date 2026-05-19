@@ -415,7 +415,7 @@ flowchart TB
 
 ## 相关内容
 
-- [配置 Schema](./01-config-schema.md) - Schema 架构
-- [插件系统](../part-6-sdks-apis/02-plugin-sdk.md) - 插件开发
-- [安全模型](../part-5-security/01-auth-permissions.md) - 权限模型
-- [Hooks 系统](../part-2-core-modules/05-hooks.md) - Hook 实现
+- [配置架构](01-config-schema) - 配置 Schema
+- [插件 SDK](../part-6-sdks-apis/02-plugin-sdk) - 插件开发指南
+- [Provider 配置](./03-provider-config) - Provider 配置
+- [通道配置](./04-channel-config) - 通道配置

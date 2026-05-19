@@ -456,6 +456,6 @@ await host.shutdown();
 
 ## Related
 
-- [Memory System](/architecture-book/part-8-session-memory/02-memory-system) - Memory architecture
+- [Memory System](/architecture-book/part-8-session-memory/00-session-memory-overview) - Memory architecture
 - [Context Engine](/architecture-book/part-8-session-memory/03-context-engine) - Context assembly
 - [Compaction](/architecture-book/part-8-session-memory/04-compaction) - Memory compaction

@@ -416,6 +416,6 @@ function validateInboundMessage(message: InboundMessage): ValidationResult {
 
 ## 相关
 
-- [通道架构](./01-channel-architecture.md) - 通道设计
-- [通道抽象](./02-channel-abstract.md) - 接口定义
-- [消息处理](./04-message-processing.md) - 处理管道
+- [通道架构](./01-channel-architecture) - 通道设计
+- [通道抽象](./02-channel-abstract) - 接口定义
+- [消息处理](./04-message-processing) - 处理管道

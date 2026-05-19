@@ -33,31 +33,31 @@ This book provides an in-depth introduction to OpenClaw, an open-source multi-ch
 
 This book is divided into nine parts:
 
-### [Part 1: Foundations](./part-1-foundations/01-introduction.md)
+### [Part 1: Foundations](./part-1-foundations/01-introduction)
 Learn the basic concepts and design philosophy of OpenClaw, including system overview, core concepts, and directory structure.
 
-### [Part 2: Core Modules](./part-2-core-modules/01-gateway.md)
+### [Part 2: Core Modules](./part-2-core-modules/01-gateway)
 Deep dive into OpenClaw's core components, including Gateway, Agent, session management, and memory systems.
 
-### [Part 3: Plugin System](./part-3-plugin-system/01-plugin-architecture.md)
+### [Part 3: Plugin System](./part-3-plugin-system/01-plugin-architecture)
 Learn how to extend OpenClaw's capabilities, including plugin architecture, SDK, and development guides.
 
-### [Part 4: Gateway Protocol](./part-4-gateway-protocol/01-protocol-overview.md)
+### [Part 4: Gateway Protocol](./part-4-gateway-protocol/01-protocol-overview)
 Understand OpenClaw's communication protocol, including WebSocket transport and message flow.
 
-### [Part 5: Channel System](./part-5-channels/01-channel-architecture.md)
+### [Part 5: Channel System](./part-5-channels/01-channel-architecture)
 Learn about the channel abstraction layer and event handling mechanisms.
 
-### [Part 6: SDK and API](./part-6-sdks-apis/01-app-sdk.md)
+### [Part 6: SDK and API](./part-6-sdks-apis/01-app-sdk)
 Complete SDK and API reference documentation.
 
-### [Part 7: Configuration System](./part-7-config-system/01-config-schema.md)
+### [Part 7: Configuration System](./part-7-config-system/01-config-schema)
 Complete reference for the configuration system.
 
-### [Part 8: Session and Memory](./part-8-session-memory/00-session-memory-overview.md)
+### [Part 8: Session and Memory](./part-8-session-memory/00-session-memory-overview)
 Deep dive into session management and memory systems.
 
-### [Part 9: Developer Guide](./part-9-dev-guide/01-dev-workflow.md)
+### [Part 9: Developer Guide](./part-9-dev-guide/01-dev-workflow)
 Best practices for development, testing, and deployment.
 
 ## Who This Book Is For

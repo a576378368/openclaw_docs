@@ -382,6 +382,6 @@ interface Callback {
 
 ## 相关
 
-- [通道架构](./01-channel-architecture.md) - 通道设计
-- [入站事件](./03-inbound-events.md) - 事件处理
-- [消息处理](./04-message-processing.md) - 处理管道
+- [通道架构](./01-channel-architecture) - 通道设计
+- [入站事件](./03-inbound-events) - 事件处理
+- [消息处理](./04-message-processing) - 处理管道

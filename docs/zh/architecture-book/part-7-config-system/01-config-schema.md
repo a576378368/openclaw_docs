@@ -289,6 +289,6 @@ const EXTENSION_SCHEMA_MAX_ITEMS = 256;            // Max 256 plugins
 
 ## 相关内容
 
-- [配置参考](./04-api-reference.md) - 完整配置参考
-- [Gateway 配置](../part-2-core-modules/01-gateway.md) - Gateway 设置
-- [Agent 配置](../part-2-core-modules/02-agents.md) - Agent 配置
+- [配置参考](./04-api-reference) - 完整配置参考
+- [Gateway 配置](../part-2-core-modules/01-gateway) - Gateway 设置
+- [Agent 配置](../part-2-core-modules/02-agents) - Agent 配置

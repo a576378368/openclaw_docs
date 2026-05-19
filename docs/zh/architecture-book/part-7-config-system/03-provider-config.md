@@ -385,6 +385,6 @@ interface SecretInput {
 
 ## 相关内容
 
-- [配置 Schema](./01-config-schema.md) - Schema 架构
-- [Agent 配置](./05-agent-config.md) - Agent 配置
-- [密钥管理](../part-5-security/02-secrets-management.md) - 密钥处理
+- [配置 Schema](./01-config-schema) - Schema 架构
+- [Agent 配置](./05-agent-config) - Agent 配置
+- [认证和安全](../part-4-gateway-protocol/05-auth-security) - 认证和安全

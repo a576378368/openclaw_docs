@@ -405,7 +405,7 @@ type SubagentEndReason = "deleted" | "completed" | "swept" | "released";
 
 ## Related
 
-- [Memory System](/architecture-book/part-8-session-memory/02-memory-system) - Memory architecture
+- [Memory System](/architecture-book/part-8-session-memory/00-session-memory-overview) - Memory architecture
 - [Memory Compaction](/architecture-book/part-8-session-memory/04-compaction) - Context reduction
 - [Multi-Agent](/architecture-book/part-8-session-memory/05-multi-agent) - Multi-agent sessions
 - [Agent System](/architecture-book/part-2-core-modules/02-agents) - Agent runtimes

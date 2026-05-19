@@ -387,4 +387,4 @@ interface SecretInput {
 
 - [Config Schema](/architecture-book/part-7-config-system/01-config-schema) - Schema architecture
 - [Agent Config](/architecture-book/part-7-config-system/05-agent-config) - Agent configuration
-- [Secrets Management](/architecture-book/part-5-security/02-secrets-management) - Secret handling
+- [Auth and Security](/architecture-book/part-4-gateway-protocol/05-auth-security) - Authentication and security

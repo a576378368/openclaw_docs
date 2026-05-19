@@ -405,7 +405,7 @@ type SubagentEndReason = "deleted" | "completed" | "swept" | "released";
 
 ## 相关
 
-- [内存系统](/architecture-book/part-8-session-memory/02-memory-system) - 内存架构
+- [内存系统](/architecture-book/part-8-session-memory/00-session-memory-overview) - 内存架构
 - [内存压缩](/architecture-book/part-8-session-memory/04-compaction) - 上下文缩减
 - [多 Agent](/architecture-book/part-8-session-memory/05-multi-agent) - 多 Agent 会话
 - [Agent 系统](/architecture-book/part-2-core-modules/02-agents) - Agent Runtime

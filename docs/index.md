@@ -15,49 +15,49 @@ hide:
 
 开源的多通道 AI 网关，用于将聊天平台与 AI Agent 连接起来。
 
-[:material-arrow-right: English Version](en/architecture-book/index.md){ .md-button .md-button--primary }
-[:material-arrow-right: 中文版本](zh/architecture-book/index.md){ .md-button }
+[:arrow_right: English Version](en/architecture-book/index){ .md-button .md-button--primary }
+[:arrow_right: 中文版本](zh/architecture-book/index){ .md-button }
 
 </div>
 </div>
 
 ## 本书特点
 
-[:material-book-open-variant: 九大章节] 涵盖从基础概念到高级功能的完整知识体系
+[:book: 九大章节] 涵盖从基础概念到高级功能的完整知识体系
 
-[:material-code-braces: 深入源码] 结合实际代码解析架构设计和实现细节
+[:code: 深入源码] 结合实际代码解析架构设计和实现细节
 
-[:material-wrench: 开发指南] 包含测试、调试和部署的最佳实践
+[:wrench: 开发指南] 包含测试、调试和部署的最佳实践
 
-[:material-translate: 双语支持] 英文和中文版本同步更新
+[:globe: 双语支持] 英文和中文版本同步更新
 
 ## 快速导航
 
 === "📚 Foundations 基础"
 
-    - [Introduction 简介](en/architecture-book/part-1-foundations/01-introduction.md)
-    - [系统概览](zh/architecture-book/part-1-foundations/02-system-overview.md)
-    - [核心概念](en/architecture-book/part-1-foundations/03-core-concepts.md)
-    - [目录结构](en/architecture-book/part-1-foundations/04-directory-structure.md)
+    - [Introduction 简介](en/architecture-book/part-1-foundations/01-introduction)
+    - [系统概览](zh/architecture-book/part-1-foundations/02-system-overview)
+    - [核心概念](en/architecture-book/part-1-foundations/03-core-concepts)
+    - [目录结构](en/architecture-book/part-1-foundations/04-directory-structure)
 
 === "⚙️ Core Modules 核心模块"
 
-    - [Gateway](en/architecture-book/part-2-core-modules/01-gateway.md)
-    - [Agents](en/architecture-book/part-2-core-modules/02-agents.md)
-    - [Sessions](en/architecture-book/part-2-core-modules/03-sessions.md)
-    - [Memory](en/architecture-book/part-2-core-modules/04-memory.md)
+    - [Gateway](en/architecture-book/part-2-core-modules/01-gateway)
+    - [Agents](en/architecture-book/part-2-core-modules/02-agents)
+    - [Sessions](en/architecture-book/part-2-core-modules/03-sessions)
+    - [Memory](en/architecture-book/part-2-core-modules/04-memory)
 
 === "🔌 Plugin System 插件系统"
 
-    - [Plugin Architecture](en/architecture-book/part-3-plugin-system/01-plugin-architecture.md)
-    - [Plugin SDK](en/architecture-book/part-3-plugin-system/02-plugin-sdk.md)
-    - [Writing Plugins](en/architecture-book/part-3-plugin-system/05-writing-plugins.md)
+    - [Plugin Architecture](en/architecture-book/part-3-plugin-system/01-plugin-architecture)
+    - [Plugin SDK](en/architecture-book/part-3-plugin-system/02-plugin-sdk)
+    - [Writing Plugins](en/architecture-book/part-3-plugin-system/05-writing-plugins)
 
 === "🌐 Gateway Protocol 网关协议"
 
-    - [Protocol Overview](en/architecture-book/part-4-gateway-protocol/01-protocol-overview.md)
-    - [WebSocket Transport](en/architecture-book/part-4-gateway-protocol/02-ws-transport.md)
-    - [Events and RPC](en/architecture-book/part-4-gateway-protocol/04-events-and-rpc.md)
+    - [Protocol Overview](en/architecture-book/part-4-gateway-protocol/01-protocol-overview)
+    - [WebSocket Transport](en/architecture-book/part-4-gateway-protocol/02-ws-transport)
+    - [Events and RPC](en/architecture-book/part-4-gateway-protocol/04-events-and-rpc)
 
 ## 相关链接
 

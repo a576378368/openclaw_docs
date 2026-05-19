@@ -497,6 +497,6 @@ interface Sender {
 
 ## 相关内容
 
-- [App SDK](./01-app-sdk.md) - 客户端 SDK
-- [插件 SDK](./02-plugin-sdk.md) - 插件 SDK
-- [协议概述](../part-4-gateway-protocol/01-protocol-overview.md) - 协议设计
+- [App SDK](./01-app-sdk) - 客户端 SDK
+- [插件 SDK](./02-plugin-sdk) - 插件 SDK
+- [协议概述](../part-4-gateway-protocol/01-protocol-overview) - 协议设计

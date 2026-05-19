@@ -136,7 +136,7 @@ Sophisticated session handling with isolation strategies:
 Hierarchical memory architecture:
 
 1. **Working Memory** - Current session context
-2. **Short-term Memory** - Recent interactions (MEMORY.md)
+2. **Short-term Memory** - Recent interactions (MEMORY)
 3. **Long-term Memory** - Persistent knowledge (wiki)
 4. **Active Memory** - Inferred facts and commitments
 
